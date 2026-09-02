@@ -41,37 +41,6 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .hand-wrap.reveal{animation:rp .6s cubic-bezier(.34,1.8,.64,1)}
 @keyframes hs{0%,100%{transform:translateY(0) rotate(0) rotateY(0)}25%{transform:translateY(-8px) rotate(-4deg) rotateY(-3deg)}75%{transform:translateY(-8px) rotate(4deg) rotateY(3deg)}}
 @keyframes rp{0%{transform:scale(.6) rotate(-10deg) translateZ(-20px);opacity:.4}60%{transform:scale(1.18) rotate(5deg) translateZ(30px)}100%{transform:scale(1) rotate(0) translateZ(0);opacity:1}}
-.hand-3d{width:100%;height:100%;position:relative;transform-style:preserve-3d;filter:drop-shadow(0 8px 12px rgba(0,0,0,.5))}
-.hand-3d .ambient{position:absolute;inset:-20%;border-radius:50%;background:radial-gradient(circle,rgba(253,224,71,.12) 0%,transparent 70%);pointer-events:none;transition:background .5s ease;z-index:-1}
-.hand-3d.closed .ambient{background:radial-gradient(circle,rgba(100,160,255,.08) 0%,transparent 70%)}
-.hand-3d .palm{position:absolute;bottom:15%;left:50%;transform:translateX(-50%) translateZ(0);width:55%;height:40%;background:linear-gradient(145deg,#fcd9b0 0%,#e8b88a 40%,#d9a070 100%);border-radius:18px 18px 22px 22px;border:2px solid #a87143;box-shadow:inset 0 -4px 8px rgba(0,0,0,.15),inset 0 4px 8px rgba(255,255,255,.15)}
-.hand-3d .palm .knuckle{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#c49060,#a87143);top:-3px}
-.hand-3d .palm .knuckle:nth-child(1){left:18%}.hand-3d .palm .knuckle:nth-child(2){left:36%}.hand-3d .palm .knuckle:nth-child(3){left:54%}.hand-3d .palm .knuckle:nth-child(4){left:72%}
-.hand-3d .wrist{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:40%;height:18%;background:linear-gradient(180deg,#d9a070,#c49060);border-radius:6px;border:2px solid #a87143}
-.hand-3d .finger{position:absolute;bottom:48%;transform-style:preserve-3d;transition:transform .4s cubic-bezier(.5,1.6,.4,1);transform-origin:bottom center;backface-visibility:hidden;will-change:transform}
-.hand-3d .finger .phalanx{position:absolute;bottom:0;left:50%;transform-origin:bottom center;transition:transform .4s cubic-bezier(.5,1.6,.64,1);border-radius:50%;backface-visibility:hidden}
-.hand-3d .finger .phalanx.p1{background:linear-gradient(180deg,#fcd9b0,#e8b88a);border:1.5px solid #a87143;box-shadow:inset 0 2px 4px rgba(255,255,255,.2),0 2px 4px rgba(0,0,0,.15)}
-.hand-3d .finger .phalanx.p2{background:linear-gradient(180deg,#f5d0a8,#dba57a);border:1.5px solid #a87143;box-shadow:inset 0 2px 4px rgba(255,255,255,.15)}
-.hand-3d .finger[data-finger="thumb"]{left:2%;width:18%;transform:rotate(-25deg) translateZ(12px)}
-.hand-3d .finger[data-finger="thumb"] .phalanx.p1{width:140%;height:32px;left:-20%}
-.hand-3d .finger[data-finger="thumb"] .phalanx.p2{width:130%;height:26px;left:-15%;bottom:28px}
-.hand-3d .finger[data-finger="index"]{left:20%;width:14%;transform:rotate(0deg) translateZ(14px);transition-delay:calc(var(--i,1) * 50ms)}
-.hand-3d .finger[data-finger="index"] .phalanx.p1{width:100%;height:30px}
-.hand-3d .finger[data-finger="index"] .phalanx.p2{width:90%;height:24px;bottom:28px}
-.hand-3d .finger[data-finger="middle"]{left:37%;width:14%;transform:rotate(0deg) translateZ(15px);transition-delay:calc(var(--i,2) * 50ms)}
-.hand-3d .finger[data-finger="middle"] .phalanx.p1{width:100%;height:34px}
-.hand-3d .finger[data-finger="middle"] .phalanx.p2{width:90%;height:28px;bottom:32px}
-.hand-3d .finger[data-finger="ring"]{left:54%;width:14%;transform:rotate(0deg) translateZ(14px);transition-delay:calc(var(--i,3) * 50ms)}
-.hand-3d .finger[data-finger="ring"] .phalanx.p1{width:100%;height:30px}
-.hand-3d .finger[data-finger="ring"] .phalanx.p2{width:90%;height:24px;bottom:28px}
-.hand-3d .finger[data-finger="pinky"]{left:70%;width:12%;transform:rotate(0deg) translateZ(13px);transition-delay:calc(var(--i,4) * 50ms)}
-.hand-3d .finger[data-finger="pinky"] .phalanx.p1{width:100%;height:26px}
-.hand-3d .finger[data-finger="pinky"] .phalanx.p2{width:85%;height:20px;bottom:24px}
-.hand-3d .finger.fdown{transform:rotateX(-85deg) translateZ(5px)!important;opacity:.4}
-.hand-3d .finger.fdown .phalanx.p1{transform:rotateX(-15deg)}
-.hand-3d .finger.fdown .phalanx.p2{transform:rotateX(-20deg)}
-.hand-3d .finger.fup .phalanx.p1{transform:rotateX(0deg)}
-.hand-3d .finger.fup .phalanx.p2{transform:rotateX(0deg)}
 .gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:20px;color:#fde047;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
 .gesture-label.show{opacity:1;transform:translateY(0)}
 .timer-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(64px,12vh,92px);height:clamp(64px,12vh,92px);pointer-events:none}
@@ -110,9 +79,6 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .mode-btn .icon{font-size:28px;display:block;margin-bottom:4px}
 .mode-btn .title{font-size:14px;font-weight:800;display:block}
 .mode-btn .desc{font-size:10px;opacity:.85;display:block;margin-top:3px;font-weight:600}
-.format-select,.team-select{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;width:100%;max-width:280px}
-.format-btn,.team-btn{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:#fff;padding:10px;border-radius:12px;font-size:12px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
-.format-btn.active,.team-btn.active{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
 .share-box{background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.3);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#fde047;font-weight:600;max-width:280px}
 .player-list{max-height:clamp(120px,22vh,200px);overflow-y:auto;width:100%;max-width:280px;background:rgba(255,255,255,.05);border-radius:12px;padding:8px;margin:8px 0}
 .player-item{padding:6px 8px;background:rgba(255,255,255,.1);margin:3px 0;border-radius:8px;font-size:11px;display:flex;justify-content:space-between}
@@ -164,8 +130,8 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .pool-item .role-badge.batter{background:rgba(59,130,246,.2);color:#93c5fd}
 .pool-item .role-badge.bowler{background:rgba(239,68,68,.2);color:#fca5a5}
 .pool-item .role-badge.all{background:rgba(168,85,247,.2);color:#d8b4fe}
-.team-size-select{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0;width:100%;max-width:300px}
-.team-size-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center}
+.team-size-select{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0;width:100%;max-width:360px}
+.team-size-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
 .team-size-btn.active{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
 .inning-info{font-size:10px;color:#86efac;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}}
@@ -179,8 +145,6 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-hand.right{animation-delay:1.5s;animation-name:handFloatR}
 @keyframes handFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(3deg)}}
 @keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
-.home-hand .hand-3d{width:100%;height:100%}
-.home-hand .finger{transition:transform .6s cubic-bezier(.5,1.6,.4,1)}
 .home-ball{width:clamp(18px,3vh,26px);height:clamp(18px,3vh,26px);background:radial-gradient(circle at 35% 35%,#ef4444,#b91c1c 60%,#7f1d1d);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5),inset 0 -2px 4px rgba(0,0,0,.3);animation:ballBounce 2s ease-in-out infinite}
 .home-ball::after{content:'';position:absolute;width:60%;height:1.5px;background:rgba(255,255,255,.25);top:45%;left:20%;border-radius:1px;transform:rotate(-15deg)}
 @keyframes ballBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}25%{transform:translate(-50%,-65%) scale(1.1)}50%{transform:translate(-50%,-50%) scale(1)}75%{transform:translate(-50%,-55%) scale(1.05)}}
@@ -213,10 +177,10 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="balls-row" id="ballsRow"></div>
 <div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
-<div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"></div><div class="gesture-label" id="labelPlayer">-</div></div>
+<div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"><img id="handImgPlayer" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:none"/></div><div class="gesture-label" id="labelPlayer">-</div></div>
 <div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
 <div class="countdown" id="countdown"></div>
-<div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"></div><div class="gesture-label" id="labelOpponent">-</div></div>
+<div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"><img id="handImgOpponent" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:none"/></div><div class="gesture-label" id="labelOpponent">-</div></div>
 <div class="flash" id="flash"></div>
 </div>
 <div class="controls"><div class="gesture-grid" id="gestureGrid">
@@ -244,17 +208,13 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 </div>
 
 <div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Bot reads your patterns!</p>
-<h2>Format</h2>
-<div class="format-select" id="offlineFormat">
-<div class="format-btn active" data-format="quick">Quick<br><small>1 wk, 6 balls</small></div>
-<div class="format-btn" data-format="full">Standard<br><small>2 wk, 2 overs</small></div>
-</div>
-<h2>Team Size</h2>
+<h2>Choose Format</h2>
 <div class="team-size-select" id="offlineSize">
-<div class="team-size-btn active" data-size="1">1v1</div>
-<div class="team-size-btn" data-size="2">2v2</div>
-<div class="team-size-btn" data-size="3">3v3</div>
-<div class="team-size-btn" data-size="5">5v5</div>
+<div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
+<div class="team-size-btn" data-size="2">2v2<br><small>2 wk, 2 ov</small></div>
+<div class="team-size-btn" data-size="3">3v3<br><small>3 wk, 3 ov</small></div>
+<div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
+<div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div>
 <h2>Toss</h2>
 <div style="display:flex;gap:10px;margin:8px 0;justify-content:center"><button id="btnHeads" class="small">Heads</button><button id="btnTails" class="small secondary">Tails</button></div>
@@ -266,16 +226,12 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="onlineLobby"><h1>Play with Friend</h1>
 <input type="text" id="nameInput" placeholder="Your Name" maxlength="16" autocomplete="off"/>
 <div id="hostFormat"><h2>Format (Host picks)</h2>
-<div class="format-select" id="onlineFormat">
-<div class="format-btn active" data-format="quick">Quick<br><small>1 wk, 6 balls</small></div>
-<div class="format-btn" data-format="full">Standard<br><small>2 wk, 2 overs</small></div>
-</div>
-<h2>Team Size</h2>
 <div class="team-size-select" id="onlineSize">
-<div class="team-size-btn active" data-size="1">1v1</div>
-<div class="team-size-btn" data-size="2">2v2</div>
-<div class="team-size-btn" data-size="3">3v3</div>
-<div class="team-size-btn" data-size="5">5v5</div>
+<div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
+<div class="team-size-btn" data-size="2">2v2<br><small>2 wk, 2 ov</small></div>
+<div class="team-size-btn" data-size="3">3v3<br><small>3 wk, 3 ov</small></div>
+<div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
+<div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div></div>
 <div id="joinerNote" style="display:none"><p style="font-size:12px;opacity:.7">Format & size decided by host</p></div>
 <button id="btnCreate" style="display:none">Create Room</button>
@@ -287,15 +243,11 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <p id="matchStatus">Searching for a real player...</p>
 <p id="matchTimer" style="font-size:24px;font-weight:900;color:#fde047;margin:8px 0"></p>
 <div class="team-size-select" id="mmSize">
-<div class="team-size-btn active" data-size="1">1v1</div>
-<div class="team-size-btn" data-size="2">2v2</div>
-<div class="team-size-btn" data-size="3">3v3</div>
-<div class="team-size-btn" data-size="5">5v5</div>
-</div>
-<h2>Format</h2>
-<div class="format-select" id="mmFormat">
-<div class="format-btn active" data-format="quick">Quick<br><small>1 wk, 6 balls</small></div>
-<div class="format-btn" data-format="full">Standard<br><small>2 wk, 2 overs</small></div>
+<div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
+<div class="team-size-btn" data-size="2">2v2<br><small>2 wk, 2 ov</small></div>
+<div class="team-size-btn" data-size="3">3v3<br><small>3 wk, 3 ov</small></div>
+<div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
+<div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div>
 <button id="btnMMCancel" class="secondary small" style="margin-top:12px">Cancel</button></div>
 
@@ -375,7 +327,7 @@ const BotAI={history:[],transitions:{},ballCount:0,
  level(){if(this.ballCount<3)return'Easy';if(this.ballCount<6)return'Medium';return'Hard'}};
 
 const TIMER=5,CIRC=2*Math.PI*44,WATCHDOG=12000;
-const G={mode:null,format:'quick',teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null};
+const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null};
 const $=id=>document.getElementById(id);
 let audioCtx=null,peer=null,conn=null,pollTimer=null,connGen=0,joinAttempts=0,readyGen=-1,rejoinTimer=null,matchTimer=null;
 
@@ -384,43 +336,19 @@ function loadSession(){try{return JSON.parse(sessionStorage.getItem('hc_sess'))}
 function saveSnap(s){try{sessionStorage.setItem('hc_snap_'+G.roomId,JSON.stringify(s))}catch(e){}}
 function loadSnap(room){try{const r=sessionStorage.getItem('hc_snap_'+room);return r?JSON.parse(r):null}catch(e){return null}}
 function clearSnap(){try{sessionStorage.removeItem('hc_snap_'+G.roomId)}catch(e){}}
-function makeSnap(){return{stage:G.stage,format:G.format,teamSize:G.teamSize,innings:G.innings,iBatHost:(G.isHost?G.iBat:!G.iBat),target:G.target,freeHit:G.freeHit,batIdx:G.batIdx,bowlIdx:G.bowlIdx,hostName:G.isHost?G.myName:G.oppName,joinName:G.isHost?G.oppName:G.myName,host:G.isHost?G.me:G.opp,joiner:G.isHost?G.opp:G.me,hostTeam:G.isHost?G.myTeam:G.oppTeam,joinTeam:G.isHost?G.oppTeam:G.myTeam,hostPlayers:G.isHost?G.myPlayers:G.oppPlayers,joinPlayers:G.isHost?G.oppPlayers:G.myPlayers,isBot:G.isBot,botProfile:G.botProfile}}
-function restore(s,iAmHost){G.format=s.format;G.teamSize=s.teamSize||1;G.innings=s.innings;G.target=s.target;G.freeHit=s.freeHit;G.batIdx=s.batIdx||0;G.bowlIdx=s.bowlIdx||0;G.stage=s.stage;G.myName=iAmHost?s.hostName:s.joinName;G.oppName=iAmHost?s.joinName:s.hostName;G.me=iAmHost?s.host:s.joiner;G.opp=iAmHost?s.joiner:s.host;G.iBat=iAmHost?s.iBatHost:!s.iBatHost;G.myTeam=iAmHost?s.hostTeam:s.joinTeam;G.oppTeam=iAmHost?s.joinTeam:s.hostTeam;G.myPlayers=iAmHost?s.hostPlayers:s.joinPlayers;G.oppPlayers=iAmHost?s.joinPlayers:s.hostPlayers;G.isBot=s.isBot||false;G.botProfile=s.botProfile||null}
+function makeSnap(){return{stage:G.stage,teamSize:G.teamSize,innings:G.innings,iBatHost:(G.isHost?G.iBat:!G.iBat),target:G.target,freeHit:G.freeHit,batIdx:G.batIdx,bowlIdx:G.bowlIdx,hostName:G.isHost?G.myName:G.oppName,joinName:G.isHost?G.oppName:G.myName,host:G.isHost?G.me:G.opp,joiner:G.isHost?G.opp:G.me,hostTeam:G.isHost?G.myTeam:G.oppTeam,joinTeam:G.isHost?G.oppTeam:G.myTeam,hostPlayers:G.isHost?G.myPlayers:G.oppPlayers,joinPlayers:G.isHost?G.oppPlayers:G.myPlayers,isBot:G.isBot,botProfile:G.botProfile}}
+function restore(s,iAmHost){G.teamSize=s.teamSize||1;G.innings=s.innings;G.target=s.target;G.freeHit=s.freeHit;G.batIdx=s.batIdx||0;G.bowlIdx=s.bowlIdx||0;G.stage=s.stage;G.myName=iAmHost?s.hostName:s.joinName;G.oppName=iAmHost?s.joinName:s.hostName;G.me=iAmHost?s.host:s.joiner;G.opp=iAmHost?s.joiner:s.host;G.iBat=iAmHost?s.iBatHost:!s.iBatHost;G.myTeam=iAmHost?s.hostTeam:s.joinTeam;G.oppTeam=iAmHost?s.joinTeam:s.hostTeam;G.myPlayers=iAmHost?s.hostPlayers:s.joinPlayers;G.oppPlayers=iAmHost?s.joinPlayers:s.hostPlayers;G.isBot=s.isBot||false;G.botProfile=s.botProfile||null}
 function persist(){if(G.isHost&&G.roomId)saveSnap(makeSnap())}
 function setStage(s){G.stage=s;persist()}
 
-function buildHand3D(el){
- el.innerHTML='';
- const d=document.createElement('div');d.className='hand-3d';
- const amb=document.createElement('div');amb.className='ambient';d.appendChild(amb);
- const palm=document.createElement('div');palm.className='palm';
- for(let i=0;i<4;i++){const k=document.createElement('div');k.className='knuckle';palm.appendChild(k)}
- d.appendChild(palm);
- const wrist=document.createElement('div');wrist.className='wrist';d.appendChild(wrist);
- const fingers=[
-  {id:'thumb',idx:0},{id:'index',idx:1},{id:'middle',idx:2},{id:'ring',idx:3},{id:'pinky',idx:4}
- ];
- fingers.forEach(f=>{
-  const fg=document.createElement('div');fg.className='finger fup';fg.dataset.finger=f.id;fg.style.setProperty('--i',f.idx);
-  const p1=document.createElement('div');p1.className='phalanx p1';
-  const p2=document.createElement('div');p2.className='phalanx p2';
-  fg.appendChild(p1);fg.appendChild(p2);d.appendChild(fg);
- });
- el.appendChild(d);return d;
-}
-const hand3dP=buildHand3D($('handPlayer')),hand3dO=buildHand3D($('handOpponent'));
-const gMap={1:['index'],2:['index','middle'],3:['index','middle','ring'],4:['index','middle','ring','pinky'],5:['thumb','index','middle','ring','pinky'],6:['thumb']};
-function setGesture(handEl,v){
- const up=v==null?[]:gMap[v];
- handEl.querySelectorAll('.finger').forEach(fg=>{
-  const id=fg.dataset.finger;
-  const isUp=up.includes(id);
-  fg.classList.toggle('fup',isUp);fg.classList.toggle('fdown',!isUp);
- });
- if(v!==null){
-  const allDown=v===0;
-  handEl.classList.toggle('closed',allDown||v<=2);
- }
+function setHandGesture(imgEl,wrapperEl,v){
+ if(v===null||v===undefined){imgEl.style.display='none';wrapperEl.classList.remove('shake','closed');return}
+ imgEl.src='HandGesture/'+v+'.png';
+ imgEl.alt='Gesture '+v;
+ imgEl.style.display='block';
+ wrapperEl.classList.remove('shake','closed');
+ wrapperEl.classList.add('reveal');
+ setTimeout(()=>wrapperEl.classList.remove('reveal'),650);
 }
 
 function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
@@ -429,7 +357,7 @@ function sfx(n){ensureAudio();const B=beep;if(n==='tap')B(600,.05,'square',.08);
 function haptic(ms){if(navigator.vibrate)try{navigator.vibrate(ms||15)}catch(e){}}
 
 function gLabel(v){return v==null?'-':v===6?'SIX!':v+(v===1?' run':' runs')}
-function oversStr(b){return G.teamSize>1?Math.floor(b/6)+'.'+(b%6)+' ov':b+'/'+G.totalBalls}
+function oversStr(b){const ov=G.totalBalls/6;return Math.floor(b/6)+'.'+(b%6)+' / '+ov+' ov'}
 function updScore(){$('scoreA').textContent=G.me.score;$('wicketsA').textContent=G.me.wkts;$('ballsA').textContent=oversStr(G.me.balls);$('scoreB').textContent=G.opp.score;$('wicketsB').textContent=G.opp.wkts;$('ballsB').textContent=oversStr(G.opp.balls);$('batA').style.display=G.iBat?'inline-block':'none';$('batB').style.display=G.iBat?'none':'inline-block';updatePlayerDisplay()}
 function popScore(s){const el=s==='A'?$('scoreBoxA'):$('scoreBoxB');if(!el)return;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}
 function renderBalls(){$('ballsRow').innerHTML='';const bat=G.iBat?G.me:G.opp;const max=Math.min(G.totalBalls,36);for(let i=0;i<max;i++){const d=document.createElement('div');d.className='ball-dot';if(i<bat.hist.length){d.classList.add('done');const h=bat.hist[i];if(h==='W'){d.classList.add('wicket');d.textContent='W'}else if(h===6){d.classList.add('six');d.textContent='6'}else if(h==='NB'){d.classList.add('noball');d.textContent='NB'}else if(h==='DOT'){d.classList.add('dotball');d.textContent='.'}else d.textContent=h}$('ballsRow').appendChild(d)}}
@@ -490,11 +418,8 @@ $('btnBack1').onclick=()=>{$('offlineSetup').classList.add('hidden');$('menuOver
 $('btnBack2').onclick=()=>{$('onlineLobby').classList.add('hidden');$('menuOverlay').classList.remove('hidden')};
 $('btnCloseProfile').onclick=()=>{$('profileOverlay').classList.add('hidden')};
 
-document.querySelectorAll('#offlineFormat .format-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#offlineFormat .format-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.format=b.dataset.format;sfx('tap')}});
 document.querySelectorAll('#offlineSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#offlineSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
-document.querySelectorAll('#onlineFormat .format-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#onlineFormat .format-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.format=b.dataset.format;sfx('tap')}});
 document.querySelectorAll('#onlineSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#onlineSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
-document.querySelectorAll('#mmFormat .format-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#mmFormat .format-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.format=b.dataset.format;sfx('tap')}});
 document.querySelectorAll('#mmSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#mmSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
 
 function resetOffline(){$('coinBox').style.display='none';$('tossResult').textContent='';$('tossDecision').style.display='none';$('btnHeads').disabled=false;$('btnTails').disabled=false}
@@ -507,8 +432,8 @@ $('btnBowlFirst').onclick=()=>{sfx('tap');G.iBat=false;startOffline()};
 function startOffline(){
  $('offlineSetup').classList.add('hidden');
  G.teamSize=getTeamSize();
- G.totalBalls=G.format==='quick'?(G.teamSize>1?G.teamSize*6:6):(G.teamSize>1?G.teamSize*12:12);
- G.totalWkts=G.format==='quick'?Math.min(G.teamSize,2):Math.min(G.teamSize*2,5);
+ G.totalBalls=G.teamSize===11?120:G.teamSize*6;
+ G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
  const botName=genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
  if(G.teamSize===1){G.myPlayers=[{name:'You',role:'all'}];G.oppPlayers=[{name:botName,role:'all'}]}
@@ -591,13 +516,13 @@ function setupConn(c,gen,isJoiner){
 
 function startAutoRejoin(){if(rejoinTimer)return;let n=0;rejoinTimer=setInterval(()=>{n++;if(n>30){stopRejoin();$('btnRetry').style.display='block';return}if(peer&&!peer.destroyed){joinHost()}},3000)}
 function connReady(){if(readyGen===connGen)return;readyGen=connGen;connLog('Hello...');sendHello(0)}
-function sendHello(att){if(att>=20){connLog('Hello failed',true);$('btnRetry').style.display='block';return}if(conn&&conn.open){try{conn.send({type:'hello',name:G.myName,format:G.format,teamSize:G.teamSize,rejoin:G.wantRejoin});connLog('Sent!')}catch(e){setTimeout(()=>sendHello(att+1),500)}}else setTimeout(()=>sendHello(att+1),500)}
+function sendHello(att){if(att>=20){connLog('Hello failed',true);$('btnRetry').style.display='block';return}if(conn&&conn.open){try{conn.send({type:'hello',name:G.myName,teamSize:G.teamSize,rejoin:G.wantRejoin});connLog('Sent!')}catch(e){setTimeout(()=>sendHello(att+1),500)}}else setTimeout(()=>sendHello(att+1),500)}
 
 function handleNet(d){
  if(!d||!d.type)return;
  if(d.type==='hello'){
   stopRejoin();G.oppName=d.name;
-  if(!G.isHost){G.format=d.format||G.format;G.teamSize=d.teamSize||G.teamSize}
+  if(!G.isHost){G.teamSize=d.teamSize||G.teamSize}
   const inProg=(G.stage==='playing'||G.stage==='break');
   if(d.rejoin&&G.isHost&&inProg){const snap=makeSnap();sendMsg({type:'sync',snap:snap});$('waitingOverlay').classList.add('hidden');connLog('Resynced '+G.oppName);clearWD();stopTimer();G.state='idle';setTimeout(resumeFromStage,600)}
   else if(d.rejoin&&!G.isHost){normalHello()}
@@ -701,7 +626,7 @@ function applyTossDec(c,isMy){G.iBat=isMy?c==='bat':c==='bowl';setStage('prematc
 function showPreMC(){setStage('prematch');$('mcOverlay').classList.remove('hidden');$('mcTitle').textContent='Ready!';$('mcNum').textContent='3';$('mcPlayers').textContent=G.myName+' vs '+G.oppName;if(G.isHost){$('mcHost').style.display='block';$('mcWait').style.display='none'}else{$('mcHost').style.display='none';$('mcWait').style.display='block'}}
 $('btnStart').onclick=()=>{sfx('tap');sendMsg({type:'start_match'});showMC(true)};
 function showMC(){$('mcHost').style.display='none';$('mcWait').style.display='none';$('mcTitle').textContent='Starting!';let c=3;$('mcNum').textContent=c;sfx('cd');const iv=setInterval(()=>{c--;if(c>0){$('mcNum').textContent=c;sfx('cd');haptic(20)}else{clearInterval(iv);$('mcNum').textContent='GO!';sfx('start');haptic(40);setTimeout(()=>{$('mcOverlay').classList.add('hidden');startOnline()},800)}},1000)}
-function startOnline(){G.totalBalls=G.format==='quick'?(G.teamSize>1?G.teamSize*6:6):(G.teamSize>1?G.teamSize*12:12);G.totalWkts=G.format==='quick'?Math.min(G.teamSize,2):Math.min(G.teamSize*2,5);G.freeHit=false;setStage('playing');$('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;updScore();renderBalls();updFH();showLeave(true);startInnings(1)}
+function startOnline(){G.totalBalls=G.teamSize===11?120:G.teamSize*6;G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;G.freeHit=false;setStage('playing');$('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;updScore();renderBalls();updFH();showLeave(true);startInnings(1)}
 
 function startInnings(n){
  clearWD();G.innings=n;
@@ -711,10 +636,10 @@ function startInnings(n){
  G.state='idle';G.freeHit=false;
  updScore();renderBalls();updFH();
  const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');
- const ft=G.format==='quick'?(G.teamSize>1?G.teamSize+' overs':'6 balls'):(G.teamSize>1?G.teamSize*2+' overs':'2 overs');
+ const ov=G.totalBalls/6;const ft=G.totalWkts+' wk, '+ov+' ov';
  if(n===1){$('status').innerHTML='<span class="hl">1st Innings</span> - '+bn+' ('+ft+')';$('targetBanner').classList.remove('show')}
  else{setStage('playing');$('status').innerHTML='<span class="hl">2nd Innings</span> Target: <b>'+(G.target+1)+'</b>';$('targetNum').textContent=G.target+1;$('targetBanner').classList.add('show')}
- setGesture(hand3dP,null);setGesture(hand3dO,null);
+ setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';
  setTimeout(nextBall,700);
@@ -724,7 +649,7 @@ function nextBall(){
  clearWD();const bat=curBat();
  if(bat.balls>=G.totalBalls||bat.wkts>=G.totalWkts){endInnings();return}
  G.state='waiting';G.myPick=null;G.oppPick=null;G.iAuto=false;G.oppAuto=false;
- setBtns(true);setGesture(hand3dP,null);setGesture(hand3dO,null);
+ setBtns(true);setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='?';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='?';
  if(G.mode==='offline'){if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
@@ -745,7 +670,7 @@ const batAuto=G.iBat?G.iAuto:G.oppAuto,bowlAuto=G.iBat?G.oppAuto:G.iAuto;
 if(batAuto&&!bowlAuto){dotBall();return}
 if(bowlAuto&&!batAuto){noBall();return}
 if(batAuto&&bowlAuto){dotBall();return}
-setGesture(hand3dP,G.myPick);setGesture(hand3dO,G.oppPick);$('handPlayer').classList.add('reveal');$('handOpponent').classList.add('reveal');setTimeout(()=>{$('handPlayer').classList.remove('reveal');$('handOpponent').classList.remove('reveal')},650);
+setHandGesture($('handImgPlayer'),$('handPlayer'),G.myPick);setHandGesture($('handImgOpponent'),$('handOpponent'),G.oppPick);
 $('labelPlayer').textContent=gLabel(G.myPick);$('labelPlayer').classList.add('show');
 $('labelOpponent').textContent=gLabel(G.oppPick);$('labelOpponent').classList.add('show');
 showCD('GO!');sfx('go');
@@ -790,7 +715,7 @@ $('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden
 function doRematch(){G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;$('resultOverlay').classList.add('hidden');startInnings(1)}
 $('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){$('menuOverlay').classList.remove('hidden');resetGame()}else{G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;startInnings(1)}};
 $('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();history.replaceState({},'',location.pathname)};
-function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;BotAI.reset();setGesture(hand3dP,null);setGesture(hand3dO,null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
+function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
 
 function showProfile(){
  const s=loadStats();
@@ -840,8 +765,8 @@ function startMatchmaking(){
 }
 function startBotMatch(){
  G.isBot=true;G.botProfile=genBotProfile();G.oppName=G.botProfile.name;G.isHost=true;
- G.totalBalls=G.format==='quick'?(G.teamSize>1?G.teamSize*6:6):(G.teamSize>1?G.teamSize*12:12);
- G.totalWkts=G.format==='quick'?Math.min(G.teamSize,2):Math.min(G.teamSize*2,5);
+ G.totalBalls=G.teamSize===11?120:G.teamSize*6;
+ G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
  if(G.teamSize===1){G.myPlayers=[{name:G.myName,role:'all'}];G.oppPlayers=[{name:G.oppName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:G.myName+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?G.oppName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
@@ -856,31 +781,18 @@ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault
 updScore();renderBalls();
 try{
  const hc=document.getElementById('homeHands');if(hc){
-  const gMap2={1:['index'],2:['index','middle'],3:['index','middle','ring'],4:['index','middle','ring','pinky'],5:['thumb','index','middle','ring','pinky'],6:['thumb']};
-  function buildHomeHand(v,cls){
+  function buildHomeHandImg(v,cls){
    const w=document.createElement('div');w.className='home-hand '+cls;
-   const hd=document.createElement('div');hd.className='hand-3d';
-   const amb=document.createElement('div');amb.className='ambient';hd.appendChild(amb);
-   const palm=document.createElement('div');palm.className='palm';
-   for(let k=0;k<4;k++){const kn=document.createElement('div');kn.className='knuckle';palm.appendChild(kn)}
-   hd.appendChild(palm);
-   const wrist=document.createElement('div');wrist.className='wrist';hd.appendChild(wrist);
-   [{id:'thumb',idx:0},{id:'index',idx:1},{id:'middle',idx:2},{id:'ring',idx:3},{id:'pinky',idx:4}].forEach(f=>{
-    const fg=document.createElement('div');fg.className='finger fup';fg.dataset.finger=f.id;fg.style.setProperty('--i',f.idx);
-    const p1=document.createElement('div');p1.className='phalanx p1';
-    const p2=document.createElement('div');p2.className='phalanx p2';
-    fg.appendChild(p1);fg.appendChild(p2);hd.appendChild(fg);
-   });
-   const up=gMap2[v]||[];
-   hd.querySelectorAll('.finger').forEach(fg=>{fg.classList.toggle('fup',up.includes(fg.dataset.finger));fg.classList.toggle('fdown',!up.includes(fg.dataset.finger))});
-   w.appendChild(hd);return w;
+   const img=document.createElement('img');img.src='HandGesture/'+v+'.png';img.alt='Gesture '+v;
+   img.style.cssText='width:100%;height:100%;object-fit:contain';
+   w.appendChild(img);return w;
   }
   let seq=[6,5,4,3,2,1,2,3,4,5,6];
   let si=0;
   function cycleHands(){
    hc.innerHTML='';
-   hc.appendChild(buildHomeHand(seq[si],'left'));
-   hc.appendChild(buildHomeHand(seq[(si+5)%seq.length],'right'));
+   hc.appendChild(buildHomeHandImg(seq[si],'left'));
+   hc.appendChild(buildHomeHandImg(seq[(si+5)%seq.length],'right'));
    si=(si+1)%seq.length;
   }
   cycleHands();setInterval(cycleHands,1200);
