@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#052e1a"/>
 <title>Hand Cricket Pro</title>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:radial-gradient(ellipse at top,#1a5d3a 0%,#0b3d2e 50%,#052e1a 100%);color:#fff;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
@@ -89,7 +90,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .gesture-btn.disabled{opacity:.35;pointer-events:none}
 .gesture-btn .big{font-size:clamp(16px,2.8vh,24px);display:block;line-height:1}
 .gesture-btn .small{font-size:clamp(8px,1.1vh,10px);opacity:.9;margin-top:2px;display:block;font-weight:700}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow-y:auto;animation:oi .3s ease}
+.overlay{position:fixed;inset:0;background:rgba(5,46,26,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow-y:auto;animation:oi .4s ease}
 @keyframes oi{from{opacity:0}to{opacity:1}}
 .overlay.hidden{display:none!important}
 .overlay h1{font-size:clamp(22px,3.2vh,28px);margin:0 0 8px}
@@ -168,6 +169,36 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .team-size-btn.active{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
 .inning-info{font-size:10px;color:#86efac;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}}
+.home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#fde047 0%,#fff 50%,#86efac 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+@keyframes titleIn{from{opacity:0;transform:translateY(-30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+.home-subtitle{font-size:clamp(11px,1.8vh,15px);opacity:.7;margin:4px 0 6px;font-weight:600;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .6s .2s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:.7;transform:translateY(0)}}
+.home-hands{display:flex;justify-content:center;align-items:center;gap:clamp(20px,5vw,50px);margin:10px 0 14px;height:clamp(90px,16vh,130px);animation:fadeUp .6s .3s both}
+.home-hand{width:clamp(60px,12vh,90px);height:clamp(78px,16vh,115px);position:relative;animation:handFloat 3s ease-in-out infinite}
+.home-hand.left{animation-delay:0s;transform:scaleX(-1)}
+.home-hand.right{animation-delay:1.5s;animation-name:handFloatR}
+@keyframes handFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
+.home-hand .hand-3d{width:100%;height:100%}
+.home-hand .finger{transition:transform .6s cubic-bezier(.5,1.6,.4,1)}
+.home-ball{width:clamp(18px,3vh,26px);height:clamp(18px,3vh,26px);background:radial-gradient(circle at 35% 35%,#ef4444,#b91c1c 60%,#7f1d1d);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5),inset 0 -2px 4px rgba(0,0,0,.3);animation:ballBounce 2s ease-in-out infinite}
+.home-ball::after{content:'';position:absolute;width:60%;height:1.5px;background:rgba(255,255,255,.25);top:45%;left:20%;border-radius:1px;transform:rotate(-15deg)}
+@keyframes ballBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}25%{transform:translate(-50%,-65%) scale(1.1)}50%{transform:translate(-50%,-50%) scale(1)}75%{transform:translate(-50%,-55%) scale(1.05)}}
+.mode-grid.three-col{animation:fadeUp .6s .4s both}
+.mode-btn{transition:all .2s cubic-bezier(.34,1.56,.64,1);animation:cardIn .5s cubic-bezier(.34,1.56,.64,1) both}
+.mode-btn:nth-child(1){animation-delay:.5s}
+.mode-btn:nth-child(2){animation-delay:.6s}
+.mode-btn:nth-child(3){animation-delay:.7s}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+.mode-btn:hover{transform:translateY(-3px);border-color:rgba(253,224,71,.4);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.mode-btn:active{transform:translateY(1px) scale(.97)}
+.home-profile-wrap{animation:fadeUp .6s .8s both;margin-top:14px}
+.home-version{font-size:9px;opacity:.4;margin-top:12px;animation:fadeUp .6s 1s both}
+.home-credit{font-size:10px;opacity:.5;margin-top:6px;animation:fadeUp .6s 1.1s both}
+.home-credit a{color:#fde047;text-decoration:none;font-weight:700}
+.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:3px;height:3px;background:rgba(253,224,71,.3);border-radius:50%;animation:particleFloat linear infinite}
+@keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
 </style>
 </head>
 <body>
@@ -196,15 +227,21 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <button class="gesture-btn disabled" data-val="5"><span class="big">5</span><span class="small">5</span></button>
 <button class="gesture-btn disabled" data-val="6"><span class="big">6</span><span class="small">SIX</span></button>
 </div></div>
-<div class="footer-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
 
-<div class="overlay" id="menuOverlay"><h1>Hand Cricket Pro</h1><p>Choose mode</p>
+<div class="particles" id="particles"></div>
+<div class="overlay" id="menuOverlay">
+<div class="home-hands" id="homeHands"></div>
+<h1 class="home-title">Hand Cricket Pro</h1>
+<p class="home-subtitle">Street Cricket Reimagined</p>
 <div class="mode-grid three-col">
-<div class="mode-btn" id="modeOffline"><span class="icon">BOT</span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
-<div class="mode-btn" id="modeOnline"><span class="icon">WEB</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
-<div class="mode-btn" id="modeInstant"><span class="icon">LIVE</span><span class="title">Instant Match</span><span class="desc">Find opponent now</span></div>
+<div class="mode-btn" id="modeOffline"><span class="icon">🤖</span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
+<div class="mode-btn" id="modeOnline"><span class="icon">🌐</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
+<div class="mode-btn" id="modeInstant"><span class="icon">⚡</span><span class="title">Instant Match</span><span class="desc">Find opponent now</span></div>
 </div>
-<div style="margin-top:14px"><button class="secondary small" id="btnProfile">My Profile</button></div></div>
+<div class="home-profile-wrap"><button class="secondary small" id="btnProfile">My Profile</button></div>
+<div class="home-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
+<div class="home-version">v2.0</div>
+</div>
 
 <div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Bot reads your patterns!</p>
 <h2>Format</h2>
@@ -321,7 +358,7 @@ const BOT_SUFFIX=['_YT','_XD','_OP','_gg','_420','_69','YT','XD','OP','Playz','G
 const BOT_EMOJI=['🦁','🐯','🦅','🐺','💀','🔥','⚡','🎮','🎯','🗡️','🛡️','🏹','💣','🏆','⭐','👑','💎','🗡️','🐍','🕷️','🤖','👽','🧿','🍀','🎪'];
 
 function genBotName(){const f=BOT_FIRST[Math.floor(Math.random()*BOT_FIRST.length)];const l=BOT_LAST[Math.floor(Math.random()*BOT_LAST.length)];const usePfx=Math.random()>.5;const useSfx=Math.random()>.5;const num=Math.floor(Math.random()*99)+1;const sep=['_','-','.',''][Math.floor(Math.random()*4)];let name='';if(usePfx)name=BOT_PREFIX[Math.floor(Math.random()*BOT_PREFIX.length)];name+=f;if(Math.random()>.6)name+=sep+l;else name+=l;if(useSfx)name+=BOT_SUFFIX[Math.floor(Math.random()*BOT_SUFFIX.length)];else if(Math.random()>.7)name+=num;return name}
-function genBotProfile(){const n=genBotName();const m=Math.floor(Math.random()*80)+10;const w=Math.floor(m*(.3+Math.random()*.4));return{name:n,avatar:BOT_EMOJI[Math.floor(Math.random()*BOT_EMOJI.length)],matches:m,wins:w,losses:m-w-Math.floor(Math.random()*3),ties:Math.floor(Math.random()*3),runs:Math.floor(m*(15+Math.random()*25)),ballsFaced:Math.floor(m*(10+Math.random()*15)),sixes:Math.floor(Math.random()*m*.3),fours:Math.floor(Math.random()*m*.5),wicketsTaken:Math.floor(m*(.2+Math.random()*.3)),runsConceded:Math.floor(m*(10+Math.random()*20)),winStreak:Math.floor(Math.random()*8),bestWinStreak:Math.floor(Math.random()*12)+2,get strikeRate(){return this.ballsFaced?(this.runs/this.ballsFaced*100).toFixed(1):'0.0'},get bowlingAvg(){return this.wicketsTaken?(this.runsConceded/this.wicketsTaken).toFixed(1):'-'},get economy(){return this.ballsBowled?(this.runsConceded/this.ballsBowled*6).toFixed(1):'-'},get winPct(){return this.matches?((this.wins/this.matches)*100).toFixed(0)+'%':'0%'},get highestScore(){return Math.floor(this.runs/this.matches*1.5)+Math.floor(Math.random()*20)}};
+function genBotProfile(){const n=genBotName();const m=Math.floor(Math.random()*80)+10;const w=Math.floor(m*(.3+Math.random()*.4));return{name:n,avatar:BOT_EMOJI[Math.floor(Math.random()*BOT_EMOJI.length)],matches:m,wins:w,losses:m-w-Math.floor(Math.random()*3),ties:Math.floor(Math.random()*3),runs:Math.floor(m*(15+Math.random()*25)),ballsFaced:Math.floor(m*(10+Math.random()*15)),sixes:Math.floor(Math.random()*m*.3),fours:Math.floor(Math.random()*m*.5),wicketsTaken:Math.floor(m*(.2+Math.random()*.3)),runsConceded:Math.floor(m*(10+Math.random()*20)),winStreak:Math.floor(Math.random()*8),bestWinStreak:Math.floor(Math.random()*12)+2,get strikeRate(){return this.ballsFaced?(this.runs/this.ballsFaced*100).toFixed(1):'0.0'},get bowlingAvg(){return this.wicketsTaken?(this.runsConceded/this.wicketsTaken).toFixed(1):'-'},get economy(){return this.ballsBowled?(this.runsConceded/this.ballsBowled*6).toFixed(1):'-'},get winPct(){return this.matches?((this.wins/this.matches)*100).toFixed(0)+'%':'0%'},get highestScore(){return Math.floor(this.runs/this.matches*1.5)+Math.floor(Math.random()*20)}}};
 
 const BotAI={history:[],transitions:{},ballCount:0,
  reset(){this.history=[];this.transitions={};this.ballCount=0},
@@ -818,6 +855,40 @@ document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 ['touchstart','click'].forEach(ev=>document.addEventListener(ev,()=>ensureAudio(),{passive:true}));
 updScore();renderBalls();
+try{
+ const hc=document.getElementById('homeHands');if(hc){
+  const gMap2={1:['index'],2:['index','middle'],3:['index','middle','ring'],4:['index','middle','ring','pinky'],5:['thumb','index','middle','ring','pinky'],6:['thumb']};
+  function buildHomeHand(v,cls){
+   const w=document.createElement('div');w.className='home-hand '+cls;
+   const hd=document.createElement('div');hd.className='hand-3d';
+   const amb=document.createElement('div');amb.className='ambient';hd.appendChild(amb);
+   const palm=document.createElement('div');palm.className='palm';
+   for(let k=0;k<4;k++){const kn=document.createElement('div');kn.className='knuckle';palm.appendChild(kn)}
+   hd.appendChild(palm);
+   const wrist=document.createElement('div');wrist.className='wrist';hd.appendChild(wrist);
+   [{id:'thumb',idx:0},{id:'index',idx:1},{id:'middle',idx:2},{id:'ring',idx:3},{id:'pinky',idx:4}].forEach(f=>{
+    const fg=document.createElement('div');fg.className='finger fup';fg.dataset.finger=f.id;fg.style.setProperty('--i',f.idx);
+    const p1=document.createElement('div');p1.className='phalanx p1';
+    const p2=document.createElement('div');p2.className='phalanx p2';
+    fg.appendChild(p1);fg.appendChild(p2);hd.appendChild(fg);
+   });
+   const up=gMap2[v]||[];
+   hd.querySelectorAll('.finger').forEach(fg=>{fg.classList.toggle('fup',up.includes(fg.dataset.finger));fg.classList.toggle('fdown',!up.includes(fg.dataset.finger))});
+   w.appendChild(hd);return w;
+  }
+  let seq=[6,5,4,3,2,1,2,3,4,5,6];
+  let si=0;
+  function cycleHands(){
+   hc.innerHTML='';
+   hc.appendChild(buildHomeHand(seq[si],'left'));
+   hc.appendChild(buildHomeHand(seq[(si+5)%seq.length],'right'));
+   si=(si+1)%seq.length;
+  }
+  cycleHands();setInterval(cycleHands,1200);
+ }
+ const pc=document.getElementById('particles');
+ if(pc){for(let i=0;i<25;i++){const p=document.createElement('div');p.className='particle';p.style.left=Math.random()*100+'%';p.style.animationDuration=(8+Math.random()*12)+'s';p.style.animationDelay=Math.random()*10+'s';p.style.width=p.style.height=(2+Math.random()*3)+'px';pc.appendChild(p)}}
+}catch(e){}
 
 (function(){
  const rid=new URLSearchParams(location.search).get('room');
