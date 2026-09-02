@@ -6,37 +6,37 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#052e1a"/>
+<meta name="theme-color" content="#0d1117"/>
 <title>Hand Cricket Pro</title>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:radial-gradient(ellipse at top,#1a5d3a 0%,#0b3d2e 50%,#052e1a 100%);color:#fff;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
+html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:radial-gradient(ellipse at top,#161b22 0%,#0d1117 50%,#010409 100%);color:#e6edf3;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
 #app{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:max(env(safe-area-inset-top),4px) max(env(safe-area-inset-right),8px) max(env(safe-area-inset-bottom),4px) max(env(safe-area-inset-left),8px)}
-.scoreboard{display:flex;justify-content:space-between;align-items:center;padding:clamp(8px,1.5vh,12px) clamp(10px,2vw,16px);background:rgba(0,0,0,.55);border-radius:18px;margin:8px 10px 4px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);position:relative;z-index:2;flex-shrink:0}
+.scoreboard{display:flex;justify-content:space-between;align-items:center;padding:clamp(8px,1.5vh,12px) clamp(10px,2vw,16px);background:rgba(13,17,23,.85);border-radius:14px;margin:8px 10px 4px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);position:relative;z-index:2;flex-shrink:0}
 .team{text-align:center;flex:1;min-width:0}
 .team .label{font-size:clamp(9px,1.2vh,11px);opacity:.7;letter-spacing:1.5px;font-weight:700;word-break:break-word}
 .team .score{font-size:clamp(22px,3.6vh,30px);font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5);line-height:1}
 .team .score.pop{animation:sp .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes sp{0%{transform:scale(1)}40%{transform:scale(1.3);color:#fde047}100%{transform:scale(1)}}
+@keyframes sp{0%{transform:scale(1)}40%{transform:scale(1.3);color:#f0883e}100%{transform:scale(1)}}
 .team .balls{font-size:clamp(9px,1.1vh,11px);opacity:.6;margin-top:2px}
 .team .bot-lvl{font-size:9px;color:#f97316;font-weight:700;margin-top:1px}
 .team .current-player{font-size:clamp(8px,1vh,10px);color:#86efac;font-weight:700;margin-top:1px}
 .vs{font-size:clamp(10px,1.2vh,12px);opacity:.4;padding:0 6px;font-weight:800}
-.batting-indicator{display:inline-block;font-size:clamp(8px,1vh,10px);background:linear-gradient(180deg,#fde047,#eab308);color:#000;padding:2px 7px;border-radius:10px;margin-top:3px;font-weight:800}
-.free-hit-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:800;background:linear-gradient(90deg,transparent,rgba(239,68,68,.3),transparent);color:#fca5a5;letter-spacing:1px;display:none;flex-shrink:0;animation:fp 1s ease-in-out infinite}
+.batting-indicator{display:inline-block;font-size:clamp(8px,1vh,10px);background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;padding:2px 7px;border-radius:10px;margin-top:3px;font-weight:800}
+.free-hit-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:800;background:linear-gradient(90deg,transparent,rgba(248,81,73,.25),transparent);color:#f85149;letter-spacing:1px;display:none;flex-shrink:0;animation:fp 1s ease-in-out infinite}
 .free-hit-banner.show{display:block}
 @keyframes fp{0%,100%{opacity:1}50%{opacity:.6}}
-.target-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:700;background:linear-gradient(90deg,transparent,rgba(253,224,71,.15),transparent);color:#fde047;display:none;flex-shrink:0}
+.target-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:700;background:linear-gradient(90deg,transparent,rgba(88,166,255,.12),transparent);color:#58a6ff;display:none;flex-shrink:0}
 .target-banner.show{display:block}
 .status-bar{display:flex;align-items:center;justify-content:center;padding:4px 12px;min-height:26px;flex-shrink:0;gap:8px}
 .status{flex:1;text-align:center;font-size:clamp(12px,1.5vh,14px);font-weight:700}
-.status .hl{color:#fde047;font-weight:900}
+.status .hl{color:#f0883e;font-weight:900}
 .leave-btn{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fca5a5;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
 .arena{flex:1;display:flex;justify-content:space-around;align-items:center;padding:4px 6px;position:relative;min-height:0}
 .player-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
 .player-side .name{font-size:clamp(10px,1.4vh,13px);font-weight:800;letter-spacing:2px;opacity:.9;text-align:center;cursor:pointer;transition:color .2s}
-.player-side .name:hover{color:#fde047}
+.player-side .name:hover{color:#f0883e}
 .hand-wrap{width:clamp(80px,16vh,140px);height:clamp(105px,22vh,185px);position:relative;display:flex;justify-content:center;align-items:flex-end;transition:transform .3s cubic-bezier(.34,1.56,.64,1);perspective:600px}
 .hand-wrap.shake{animation:hs .35s ease-in-out infinite}
 .hand-wrap.reveal{animation:rp .6s cubic-bezier(.34,1.8,.64,1)}
@@ -58,65 +58,65 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .css-finger:nth-child(5){transform:rotate(12deg) translateX(1px);transform-origin:bottom center}
 .css-palm{width:58%;height:26%;background:linear-gradient(180deg,#ecd0a0 0%,#e0b088 40%,#d9a070 100%);border-radius:4px 4px 20px 20px;border:1.5px solid #c49060;border-top:none;box-shadow:inset 0 -4px 8px rgba(0,0,0,.12),inset 0 3px 6px rgba(255,255,255,.1),0 4px 12px rgba(0,0,0,.25);position:relative}
 .css-palm::before{content:'';position:absolute;width:70%;height:4px;background:rgba(255,255,255,.12);top:20%;left:15%;border-radius:2px}
-.css-hand .num-badge{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(253,224,71,.5),0 0 48px rgba(253,224,71,.2);z-index:3;pointer-events:none;animation:numPulse 2s ease-in-out infinite}
-@keyframes numPulse{0%,100%{text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(253,224,71,.5)}50%{text-shadow:0 2px 16px rgba(0,0,0,.9),0 0 32px rgba(253,224,71,.7),0 0 48px rgba(249,115,22,.3)}}
+.css-hand .num-badge{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(240,136,62,.5),0 0 48px rgba(240,136,62,.2);z-index:3;pointer-events:none;animation:numPulse 2s ease-in-out infinite}
+@keyframes numPulse{0%,100%{text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(240,136,62,.5)}50%{text-shadow:0 2px 16px rgba(0,0,0,.9),0 0 32px rgba(240,136,62,.7),0 0 48px rgba(249,115,22,.3)}}
 @keyframes fistShake{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-3deg)}75%{transform:translateY(-4px) rotate(3deg)}}
 .css-hand.shake{animation:fistShake .35s ease-in-out infinite}
 @keyframes fistReveal{0%{transform:scale(.4) rotate(-20deg) translateY(20px);opacity:.2;filter:blur(4px)}40%{transform:scale(1.12) rotate(4deg) translateY(-5px);opacity:1;filter:blur(0)}70%{transform:scale(.97) rotate(-2deg) translateY(2px);opacity:1}100%{transform:scale(1) rotate(0) translateY(0);opacity:1}}
 .css-hand.reveal{animation:fistReveal .55s cubic-bezier(.34,1.8,.64,1)}
 @keyframes hs{0%,100%{transform:translateY(0) rotate(0) rotateY(0)}25%{transform:translateY(-8px) rotate(-4deg) rotateY(-3deg)}75%{transform:translateY(-8px) rotate(4deg) rotateY(3deg)}}
 @keyframes rp{0%{transform:scale(.6) rotate(-10deg) translateZ(-20px);opacity:.4}60%{transform:scale(1.18) rotate(5deg) translateZ(30px)}100%{transform:scale(1) rotate(0) translateZ(0);opacity:1}}
-.gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:20px;color:#fde047;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
+.gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:20px;color:#f0883e;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
 .gesture-label.show{opacity:1;transform:translateY(0)}
 .timer-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(64px,12vh,92px);height:clamp(64px,12vh,92px);pointer-events:none}
 .timer-circle{width:100%;height:100%;transform:rotate(-90deg)}
 .timer-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:6}
 .timer-fg{fill:none;stroke:url(#tg);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .08s linear}
 .timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7)}
-.countdown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:clamp(70px,13vh,110px);font-weight:900;color:#fde047;text-shadow:0 0 40px rgba(253,224,71,.9);pointer-events:none;z-index:6;opacity:0}
+.countdown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:clamp(70px,13vh,110px);font-weight:900;color:#f0883e;text-shadow:0 0 40px rgba(240,136,62,.9);pointer-events:none;z-index:6;opacity:0}
 .countdown.go{animation:cp .9s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes cp{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.3);opacity:1}100%{transform:translate(-50%,-50%) scale(2);opacity:0}}
 .controls{padding:6px 10px 4px;flex-shrink:0}
 .gesture-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(4px,1vw,8px)}
-.gesture-btn{background:linear-gradient(180deg,#16a34a,#15803d);border:2px solid rgba(255,255,255,.2);color:#fff;border-radius:clamp(10px,1.5vh,16px);padding:clamp(6px,1vh,10px) 2px;font-size:13px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 0 rgba(0,0,0,.35);-webkit-appearance:none;touch-action:manipulation}
-.gesture-btn:active:not(.disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.35)}
-.gesture-btn.selected{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
+.gesture-btn{background:linear-gradient(180deg,#21262d,#161b22);border:2px solid rgba(255,255,255,.12);color:#e6edf3;border-radius:clamp(10px,1.5vh,16px);padding:clamp(6px,1vh,10px) 2px;font-size:13px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 0 rgba(0,0,0,.4);-webkit-appearance:none;touch-action:manipulation}
+.gesture-btn:active:not(.disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.gesture-btn.selected{background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border-color:rgba(240,136,62,.5)}
 .gesture-btn.disabled{opacity:.35;pointer-events:none}
 .gesture-btn .big{font-size:clamp(16px,2.8vh,24px);display:block;line-height:1}
 .gesture-btn .small{font-size:clamp(8px,1.1vh,10px);opacity:.9;margin-top:2px;display:block;font-weight:700}
-.overlay{position:fixed;inset:0;background:rgba(5,46,26,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow-y:auto;animation:oi .4s ease}
+.overlay{position:fixed;inset:0;background:rgba(1,4,9,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;animation:oi .4s ease}
 @keyframes oi{from{opacity:0}to{opacity:1}}
 .overlay.hidden{display:none!important}
 .overlay h1{font-size:clamp(22px,3.2vh,28px);margin:0 0 8px}
 .overlay h2{font-size:clamp(13px,1.8vh,16px);margin:10px 0 4px;opacity:.9}
 .overlay p{font-size:clamp(12px,1.6vh,14px);opacity:.9;margin:5px 0;line-height:1.5;max-width:320px}
 .overlay input{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:#fff;padding:11px 14px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;width:100%;max-width:260px;margin:6px 0;outline:none;-webkit-appearance:none}
-.overlay button{margin-top:10px;background:linear-gradient(180deg,#fde047,#eab308);color:#000;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:16px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.35);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation}
+.overlay button{margin-top:10px;background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:12px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.4);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation}
 .overlay button:active:not(:disabled){transform:translateY(2px)}
-.overlay button.secondary{background:rgba(255,255,255,.1);color:#fff;box-shadow:none;border:2px solid rgba(255,255,255,.2)}
-.overlay button.danger{background:rgba(239,68,68,.2);color:#fca5a5;box-shadow:none;border:2px solid rgba(239,68,68,.4)}
+.overlay button.secondary{background:rgba(255,255,255,.06);color:#e6edf3;box-shadow:none;border:1px solid rgba(255,255,255,.12)}
+.overlay button.danger{background:rgba(248,81,73,.15);color:#f85149;box-shadow:none;border:1px solid rgba(248,81,73,.3)}
 .overlay button.small{padding:9px 18px;font-size:13px;max-width:200px}
 .overlay button:disabled{opacity:.4;pointer-events:none}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;width:100%;max-width:300px}
 .mode-grid.three-col{grid-template-columns:1fr 1fr 1fr}
-.mode-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:14px 8px;border-radius:14px;cursor:pointer;text-align:center;-webkit-appearance:none;touch-action:manipulation}
+.mode-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#e6edf3;padding:14px 8px;border-radius:14px;cursor:pointer;text-align:center;-webkit-appearance:none;touch-action:manipulation}
 .mode-btn:active{transform:scale(.97)}
 .mode-btn .icon{font-size:28px;display:block;margin-bottom:4px}
 .mode-btn .title{font-size:14px;font-weight:800;display:block}
 .mode-btn .desc{font-size:10px;opacity:.85;display:block;margin-top:3px;font-weight:600}
-.share-box{background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.3);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#fde047;font-weight:600;max-width:280px}
+.share-box{background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.3);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#f0883e;font-weight:600;max-width:280px}
 .player-list{max-height:clamp(120px,22vh,200px);overflow-y:auto;width:100%;max-width:280px;background:rgba(255,255,255,.05);border-radius:12px;padding:8px;margin:8px 0}
 .player-item{padding:6px 8px;background:rgba(255,255,255,.1);margin:3px 0;border-radius:8px;font-size:11px;display:flex;justify-content:space-between}
 .coin-container{width:clamp(90px,14vh,115px);height:clamp(90px,14vh,115px);margin:14px auto;position:relative;perspective:1000px}
 .coin{width:100%;height:100%;position:relative;transform-style:preserve-3d}
 .coin.flipping{animation:cf 2.5s ease-out forwards}
 @keyframes cf{0%{transform:rotateY(0)}100%{transform:rotateY(1800deg)}}
-.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,#fde047,#eab308);border:4px solid #ca8a04;color:#000}
+.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,#f0883e,#d2772f);border:4px solid #b85c2a;color:#fff}
 .coin-tails{transform:rotateY(180deg);background:linear-gradient(135deg,#e5e7eb,#9ca3af);border-color:#6b7280}
 .flash{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:clamp(38px,7vh,56px);font-weight:900;opacity:0;pointer-events:none;z-index:5;white-space:nowrap}
 .flash.show{animation:fi 1.1s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes fi{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}35%{transform:translate(-50%,-50%) scale(1.25);opacity:1}100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}
-.flash.six{color:#fde047;text-shadow:0 0 30px rgba(253,224,71,1)}
+.flash.six{color:#f0883e;text-shadow:0 0 30px rgba(240,136,62,1)}
 .flash.out{color:#ef4444;text-shadow:0 0 30px rgba(239,68,68,1)}
 .flash.runs{color:#fff;text-shadow:0 0 20px rgba(255,255,255,.7)}
 .flash.noball{color:#f97316;text-shadow:0 0 30px rgba(249,115,22,1)}
@@ -127,43 +127,37 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .ball-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:800}
 .ball-dot.done{background:rgba(255,255,255,.6);color:#000}
 .ball-dot.wicket{background:#ef4444;color:#fff;border-color:#fca5a5}
-.ball-dot.six{background:#fde047;color:#000;border-color:#fef08a}
+.ball-dot.six{background:#f0883e;color:#000;border-color:#fef08a}
 .ball-dot.noball{background:#f97316;color:#fff}
 .ball-dot.dotball{background:#64748b;color:#fff}
 .confetti{position:absolute;width:10px;height:10px;top:50%;left:50%;pointer-events:none;z-index:4;border-radius:2px}
 .footer-credit{text-align:center;padding:4px 8px calc(6px + env(safe-area-inset-bottom));font-size:10px;color:rgba(255,255,255,.5);flex-shrink:0;font-weight:600}
-.footer-credit a{color:#fde047;text-decoration:none;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(253,224,71,.08);border:1px solid rgba(253,224,71,.15)}
+.footer-credit a{color:#f0883e;text-decoration:none;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(240,136,62,.08);border:1px solid rgba(240,136,62,.15)}
 .conn-log{font-size:11px;color:#86efac;margin:6px 0;max-width:280px;text-align:left;line-height:1.6;min-height:50px;max-height:130px;overflow-y:auto}
-.conn-log .err{color:#fca5a5}.conn-log .warn{color:#fde047}
-.mc-num{font-size:clamp(80px,20vh,140px);font-weight:900;color:#fde047;text-shadow:0 0 40px rgba(253,224,71,.9);animation:mcp 1s ease-in-out infinite}
+.conn-log .err{color:#fca5a5}.conn-log .warn{color:#f0883e}
+.mc-num{font-size:clamp(80px,20vh,140px);font-weight:900;color:#f0883e;text-shadow:0 0 40px rgba(240,136,62,.9);animation:mcp 1s ease-in-out infinite}
 @keyframes mcp{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
 .connected-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;color:#86efac;margin:8px 0}
 .connected-badge .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}
-.search-spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.15);border-top-color:#fde047;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto}
+.search-spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.15);border-top-color:#f0883e;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-.profile-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:14px;margin:8px 0;width:100%;max-width:300px;text-align:left}
-.profile-card h3{margin:0 0 8px;font-size:14px;text-align:center}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.stat-item{text-align:center;padding:6px 4px;background:rgba(255,255,255,.05);border-radius:8px}
-.stat-item .val{font-size:16px;font-weight:900;color:#fde047}
-.stat-item .lbl{font-size:9px;opacity:.7;text-transform:uppercase;letter-spacing:.5px}
 .pool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:clamp(150px,30vh,250px);overflow-y:auto;width:100%;max-width:300px;margin:8px 0;padding:4px}
 .pool-item{padding:6px 8px;background:rgba(255,255,255,.08);border:2px solid transparent;border-radius:10px;font-size:11px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s}
 .pool-item:active{transform:scale(.97)}
-.pool-item.picked{background:rgba(253,224,71,.15);border-color:#fde047;color:#fde047}
+.pool-item.picked{background:rgba(240,136,62,.15);border-color:#f0883e;color:#f0883e}
 .pool-item .role-badge{font-size:8px;padding:2px 5px;border-radius:6px;font-weight:700;text-transform:uppercase}
 .pool-item .role-badge.batter{background:rgba(59,130,246,.2);color:#93c5fd}
 .pool-item .role-badge.bowler{background:rgba(239,68,68,.2);color:#fca5a5}
 .pool-item .role-badge.all{background:rgba(168,85,247,.2);color:#d8b4fe}
 .team-size-select{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0;width:100%;max-width:360px}
 .team-size-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
-.team-size-btn.active{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
+.team-size-btn.active{background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border-color:rgba(240,136,62,.5)}
 .inning-info{font-size:10px;color:#86efac;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}}
 @media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}}
 @media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
 @media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}}
-.home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#fde047 0%,#fff 50%,#86efac 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f0883e 0%,#fff 50%,#86efac 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
 @keyframes titleIn{from{opacity:0;transform:translateY(-30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
 .home-subtitle{font-size:clamp(11px,1.8vh,15px);opacity:.7;margin:4px 0 6px;font-weight:600;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .6s .2s both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:.7;transform:translateY(0)}}
@@ -187,27 +181,38 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .mode-btn:nth-child(2){animation-delay:.6s}
 .mode-btn:nth-child(3){animation-delay:.7s}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
-.mode-btn:hover{transform:translateY(-3px);border-color:rgba(253,224,71,.4);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.mode-btn:hover{transform:translateY(-3px);border-color:rgba(240,136,62,.4);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .mode-btn:active{transform:translateY(1px) scale(.97)}
 .home-profile-wrap{animation:fadeUp .6s .8s both;margin-top:14px}
 .home-version{font-size:9px;opacity:.4;margin-top:12px;animation:fadeUp .6s 1s both}
 .home-credit{font-size:10px;opacity:.5;margin-top:6px;animation:fadeUp .6s 1.1s both}
-.home-credit a{color:#fde047;text-decoration:none;font-weight:700}
+.home-credit a{color:#f0883e;text-decoration:none;font-weight:700}
+.pre-stats-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px;margin:10px auto;max-width:280px;text-align:left;max-height:40vh;overflow-y:auto}
+.pre-stats-title{font-size:14px;font-weight:800;color:#f0883e;margin-bottom:8px;text-align:center}
+.pre-rank{font-size:10px;opacity:.7;font-weight:600;color:#86efac}
+.pre-stats-section{margin:8px 0;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
+.pre-section-label{font-size:10px;font-weight:700;color:#86efac;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;opacity:.8}
+.pre-stat-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;font-weight:600}
+.pre-stat-row span{opacity:.7}
+.pre-stat-row b{color:#f0883e}
 .home-username{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 4px;animation:fadeUp .5s .5s both}
-.home-username-text{font-size:15px;font-weight:800;color:#fde047;text-shadow:0 0 12px rgba(253,224,71,.3)}
+.home-username-text{font-size:15px;font-weight:800;color:#f0883e;text-shadow:0 0 12px rgba(240,136,62,.3)}
 .edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s}
 .edit-name-btn:hover{background:rgba(255,255,255,.15)}
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:280px;margin:8px auto}
 .stat-item{background:rgba(255,255,255,.08);border-radius:10px;padding:10px 6px;text-align:center}
-.stat-item .val{font-size:clamp(18px,3.5vh,24px);font-weight:900;color:#fde047}
+.stat-item .val{font-size:clamp(18px,3.5vh,24px);font-weight:900;color:#f0883e}
 .stat-item .lbl{font-size:10px;opacity:.7;font-weight:600;margin-top:2px}
-.profile-card{background:rgba(255,255,255,.06);border-radius:16px;padding:16px;width:100%;max-width:300px;border:1px solid rgba(255,255,255,.1)}
-.profile-card h3{margin:0 0 8px;font-size:18px;font-weight:900;color:#fde047}
+.profile-card{background:rgba(255,255,255,.06);border-radius:16px;padding:16px;width:100%;max-width:300px;border:1px solid rgba(255,255,255,.1);max-height:70vh;overflow-y:auto}
+.profile-card h3{margin:0 0 8px;font-size:18px;font-weight:900;color:#f0883e}
 .profile-card .profile-rank{font-size:11px;opacity:.7;font-weight:600;margin-bottom:10px}
+.profile-section{margin:10px 0;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
+.profile-section h3{font-size:13px;font-weight:800;color:#86efac;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px}
+.stat-grid.two-col{grid-template-columns:repeat(2,1fr)}
 .opp-profile-card{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid rgba(255,255,255,.1);margin:8px auto;cursor:pointer;transition:all .2s}
-.opp-profile-card:hover{background:rgba(255,255,255,.12);border-color:rgba(253,224,71,.3)}
+.opp-profile-card:hover{background:rgba(255,255,255,.12);border-color:rgba(240,136,62,.3)}
 .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.particle{position:absolute;width:3px;height:3px;background:rgba(253,224,71,.3);border-radius:50%;animation:particleFloat linear infinite}
+.particle{position:absolute;width:3px;height:3px;background:rgba(240,136,62,.3);border-radius:50%;animation:particleFloat linear infinite}
 @keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
 </style>
 </head>
@@ -224,7 +229,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
 <div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"><div class="css-hand" id="cssHandPlayer"><div class="css-fingers" id="cssFingersPlayer"></div><div class="css-palm"></div></div><img id="handImgPlayer" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelPlayer">-</div></div>
-<div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
+<div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
 <div class="countdown" id="countdown"></div>
 <div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"><div class="css-hand" id="cssHandOpponent"><div class="css-fingers" id="cssFingersOpponent"></div><div class="css-palm"></div></div><img id="handImgOpponent" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelOpponent">-</div></div>
 <div class="flash" id="flash"></div>
@@ -255,6 +260,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 </div>
 
 <div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Bot reads your patterns!</p>
+<div id="offlineBotStats" style="display:none"></div>
 <h2>Choose Format</h2>
 <div class="team-size-select" id="offlineSize">
 <div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
@@ -288,7 +294,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="matchmakingOverlay"><h1>Finding Opponent</h1>
 <div class="search-spinner" id="searchSpinner"></div>
 <p id="matchStatus">Searching for a real player...</p>
-<p id="matchTimer" style="font-size:24px;font-weight:900;color:#fde047;margin:8px 0"></p>
+<p id="matchTimer" style="font-size:24px;font-weight:900;color:#f0883e;margin:8px 0"></p>
 <div class="team-size-select" id="mmSize">
 <div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
 <div class="team-size-btn" data-size="2">2v2<br><small>2 wk, 2 ov</small></div>
@@ -324,11 +330,13 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="tossOverlay"><h1>Toss</h1>
 <div class="connected-badge"><span class="dot"></span><span id="tossVs">vs</span></div>
 <p id="tossText">...</p>
+<div id="tossPreStats" style="display:none"></div>
 <div class="coin-container"><div class="coin" id="onlineCoin"><div class="coin-face">HEADS</div><div class="coin-face coin-tails">TAILS</div></div></div>
 <div id="onlineTossBtns" style="display:none"><div style="display:flex;gap:10px;justify-content:center"><button id="btnOHeads" class="small">Heads</button><button id="btnOTails" class="small secondary">Tails</button></div></div>
 <div id="onlineTossDec" style="display:none"><p><b>You won!</b></p><div style="display:flex;gap:10px;justify-content:center"><button id="btnOBat" class="small">Bat</button><button id="btnOBowl" class="small secondary">Bowl</button></div></div></div>
 
 <div class="overlay hidden" id="mcOverlay"><h1 id="mcTitle">Ready!</h1><div class="mc-num" id="mcNum">3</div><p id="mcPlayers" style="font-size:16px;font-weight:700"></p>
+<div id="preMatchStats" style="display:none"></div>
 <div id="mcHost" style="display:none"><button id="btnStart">Start</button></div>
 <div id="mcWait" style="display:none"><p style="font-size:12px;opacity:.7">Waiting for host...</p></div></div>
 
@@ -362,19 +370,154 @@ const BOT_EMOJI=['🦁','🐯','🦅','🐺','💀','🔥','⚡','🎮','🎯','
 function genBotName(){const f=BOT_FIRST[Math.floor(Math.random()*BOT_FIRST.length)];const l=BOT_LAST[Math.floor(Math.random()*BOT_LAST.length)];const usePfx=Math.random()>.5;const useSfx=Math.random()>.5;const num=Math.floor(Math.random()*99)+1;const sep=['_','-','.',''][Math.floor(Math.random()*4)];let name='';if(usePfx)name=BOT_PREFIX[Math.floor(Math.random()*BOT_PREFIX.length)];name+=f;if(Math.random()>.6)name+=sep+l;else name+=l;if(useSfx)name+=BOT_SUFFIX[Math.floor(Math.random()*BOT_SUFFIX.length)];else if(Math.random()>.7)name+=num;return name}
 function genBotProfile(){const n=genBotName();const m=Math.floor(Math.random()*80)+10;const w=Math.floor(m*(.3+Math.random()*.4));return{name:n,avatar:BOT_EMOJI[Math.floor(Math.random()*BOT_EMOJI.length)],matches:m,wins:w,losses:m-w-Math.floor(Math.random()*3),ties:Math.floor(Math.random()*3),runs:Math.floor(m*(15+Math.random()*25)),ballsFaced:Math.floor(m*(10+Math.random()*15)),sixes:Math.floor(Math.random()*m*.3),fours:Math.floor(Math.random()*m*.5),wicketsTaken:Math.floor(m*(.2+Math.random()*.3)),runsConceded:Math.floor(m*(10+Math.random()*20)),winStreak:Math.floor(Math.random()*8),bestWinStreak:Math.floor(Math.random()*12)+2,get strikeRate(){return this.ballsFaced?(this.runs/this.ballsFaced*100).toFixed(1):'0.0'},get bowlingAvg(){return this.wicketsTaken?(this.runsConceded/this.wicketsTaken).toFixed(1):'-'},get economy(){return this.ballsBowled?(this.runsConceded/this.ballsBowled*6).toFixed(1):'-'},get winPct(){return this.matches?((this.wins/this.matches)*100).toFixed(0)+'%':'0%'},get highestScore(){return Math.floor(this.runs/this.matches*1.5)+Math.floor(Math.random()*20)}}};
 
-const BotAI={history:[],transitions:{},ballCount:0,
- reset(){this.history=[];this.transitions={};this.ballCount=0},
- record(p){if(this.history.length>0){const prev=this.history[this.history.length-1];if(!this.transitions[prev])this.transitions[prev]={};this.transitions[prev][p]=(this.transitions[prev][p]||0)+1}this.history.push(p);this.ballCount++;if(this.history.length>20)this.history=this.history.slice(-20)},
- bowl(){if(this.ballCount<3)return this.rand();const d=Math.min(this.ballCount/6,1);const pr=this.predict();if(pr&&Math.random()<(.4+d*.45))return pr;return this.rand()},
- bat(){if(this.ballCount<3)return this.rand();const d=Math.min(this.ballCount/6,1);const pr=this.predict();let o=[1,2,3,4,5,6];if(pr&&Math.random()<(.4+d*.45))o=o.filter(n=>n!==pr);const w=o.map(n=>{let x=n;if(d>.5&&n>=4)x+=3;return x});return this.wp(o,w)},
- predict(){if(this.history.length<2)return null;const v={};const add=(val,c)=>{if(val>=1&&val<=6)v[val]=(v[val]||0)+c};const mk=this.markov();if(mk)add(mk,3);const fr=this.freq();if(fr)add(fr,2);const sq=this.seq();if(sq)add(sq,2);const rp=this.rep();if(rp)add(rp,1);let b=null,bs=0;for(const[k,s]of Object.entries(v)){if(s>bs){bs=s;b=parseInt(k)}}return b},
+const BotAI={
+ history:[],transitions:{},ballCount:0,playerPatterns:{},recentChoices:[],
+ consecutiveSame:0,lastPlayerPick:null,streakType:null,streakLen:0,
+ defensiveMode:false,wicketsDown:0,requiredRate:0,matchPhase:'start',
+
+ reset(){this.history=[];this.transitions={};this.ballCount=0;this.playerPatterns={};this.recentChoices=[];this.consecutiveSame=0;this.lastPlayerPick=null;this.streakType=null;this.streakLen=0;this.defensiveMode=false;this.wicketsDown=0;this.requiredRate=0;this.matchPhase='start'},
+
+ record(p){
+  if(this.history.length>0){const prev=this.history[this.history.length-1];if(!this.transitions[prev])this.transitions[prev]={};this.transitions[prev][p]=(this.transitions[prev][p]||0)+1}
+  this.history.push(p);this.ballCount++;
+  if(this.history.length>30)this.history=this.history.slice(-30);
+  if(!this.playerPatterns[p])this.playerPatterns[p]=0;this.playerPatterns[p]++;
+
+  if(p===this.lastPlayerPick){this.consecutiveSame++;if(this.consecutiveSame>=3)this.streakType='repeat';else this.streakType=null}
+  else{this.consecutiveSame=0;this.streakType=null}
+  this.lastPlayerPick=p;
+  this.recentChoices.push(p);if(this.recentChoices.length>10)this.recentChoices.shift();
+  this.matchPhase=this.ballCount<=6?'start':this.ballCount<=15?'middle':'end';
+ },
+
+ updateContext(target,currentScore,currentWkts,totalBalls){
+  if(target!==null){this.requiredRate=((target-currentScore)/((totalBalls-this.ballCount)/6)).toFixed(1);this.defensiveMode=currentScore>=target}
+  this.wicketsDown=currentWkts;
+ },
+
+ predict(){
+  if(this.history.length<2)return null;
+  const scores={};
+  const add=(val,c)=>{if(val>=1&&val<=6)scores[val]=(scores[val]||0)+c};
+
+  const mk=this.markov();if(mk)add(mk,4);
+  const mk2=this.markov2();if(mk2)add(mk2,3);
+  const fr=this.freq();if(fr)add(fr,2);
+  const sq=this.seq();if(sq)add(sq,3);
+  const rp=this.rep();if(rp)add(rp,2);
+  const anti=this.antiPattern();if(anti)add(anti,5);
+  const ctx=this.contextPredict();if(ctx)add(ctx,3);
+
+  let best=null,bs=0;for(const[k,s]of Object.entries(scores)){if(s>bs){bs=s;best=parseInt(k)}}return best;
+ },
+
  markov(){const l=this.history[this.history.length-1];const t=this.transitions[l];if(!t)return null;let b=null,bc=0;for(const[k,c]of Object.entries(t)){if(c>bc){bc=c;b=parseInt(k)}}return b},
- freq(){const r=this.history.slice(-8);const f={};r.forEach((p,i)=>{f[p]=(f[p]||0)+(i+1)});let b=null,bs=0;for(const[k,s]of Object.entries(f)){if(s>bs){bs=s;b=parseInt(k)}}return b},
- seq(){const L=this.history.length;if(L<3)return null;const a=this.history.slice(-3);if(a[0]===a[1]-1&&a[1]===a[2]-1){const n=a[2]+1;if(n<=6)return n}if(a[0]===a[1]+1&&a[1]===a[2]+1){const n=a[2]-1;if(n>=1)return n}if(L>=4){const b=this.history.slice(-4);if(b[0]===b[2]&&b[1]===b[3])return b[0]}return null},
+
+ markov2(){if(this.history.length<3)return null;const k=this.history.slice(-2).join(',');const matches={};this.history.forEach((p,i)=>{if(i>=2&&this.history[i-2]===parseInt(k.split(',')[0])&&this.history[i-1]===parseInt(k.split(',')[1])){matches[this.history[i]]=(matches[this.history[i]]||0)+1}});let b=null,bc=0;for(const[k,c] of Object.entries(matches)){if(c>bc){bc=c;b=parseInt(k)}}return b},
+
+ freq(){const r=this.history.slice(-10);const f={};r.forEach((p,i)=>{f[p]=(f[p]||0)+(10-i)});let b=null,bs=0;for(const[k,s] of Object.entries(f)){if(s>bs){bs=s;b=parseInt(k)}}return b},
+
+ seq(){const L=this.history.length;if(L<3)return null;const a=this.history.slice(-3);
+  if(a[0]===a[1]-1&&a[1]===a[2]-1){const n=a[2]+1;if(n<=6)return n}
+  if(a[0]===a[1]+1&&a[1]===a[2]+1){const n=a[2]-1;if(n>=1)return n}
+  if(L>=4){const b=this.history.slice(-4);if(b[0]===b[2]&&b[1]===b[3])return b[0]}
+  return null},
+
  rep(){if(this.history.length<2)return null;const l=this.history[this.history.length-1];const c=this.history.filter(p=>p===l).length;return c>=3?l:null},
+
+ antiPattern(){
+  if(this.recentChoices.length<3)return null;
+  const last3=this.recentChoices.slice(-3);
+  const allSame=last3.every(v=>v===last3[0]);
+  if(allSame){const avoid=last3[0];const opts=[1,2,3,4,5,6].filter(n=>n!==avoid);return opts[Math.floor(Math.random()*opts.length)]}
+  const freq={};this.recentChoices.forEach(p=>{freq[p]=(freq[p]||0)+1});
+  const maxFreq=Math.max(...Object.values(freq));
+  if(maxFreq>=4){const most=Object.entries(freq).find(([,c])=>c===maxFreq);const avoid=parseInt(most[0]);const opts=[1,2,3,4,5,6].filter(n=>n!==avoid);return opts[Math.floor(Math.random()*opts.length)]}
+  return null;
+
+ },
+
+ contextPredict(){
+  if(this.matchPhase==='start')return null;
+  if(this.history.length<4)return null;
+  const playerFavs={};this.history.slice(-8).forEach(p=>{playerFavs[p]=(playerFavs[p]||0)+1});
+  const topPick=Object.entries(playerFavs).sort((a,b)=>b[1]-a[1])[0];
+  if(!topPick)return null;
+  const fav=parseInt(topPick[0]);
+  if(this.defensiveMode)return fav<=3?fav:Math.ceil(Math.random()*3);
+  if(this.wicketsDown>=Math.floor(G.totalWkts*0.7)){
+   const survival=[1,2,3];return survival[Math.floor(Math.random()*3)];
+  }
+  return fav;
+ },
+
+ bowl(){
+  if(this.ballCount<3)return this.rand();
+  const d=Math.min(this.ballCount/8,1);
+  const pr=this.predict();
+  const anti=this.antiPattern();
+
+  if(anti&&Math.random()<(.55+d*.35)){
+   return anti;
+  }
+  if(pr&&Math.random()<(.45+d*.4)){
+   const opts=[1,2,3,4,5,6];
+   const safe=opts.filter(n=>n!==pr);
+   if(Math.random()<.6)return pr;
+   return safe[Math.floor(Math.random()*safe.length)];
+  }
+  return this.contextBowl();
+ },
+
+ contextBowl(){
+  if(this.matchPhase==='end'&&Math.random()<.6){
+   return Math.ceil(Math.random()*3);
+  }
+  if(this.matchPhase==='start'&&Math.random()<.5){
+   return Math.ceil(Math.random()*6);
+  }
+  const weights=[1,1.2,1.5,2,2.5,3];
+  const r=Math.random()*weights.reduce((a,b)=>a+b,0);
+  let acc=0;for(let i=0;i<6;i++){acc+=weights[i];if(r<=acc)return i+1}return 6;
+ },
+
+ bat(){
+  if(this.ballCount<3)return this.rand();
+  const d=Math.min(this.ballCount/8,1);
+  const pr=this.predict();
+  let opts=[1,2,3,4,5,6];
+
+  if(pr&&Math.random()<(.5+d*.35)){
+   opts=opts.filter(n=>n!==pr);
+  }
+
+  if(this.defensiveMode){
+   const w=opts.map(n=>{let x=1;if(n>=5)x+=4;else if(n>=3)x+=2;return x});
+   return this.wp(opts,w);
+  }
+
+  if(this.matchPhase==='end'){
+   const target=G.target;if(target!==null){
+    const needed=target-G.me.score;
+    if(needed<=12&&this.ballCount<G.totalBalls){
+     const w=opts.map(n=>{let x=n>=4?4:1;if(n>=5)x+=3;return x});
+     return this.wp(opts,w);
+    }
+   }
+  }
+
+  if(this.matchPhase==='start'){
+   const w=opts.map(n=>{let x=n>=4?2.5:1;if(n===6)x+=1.5;return x});
+   return this.wp(opts,w);
+  }
+
+  const w=opts.map(n=>{let x=n;if(d>.4&&n>=5)x+=2;return x});
+  return this.wp(opts,w);
+ },
+
  rand(){return Math.floor(Math.random()*6)+1},
  wp(o,w){const t=w.reduce((a,b)=>a+b,0);let r=Math.random()*t;for(let i=0;i<o.length;i++){r-=w[i];if(r<=0)return o[i]}return o[o.length-1]},
- level(){if(this.ballCount<3)return'Easy';if(this.ballCount<6)return'Medium';return'Hard'}};
+ level(){if(this.ballCount<4)return'Easy';if(this.ballCount<10)return'Medium';if(this.matchPhase==='end')return'Expert';return'Hard'}};
 
 const TIMER=5,CIRC=2*Math.PI*44,WATCHDOG=12000;
 const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null,oppStats:null};
@@ -400,9 +543,11 @@ function buildFingers(container,v){
   const tip=document.createElement('div');tip.className='tip';f.appendChild(tip);
   container.appendChild(f);
  }
+ const hand=container.closest('.css-hand');
+ const oldBadge=hand.querySelector('.num-badge');if(oldBadge)oldBadge.remove();
  const badge=document.createElement('div');badge.className='num-badge';
  badge.textContent=v===null?'':(v===0?'0':v);
- container.closest('.css-hand').appendChild(badge);
+ hand.appendChild(badge);
 }
 function setHandGesture(imgEl,wrapperEl,v){
  const cssEl=wrapperEl.querySelector('.css-hand');
@@ -437,7 +582,7 @@ function updFH(){$('fhBanner').classList.toggle('show',G.freeHit)}
 function flash(t,c){const f=$('flash');f.className='flash '+(c||'');f.textContent=t;void f.offsetWidth;f.classList.add('show');setTimeout(()=>f.classList.remove('show'),1100)}
 function showCD(n){const c=$('countdown');c.textContent=n;c.classList.remove('go');void c.offsetWidth;c.classList.add('go')}
 function shake(){const a=$('app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');haptic(40);setTimeout(()=>a.classList.remove('shake'),500)}
-function confetti(n){const cols=['#fde047','#f97316','#ef4444','#22c55e','#3b82f6','#a855f7'];const ar=document.querySelector('.arena');for(let i=0;i<(n||30);i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[Math.floor(Math.random()*cols.length)];const a=Math.random()*Math.PI*2,d=120+Math.random()*200,dx=Math.cos(a)*d,dy=Math.sin(a)*d,r=Math.random()*720;c.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:1},{transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(1.2) rotate('+r+'deg)',opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'});ar.appendChild(c);setTimeout(()=>c.remove(),1400)}}
+function confetti(n){const cols=['#f0883e','#f97316','#ef4444','#22c55e','#3b82f6','#a855f7'];const ar=document.querySelector('.arena');for(let i=0;i<(n||30);i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[Math.floor(Math.random()*cols.length)];const a=Math.random()*Math.PI*2,d=120+Math.random()*200,dx=Math.cos(a)*d,dy=Math.sin(a)*d,r=Math.random()*720;c.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:1},{transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(1.2) rotate('+r+'deg)',opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'});ar.appendChild(c);setTimeout(()=>c.remove(),1400)}}
 function setBtns(en){$('gestureGrid').querySelectorAll('.gesture-btn').forEach(b=>{b.classList.toggle('disabled',!en);b.classList.remove('selected')})}
 function showLeave(s){$('leaveBtn').style.display=s?'block':'none'}
 function updBotLvl(){if(G.mode==='offline')$('botLvl').textContent='Bot: '+BotAI.level();else $('botLvl').textContent=''}
@@ -502,7 +647,24 @@ $('usernameInput').onkeydown=(e)=>{if(e.key==='Enter')$('btnSaveUsername').click
 $('btnEditName').onclick=()=>{sfx('tap');$('usernameOverlay').classList.remove('hidden');$('usernameInput').value=getUsername();$('usernameInput').focus();window._pendingCb=null};
 function updHomeUsername(){const u=getUsername();if(u){$('homeUsername').style.display='flex';$('homeUsernameText').textContent=u}else{$('homeUsername').style.display='none'}}
 
-$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='offline';$('menuOverlay').classList.add('hidden');$('offlineSetup').classList.remove('hidden');resetOffline()})};
+$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='offline'; G.oppStats={name:'Ultra Bot',matches:Math.floor(Math.random()*80)+20,wins:Math.floor(Math.random()*45)+10,losses:Math.floor(Math.random()*30)+3,ties:Math.floor(Math.random()*5),runs:Math.floor(Math.random()*800)+100,ballsFaced:Math.floor(Math.random()*600)+80,sixes:Math.floor(Math.random()*50)+5,fours:Math.floor(Math.random()*70)+10,dots:Math.floor(Math.random()*150)+20,highestScore:Math.floor(Math.random()*100)+15,wicketsTaken:Math.floor(Math.random()*60)+8,ballsBowled:Math.floor(Math.random()*500)+50,runsConceded:Math.floor(Math.random()*600)+60,hatricks:Math.floor(Math.random()*5),winStreak:0,bestWinStreak:Math.floor(Math.random()*12)+2,streak:0};
+ const s=G.oppStats;s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';const sb=$('offlineBotStats');sb.style.display='block';
+ sb.innerHTML='<div class="pre-stats-box"><div class="pre-stats-title">Ultra Bot <span class="pre-rank">'+getRank(s)+'</span></div>'
+ +'<div class="pre-stats-section"><div class="pre-section-label">Career</div>'
+ +'<div class="pre-stat-row"><span>Matches</span><b>'+s.matches+'</b></div>'
+ +'<div class="pre-stat-row"><span>Wins</span><b>'+s.wins+'</b></div>'
+ +'<div class="pre-stat-row"><span>Win Rate</span><b>'+s.winPct+'</b></div>'
+ +'</div>'
+ +'<div class="pre-stats-section"><div class="pre-section-label">Batting</div>'
+ +'<div class="pre-stat-row"><span>Runs</span><b>'+s.runs+'</b></div>'
+ +'<div class="pre-stat-row"><span>SR</span><b>'+s.strikeRate+'</b></div>'
+ +'<div class="pre-stat-row"><span>Sixes</span><b>'+s.sixes+'</b></div>'
+ +'</div>'
+ +'<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>'
+ +'<div class="pre-stat-row"><span>Wkts</span><b>'+s.wicketsTaken+'</b></div>'
+ +'<div class="pre-stat-row"><span>Avg</span><b>'+s.bowlingAvg+'</b></div>'
+ +'</div></div>';
+ $('menuOverlay').classList.add('hidden');$('offlineSetup').classList.remove('hidden');resetOffline()})};
 $('modeOnline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='online';$('menuOverlay').classList.add('hidden');$('onlineLobby').classList.remove('hidden');$('nameInput').value=getUsername();const rid=new URLSearchParams(location.search).get('room');if(rid){$('btnJoin').style.display='block';$('btnCreate').style.display='none';$('hostFormat').style.display='none';$('joinerNote').style.display='block'}else{$('btnCreate').style.display='block';$('btnJoin').style.display='none';$('hostFormat').style.display='block';$('joinerNote').style.display='none'}})};
 $('modeInstant').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='online';$('menuOverlay').classList.add('hidden');$('matchmakingOverlay').classList.remove('hidden');startMatchmaking()})};
 $('btnProfile').onclick=()=>{sfx('tap');showProfile()};
@@ -530,7 +692,8 @@ function startOffline(){
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
  const botName=genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
- G.oppStats={name:botName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+  G.oppStats={name:botName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+  const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
  if(G.teamSize===1){G.myPlayers=[{name:'You',role:'all'}];G.oppPlayers=[{name:botName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:'Player '+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?botName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
  $('labelA').textContent='YOU';$('labelB').textContent=botName;$('nameA').textContent='YOU';$('nameB').textContent=botName;
@@ -540,7 +703,7 @@ function startOffline(){
 function genId(){return Math.random().toString(36).substring(2,8).toUpperCase()}
 const PEER_OPTS={debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:stun2.l.google.com:19302'},{urls:'stun:stun3.l.google.com:19302'},{urls:'stun:stun4.l.google.com:19302'},{urls:'turn:openrelay.metered.us:80',username:'openrelayproject',credential:'openrelayproject'},{urls:'turn:openrelay.metered.us:443',username:'openrelayproject',credential:'openrelayproject'},{urls:'turn:openrelay.metered.us:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}]}};
 
-$('btnCreate').onclick=()=>{sfx('tap');G.myName=$('nameInput').value.trim()||'Host';G.isHost=true;G.wantRejoin=false;G.teamSize=getTeamSize();$('onlineLobby').classList.add('hidden');$('waitingOverlay').classList.remove('hidden');$('connLog').innerHTML='';$('connBadge').style.display='none';connLog('Creating room...');startPeer(true)};
+$('btnCreate').onclick=()=>{sfx('tap');G.myName=$('nameInput').value.trim()||getUsername()||'Host';setUsername(G.myName);G.isHost=true;G.wantRejoin=false;G.teamSize=getTeamSize();$('onlineLobby').classList.add('hidden');$('waitingOverlay').classList.remove('hidden');$('connLog').innerHTML='';$('connBadge').style.display='none';connLog('Creating room...');startPeer(true)};
 $('btnJoin').onclick=()=>{sfx('tap');G.myName=$('nameInput').value.trim()||'Player';G.isHost=false;const rid=new URLSearchParams(location.search).get('room');if(!rid){alert('No room!');return}const sess=loadSession();G.wantRejoin=!!(sess&&sess.role==='join'&&sess.room===rid);$('onlineLobby').classList.add('hidden');$('waitingOverlay').classList.remove('hidden');$('connLog').innerHTML='';$('connBadge').style.display='none';connLog('Joining '+rid+'...');startPeer(false,rid)};
 $('btnRetry').onclick=()=>{sfx('tap');$('btnRetry').style.display='none';$('connLog').innerHTML='';$('connBadge').style.display='none';connLog('Retrying...');destroyPeer();if(G.isHost)startPeer(true);else startPeer(false,new URLSearchParams(location.search).get('room'))};
 $('btnCancelWait').onclick=()=>{destroyPeer();$('waitingOverlay').classList.add('hidden');$('onlineLobby').classList.remove('hidden')};
@@ -706,7 +869,25 @@ $('btnSaveTeam').onclick=()=>{
 };
 $('btnBackTB').onclick=()=>{$('teamBuilderOverlay').classList.add('hidden');showTeamSel()};
 
-function startOnlineToss(){setStage('toss');$('tossOverlay').classList.remove('hidden');$('tossVs').textContent=G.myName+' vs '+G.oppName;$('onlineTossBtns').style.display='none';$('onlineTossDec').style.display='none';$('btnOHeads').disabled=false;$('btnOTails').disabled=false;if(G.isHost){$('tossText').textContent='Call it!';$('onlineTossBtns').style.display='block'}else{$('tossText').textContent=G.oppName+' is calling...'}}
+function startOnlineToss(){setStage('toss');$('tossOverlay').classList.remove('hidden');$('tossVs').textContent=G.myName+' vs '+G.oppName;$('onlineTossBtns').style.display='none';$('onlineTossDec').style.display='none';$('btnOHeads').disabled=false;$('btnOTails').disabled=false;
+ const sb=$('tossPreStats');
+ if(G.oppStats){const s=G.oppStats;sb.style.display='block';
+  sb.innerHTML='<div class="pre-stats-box"><div class="pre-stats-title">'+G.oppName+'</div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Career</div>'
+  +'<div class="pre-stat-row"><span>Matches</span><b>'+s.matches+'</b></div>'
+  +'<div class="pre-stat-row"><span>Wins</span><b>'+s.wins+'</b></div>'
+  +'<div class="pre-stat-row"><span>Win Rate</span><b>'+s.winPct+'</b></div>'
+  +'</div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Batting</div>'
+  +'<div class="pre-stat-row"><span>Runs</span><b>'+s.runs+'</b></div>'
+  +'<div class="pre-stat-row"><span>SR</span><b>'+s.strikeRate+'</b></div>'
+  +'<div class="pre-stat-row"><span>Sixes</span><b>'+s.sixes+'</b></div>'
+  +'</div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>'
+  +'<div class="pre-stat-row"><span>Wkts</span><b>'+s.wicketsTaken+'</b></div>'
+  +'<div class="pre-stat-row"><span>Avg</span><b>'+s.bowlingAvg+'</b></div>'
+  +'</div></div>';}else{sb.style.display='none'}
+ if(G.isHost){$('tossText').textContent='Call it!';$('onlineTossBtns').style.display='block'}else{$('tossText').textContent=G.oppName+' is calling...'}}
 $('btnOHeads').onclick=()=>callToss('heads');
 $('btnOTails').onclick=()=>callToss('tails');
 function callToss(c){sfx('coin');haptic(20);$('btnOHeads').disabled=true;$('btnOTails').disabled=true;const res=Math.random()<.5?'heads':'tails';const hostWon=(res===c);sendMsg({type:'toss_start',call:c,result:res,hostWon:hostWon});runTossAnim(res,hostWon)}
@@ -719,7 +900,30 @@ $('btnOBat').onclick=()=>decToss('bat');
 $('btnOBowl').onclick=()=>decToss('bowl');
 function decToss(c){sfx('tap');sendMsg({type:'toss_dec',choice:c});applyTossDec(c,true)}
 function applyTossDec(c,isMy){G.iBat=isMy?c==='bat':c==='bowl';setStage('prematch');$('tossText').innerHTML+='<br><b>'+(isMy?G.myName:G.oppName)+'</b> chose <b>'+c+'</b>!';setTimeout(()=>{$('tossOverlay').classList.add('hidden');showPreMC()},2000)}
-function showPreMC(){setStage('prematch');$('mcOverlay').classList.remove('hidden');$('mcTitle').textContent='Ready!';$('mcNum').textContent='3';$('mcPlayers').textContent=G.myName+' vs '+G.oppName;if(G.isHost){$('mcHost').style.display='block';$('mcWait').style.display='none'}else{$('mcHost').style.display='none';$('mcWait').style.display='block'}}
+function showPreMC(){setStage('prematch');$('mcOverlay').classList.remove('hidden');$('mcTitle').textContent='Ready!';$('mcNum').textContent='3';$('mcPlayers').textContent=G.myName+' vs '+G.oppName;
+ const sb=$('preMatchStats');
+ if(G.oppStats){const s=G.oppStats;const rk=getRank(s);
+  sb.style.display='block';
+  sb.innerHTML='<div class="pre-stats-box"><div class="pre-stats-title">'+G.oppName+' <span class="pre-rank">'+rk+'</span></div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Career Stats</div>'
+  +'<div class="pre-stat-row"><span>Matches</span><b>'+s.matches+'</b></div>'
+  +'<div class="pre-stat-row"><span>Wins</span><b>'+s.wins+'</b></div>'
+  +'<div class="pre-stat-row"><span>Win Rate</span><b>'+s.winPct+'</b></div>'
+  +'<div class="pre-stat-row"><span>Best Streak</span><b>'+s.bestWinStreak+'</b></div>'
+  +'</div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Batting</div>'
+  +'<div class="pre-stat-row"><span>Runs</span><b>'+s.runs+'</b></div>'
+  +'<div class="pre-stat-row"><span>Strike Rate</span><b>'+s.strikeRate+'</b></div>'
+  +'<div class="pre-stat-row"><span>Best Score</span><b>'+s.highestScore+'</b></div>'
+  +'<div class="pre-stat-row"><span>Sixes</span><b>'+s.sixes+'</b></div>'
+  +'<div class="pre-stat-row"><span>Fours</span><b>'+s.fours+'</b></div>'
+  +'</div>'
+  +'<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>'
+  +'<div class="pre-stat-row"><span>Wickets</span><b>'+s.wicketsTaken+'</b></div>'
+  +'<div class="pre-stat-row"><span>Bowling Avg</span><b>'+s.bowlingAvg+'</b></div>'
+  +'<div class="pre-stat-row"><span>Dots</span><b>'+s.dots+'</b></div>'
+  +'</div></div>';}else{sb.style.display='none'}
+ if(G.isHost){$('mcHost').style.display='block';$('mcWait').style.display='none'}else{$('mcHost').style.display='none';$('mcWait').style.display='block'}}
 $('btnStart').onclick=()=>{sfx('tap');sendMsg({type:'start_match'});showMC(true)};
 function showMC(){$('mcHost').style.display='none';$('mcWait').style.display='none';$('mcTitle').textContent='Starting!';let c=3;$('mcNum').textContent=c;sfx('cd');const iv=setInterval(()=>{c--;if(c>0){$('mcNum').textContent=c;sfx('cd');haptic(20)}else{clearInterval(iv);$('mcNum').textContent='GO!';sfx('start');haptic(40);setTimeout(()=>{$('mcOverlay').classList.add('hidden');startOnline()},800)}},1000)}
 function startOnline(){G.totalBalls=G.teamSize===11?120:G.teamSize*6;G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;G.freeHit=false;setStage('playing');$('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;updScore();renderBalls();updFH();showLeave(true);startInnings(1)}
@@ -748,7 +952,7 @@ function nextBall(){
  setBtns(true);setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='?';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='?';
- if(G.mode==='offline'){if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
+  if(G.mode==='offline'){BotAI.updateContext(G.target,G.me.score,G.me.wkts,G.totalBalls);if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
  const fh=G.freeHit?' FREE HIT':'';
  $('status').innerHTML=G.iBat?'BAT!'+fh:'BOWL!'+fh;
  updFH();startTimer();armWD();
@@ -802,7 +1006,7 @@ function finishMatch(){
  updateStatsAfterMatch(matchResult);
  const statsBox=$('matchStatsBox');statsBox.style.display='block';
  const s=loadStats();
- statsBox.innerHTML='<div class="profile-card"><div class="stat-grid"><div class="stat-item"><div class="val">'+s.matches+'</div><div class="lbl">Matches</div></div><div class="stat-item"><div class="val">'+s.wins+'</div><div class="lbl">Wins</div></div><div class="stat-item"><div class="val">'+s.winPct+'</div><div class="lbl">Win%</div></div><div class="stat-item"><div class="val">'+s.strikeRate+'</div><div class="lbl">Strike Rate</div></div><div class="stat-item"><div class="val">'+s.highestScore+'</div><div class="lbl">Best Score</div></div><div class="stat-item"><div class="val">'+s.streak+'</div><div class="lbl">Streak</div></div></div></div>';
+  statsBox.innerHTML='<div class="profile-card"><div class="profile-section"><h3>Main Stats</h3><div class="stat-grid two-col"><div class="stat-item"><div class="val">'+s.matches+'</div><div class="lbl">Matches</div></div><div class="stat-item"><div class="val">'+s.wins+'</div><div class="lbl">Wins</div></div><div class="stat-item"><div class="val">'+s.winPct+'</div><div class="lbl">Win%</div></div><div class="stat-item"><div class="val">'+s.streak+'</div><div class="lbl">Streak</div></div></div></div><div class="profile-section"><h3>Batting</h3><div class="stat-grid"><div class="stat-item"><div class="val">'+s.runs+'</div><div class="lbl">Runs</div></div><div class="stat-item"><div class="val">'+s.strikeRate+'</div><div class="lbl">SR</div></div><div class="stat-item"><div class="val">'+s.highestScore+'</div><div class="lbl">Best</div></div><div class="stat-item"><div class="val">'+s.sixes+'</div><div class="lbl">Sixes</div></div><div class="stat-item"><div class="val">'+s.fours+'</div><div class="lbl">Fours</div></div></div></div><div class="profile-section"><h3>Bowling</h3><div class="stat-grid"><div class="stat-item"><div class="val">'+s.wicketsTaken+'</div><div class="lbl">Wkts</div></div><div class="stat-item"><div class="val">'+s.bowlingAvg+'</div><div class="lbl">Avg</div></div><div class="stat-item"><div class="val">'+s.dots+'</div><div class="lbl">Dots</div></div></div></div></div>';
  $('btnRematch').style.display=G.mode==='online'?'inline-block':'none';
  $('resultOverlay').classList.remove('hidden');showLeave(false);
 }
@@ -819,20 +1023,28 @@ function showProfile(name,stats){
  const rank=getRank(s);
  $('profileTitle').textContent=name?(name+"'s Profile"):'My Profile';
  card.innerHTML=(name?'':'<div class="profile-rank">'+rank+'</div>')
- +'<div class="stat-grid">'
+ +'<div class="profile-section"><h3>Main Stats</h3><div class="stat-grid two-col">'
  +'<div class="stat-item"><div class="val">'+s.matches+'</div><div class="lbl">Matches</div></div>'
  +'<div class="stat-item"><div class="val">'+s.wins+'</div><div class="lbl">Wins</div></div>'
  +'<div class="stat-item"><div class="val">'+s.winPct+'</div><div class="lbl">Win%</div></div>'
+ +'<div class="stat-item"><div class="val">'+s.bestWinStreak+'</div><div class="lbl">Best Streak</div></div>'
+ +'</div></div>'
+ +'<div class="profile-section"><h3>Batting Career</h3><div class="stat-grid">'
  +'<div class="stat-item"><div class="val">'+s.runs+'</div><div class="lbl">Runs</div></div>'
+ +'<div class="stat-item"><div class="val">'+s.ballsFaced+'</div><div class="lbl">Balls</div></div>'
  +'<div class="stat-item"><div class="val">'+s.strikeRate+'</div><div class="lbl">Strike Rate</div></div>'
  +'<div class="stat-item"><div class="val">'+s.highestScore+'</div><div class="lbl">Best Score</div></div>'
  +'<div class="stat-item"><div class="val">'+s.sixes+'</div><div class="lbl">Sixes</div></div>'
  +'<div class="stat-item"><div class="val">'+s.fours+'</div><div class="lbl">Fours</div></div>'
+ +'</div></div>'
+ +'<div class="profile-section"><h3>Bowling Career</h3><div class="stat-grid">'
  +'<div class="stat-item"><div class="val">'+s.wicketsTaken+'</div><div class="lbl">Wickets</div></div>'
+ +'<div class="stat-item"><div class="val">'+s.runsConceded+'</div><div class="lbl">Runs Conceded</div></div>'
  +'<div class="stat-item"><div class="val">'+s.bowlingAvg+'</div><div class="lbl">Bowling Avg</div></div>'
- +'<div class="stat-item"><div class="val">'+s.bestWinStreak+'</div><div class="lbl">Best Streak</div></div>'
+ +'<div class="stat-item"><div class="val">'+s.ballsBowled+'</div><div class="lbl">Balls Bowled</div></div>'
  +'<div class="stat-item"><div class="val">'+s.hatricks+'</div><div class="lbl">Hatricks</div></div>'
- +'</div>';
+ +'<div class="stat-item"><div class="val">'+s.dots+'</div><div class="lbl">Dot Balls</div></div>'
+ +'</div></div>';
  $('profileOverlay').classList.remove('hidden');
 }
 function showOppProfile(){
@@ -867,7 +1079,8 @@ function startMatchmaking(){
 }
 function startBotMatch(){
  G.isBot=true;G.botProfile=genBotProfile();G.oppName=G.botProfile.name;G.isHost=true;
- G.oppStats={name:G.oppName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+  G.oppStats={name:G.oppName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+  const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
  G.totalBalls=G.teamSize===11?120:G.teamSize*6;
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
@@ -924,6 +1137,7 @@ try{
  }else{
   $('menuOverlay').classList.add('hidden');
   $('onlineLobby').classList.remove('hidden');
+  $('nameInput').value=getUsername()||'';
   $('btnJoin').style.display='block';$('btnCreate').style.display='none';
   $('hostFormat').style.display='none';$('joinerNote').style.display='block';
   if(sess&&sess.role==='join'&&sess.room===rid){$('nameInput').value=sess.name;G.wantRejoin=true}
