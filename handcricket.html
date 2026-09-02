@@ -460,7 +460,7 @@ function updatePlayerDisplay(){
  }else{$('playerA').textContent='';$('playerB').textContent=''}
 }
 
-function loadStats(){try{return JSON.parse(localStorage.getItem('hc_stats'))||defaultStats()}catch(e){return defaultStats()}}
+function loadStats(){try{const s=JSON.parse(localStorage.getItem('hc_stats'))||defaultStats();s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';return s}catch(e){return defaultStats()}}
 function defaultStats(){return{name:'',matches:0,wins:0,losses:0,ties:0,runs:0,ballsFaced:0,sixes:0,fours:0,dots:0,highestScore:0,wicketsTaken:0,ballsBowled:0,runsConceded:0,hatricks:0,winStreak:0,bestWinStreak:0,streak:0}}
 function saveStats(s){localStorage.setItem('hc_stats',JSON.stringify(s))}
 function updateStatsAfterMatch(result){
@@ -706,9 +706,8 @@ function startOnline(){G.totalBalls=G.format==='quick'?(G.teamSize>1?G.teamSize*
 function startInnings(n){
  clearWD();G.innings=n;
  if(n===2){G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0}
- const bat=G.iBat?G.me:G.opp,bowl=G.iBat?G.opp:G.me;
+ const bat=G.iBat?G.me:G.opp;
  bat.score=0;bat.wkts=0;bat.balls=0;bat.hist=[];
- bowl.score=0;bowl.wkts=0;bowl.balls=0;bowl.hist=[];
  G.state='idle';G.freeHit=false;
  updScore();renderBalls();updFH();
  const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');
