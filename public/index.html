@@ -6,158 +6,148 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#0d1117"/>
+<meta name="theme-color" content="#0f172a"/>
 <title>Hand Cricket Pro</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M484S7S0KG"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-M484S7S0KG');</script>
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:radial-gradient(ellipse at top,#161b22 0%,#0d1117 50%,#010409 100%);color:#e6edf3;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
-#app{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:max(env(safe-area-inset-top),4px) max(env(safe-area-inset-right),8px) max(env(safe-area-inset-bottom),4px) max(env(safe-area-inset-left),8px)}
-.scoreboard{display:flex;justify-content:space-between;align-items:center;padding:clamp(8px,1.5vh,12px) clamp(10px,2vw,16px);background:rgba(13,17,23,.85);border-radius:14px;margin:8px 10px 4px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);position:relative;z-index:2;flex-shrink:0}
+html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;background:#0f172a;color:#f1f5f9;overflow:hidden;touch-action:manipulation;overscroll-behavior:none}
+::-webkit-scrollbar{width:0;height:0;display:none}
+*{scrollbar-width:none;scrollbar-color:transparent transparent}
+#app{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:max(env(safe-area-inset-top),4px) max(env(safe-area-inset-right),8px) max(env(safe-area-inset-bottom),4px) max(env(safe-area-inset-left),8px);background:linear-gradient(165deg,#0f172a 0%,#1e293b 40%,#0f172a 100%)}
+.scoreboard{display:flex;justify-content:space-between;align-items:center;padding:clamp(8px,1.5vh,12px) clamp(10px,2vw,16px);background:rgba(30,41,59,.9);border-radius:14px;margin:6px 10px 4px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(148,163,184,.12);position:relative;z-index:2;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.3)}
 .team{text-align:center;flex:1;min-width:0}
-.team .label{font-size:clamp(9px,1.2vh,11px);opacity:.7;letter-spacing:1.5px;font-weight:700;word-break:break-word}
-.team .score{font-size:clamp(22px,3.6vh,30px);font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5);line-height:1}
+.team .label{font-size:clamp(9px,1.2vh,11px);color:#94a3b8;letter-spacing:1.5px;font-weight:700;word-break:break-word}
+.team .score{font-size:clamp(22px,3.6vh,30px);font-weight:900;color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.5);line-height:1}
 .team .score.pop{animation:sp .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes sp{0%{transform:scale(1)}40%{transform:scale(1.3);color:#f0883e}100%{transform:scale(1)}}
-.team .balls{font-size:clamp(9px,1.1vh,11px);opacity:.6;margin-top:2px}
-.team .bot-lvl{font-size:9px;color:#f97316;font-weight:700;margin-top:1px}
-.team .current-player{font-size:clamp(8px,1vh,10px);color:#86efac;font-weight:700;margin-top:1px}
-.vs{font-size:clamp(10px,1.2vh,12px);opacity:.4;padding:0 6px;font-weight:800}
-.batting-indicator{display:inline-block;font-size:clamp(8px,1vh,10px);background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;padding:2px 7px;border-radius:10px;margin-top:3px;font-weight:800}
-.free-hit-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:800;background:linear-gradient(90deg,transparent,rgba(248,81,73,.25),transparent);color:#f85149;letter-spacing:1px;display:none;flex-shrink:0;animation:fp 1s ease-in-out infinite}
+@keyframes sp{0%{transform:scale(1)}40%{transform:scale(1.3);color:#f59e0b}100%{transform:scale(1)}}
+.team .balls{font-size:clamp(9px,1.1vh,11px);color:#64748b;margin-top:2px}
+.team .bot-lvl{font-size:9px;color:#f59e0b;font-weight:700;margin-top:1px}
+.team .current-player{font-size:clamp(8px,1vh,10px);color:#34d399;font-weight:700;margin-top:1px}
+.vs{font-size:clamp(10px,1.2vh,12px);color:#475569;padding:0 6px;font-weight:800}
+.batting-indicator{display:inline-block;font-size:clamp(8px,1vh,10px);background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:2px 7px;border-radius:10px;margin-top:3px;font-weight:800;box-shadow:0 2px 8px rgba(245,158,11,.3)}
+.free-hit-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:800;background:linear-gradient(90deg,transparent,rgba(239,68,68,.15),transparent);color:#fb7185;letter-spacing:1px;display:none;flex-shrink:0;animation:fp 1s ease-in-out infinite}
 .free-hit-banner.show{display:block}
 @keyframes fp{0%,100%{opacity:1}50%{opacity:.6}}
-.target-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:700;background:linear-gradient(90deg,transparent,rgba(88,166,255,.12),transparent);color:#58a6ff;display:none;flex-shrink:0}
+.target-banner{text-align:center;padding:4px 10px;font-size:clamp(11px,1.4vh,13px);font-weight:700;background:linear-gradient(90deg,transparent,rgba(59,130,246,.1),transparent);color:#60a5fa;display:none;flex-shrink:0}
 .target-banner.show{display:block}
 .status-bar{display:flex;align-items:center;justify-content:center;padding:4px 12px;min-height:26px;flex-shrink:0;gap:8px}
-.status{flex:1;text-align:center;font-size:clamp(12px,1.5vh,14px);font-weight:700}
-.status .hl{color:#f0883e;font-weight:900}
-.leave-btn{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fca5a5;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
-.arena{flex:1;display:flex;justify-content:space-around;align-items:center;padding:4px 6px;position:relative;min-height:0}
-.player-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
-.player-side .name{font-size:clamp(10px,1.4vh,13px);font-weight:800;letter-spacing:2px;opacity:.9;text-align:center;cursor:pointer;transition:color .2s}
-.player-side .name:hover{color:#f0883e}
-.hand-wrap{width:clamp(80px,16vh,140px);height:clamp(105px,22vh,185px);position:relative;display:flex;justify-content:center;align-items:flex-end;transition:transform .3s cubic-bezier(.34,1.56,.64,1);perspective:600px}
+.status{flex:1;text-align:center;font-size:clamp(12px,1.5vh,14px);font-weight:700;color:#cbd5e1}
+.status .hl{color:#f59e0b;font-weight:900}
+.leave-btn{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fb7185;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.arena{flex:1;display:flex;justify-content:space-around;align-items:center;padding:4px 6px;position:relative;min-height:0;overflow:hidden}
+.player-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.player-side .name{font-size:clamp(10px,1.4vh,13px);font-weight:800;letter-spacing:2px;color:#e2e8f0;text-align:center;cursor:pointer;transition:color .2s}
+.player-side .name:hover{color:#f59e0b}
+.hand-wrap{width:clamp(80px,14vh,130px);height:clamp(90px,18vh,160px);position:relative;display:flex;justify-content:center;align-items:center;transition:transform .3s cubic-bezier(.34,1.56,.64,1);perspective:600px}
 .hand-wrap.shake{animation:hs .35s ease-in-out infinite}
 .hand-wrap.reveal{animation:rp .6s cubic-bezier(.34,1.8,.64,1)}
 .hand-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2}
-.hand-wrap img[style*="display:none"]+.css-hand,.hand-wrap img[src=""]+.css-hand{display:block}
+.hand-wrap svg.hand-svg{width:100%;height:100%;display:block;filter:drop-shadow(0 6px 20px rgba(0,0,0,.6));transition:filter .3s}
+.hand-wrap img[style*="display:none"]+.css-hand,.hand-wrap img[src=""]+.css-hand{display:none}
 .hand-wrap img:not([style*="display:none"]):not([src=""])+.css-hand{display:none}
-.css-hand{width:100%;height:100%;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
-.css-fingers{display:flex;gap:clamp(2px,.5vw,4px);align-items:flex-end;justify-content:center;height:62%;margin-bottom:0}
-.css-finger{width:clamp(12px,2.2vw,18px);height:100%;position:relative;transform-style:preserve-3d;transition:height .4s cubic-bezier(.5,1.6,.4,1),opacity .3s}
-.css-finger .tip{width:100%;height:52%;border-radius:12px 12px 8px 8px;position:absolute;bottom:0;transition:transform .45s cubic-bezier(.5,1.6,.5,1),opacity .3s,border-radius .3s;transform-origin:bottom center;box-shadow:inset 0 2px 4px rgba(255,255,255,.25),inset 0 -3px 6px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.2)}
-.css-finger .tip::after{content:'';position:absolute;width:60%;height:3px;background:rgba(255,255,255,.2);top:12%;left:20%;border-radius:2px}
-.css-finger.down .tip{transform:rotateX(70deg) scaleY(.35) translateY(4px);opacity:.25;border-radius:8px}
-.css-finger:nth-child(1) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060}
-.css-finger:nth-child(2) .tip{background:linear-gradient(180deg,#fcd9b0 0%,#ecd0a0 50%,#e8b88a 100%);border:1.5px solid #c49060}
-.css-finger:nth-child(3) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060}
-.css-finger:nth-child(4) .tip{background:linear-gradient(180deg,#fcd9b0 0%,#ecd0a0 50%,#e8b88a 100%);border:1.5px solid #c49060}
-.css-finger:nth-child(5) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060;width:85%;left:7.5%;border-radius:10px 10px 7px 7px}
-.css-finger:nth-child(1){transform:rotate(-18deg) translateX(-2px);transform-origin:bottom center}
-.css-finger:nth-child(5){transform:rotate(12deg) translateX(1px);transform-origin:bottom center}
-.css-palm{width:58%;height:26%;background:linear-gradient(180deg,#ecd0a0 0%,#e0b088 40%,#d9a070 100%);border-radius:4px 4px 20px 20px;border:1.5px solid #c49060;border-top:none;box-shadow:inset 0 -4px 8px rgba(0,0,0,.12),inset 0 3px 6px rgba(255,255,255,.1),0 4px 12px rgba(0,0,0,.25);position:relative}
-.css-palm::before{content:'';position:absolute;width:70%;height:4px;background:rgba(255,255,255,.12);top:20%;left:15%;border-radius:2px}
-.css-hand .num-badge{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(240,136,62,.5),0 0 48px rgba(240,136,62,.2);z-index:3;pointer-events:none;animation:numPulse 2s ease-in-out infinite}
-@keyframes numPulse{0%,100%{text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(240,136,62,.5)}50%{text-shadow:0 2px 16px rgba(0,0,0,.9),0 0 32px rgba(240,136,62,.7),0 0 48px rgba(249,115,22,.3)}}
-@keyframes fistShake{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-3deg)}75%{transform:translateY(-4px) rotate(3deg)}}
-.css-hand.shake{animation:fistShake .35s ease-in-out infinite}
-@keyframes fistReveal{0%{transform:scale(.4) rotate(-20deg) translateY(20px);opacity:.2;filter:blur(4px)}40%{transform:scale(1.12) rotate(4deg) translateY(-5px);opacity:1;filter:blur(0)}70%{transform:scale(.97) rotate(-2deg) translateY(2px);opacity:1}100%{transform:scale(1) rotate(0) translateY(0);opacity:1}}
-.css-hand.reveal{animation:fistReveal .55s cubic-bezier(.34,1.8,.64,1)}
+.hand-wrap:not(:has(img:not([style*="display:none"]):not([src=""]))) svg.hand-svg{display:block}
+.hand-wrap:has(img:not([style*="display:none"]):not([src=""])) svg.hand-svg{display:none}
 @keyframes hs{0%,100%{transform:translateY(0) rotate(0) rotateY(0)}25%{transform:translateY(-8px) rotate(-4deg) rotateY(-3deg)}75%{transform:translateY(-8px) rotate(4deg) rotateY(3deg)}}
 @keyframes rp{0%{transform:scale(.6) rotate(-10deg) translateZ(-20px);opacity:.4}60%{transform:scale(1.18) rotate(5deg) translateZ(30px)}100%{transform:scale(1) rotate(0) translateZ(0);opacity:1}}
-.gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:20px;color:#f0883e;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
+.gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:18px;color:#f59e0b;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
 .gesture-label.show{opacity:1;transform:translateY(0)}
 .timer-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:clamp(64px,12vh,92px);height:clamp(64px,12vh,92px);pointer-events:none}
 .timer-circle{width:100%;height:100%;transform:rotate(-90deg)}
-.timer-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:6}
+.timer-bg{fill:none;stroke:rgba(148,163,184,.15);stroke-width:6}
 .timer-fg{fill:none;stroke:url(#tg);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .08s linear}
-.timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.7)}
-.countdown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:clamp(70px,13vh,110px);font-weight:900;color:#f0883e;text-shadow:0 0 40px rgba(240,136,62,.9);pointer-events:none;z-index:6;opacity:0}
+.timer-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,4vh,32px);font-weight:900;color:#f8fafc;text-shadow:0 2px 10px rgba(0,0,0,.7)}
+.countdown{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:clamp(70px,13vh,110px);font-weight:900;color:#f59e0b;text-shadow:0 0 40px rgba(245,158,11,.8);pointer-events:none;z-index:6;opacity:0}
 .countdown.go{animation:cp .9s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes cp{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.3);opacity:1}100%{transform:translate(-50%,-50%) scale(2);opacity:0}}
-.controls{padding:6px 10px 4px;flex-shrink:0}
+.controls{padding:6px 10px 6px;flex-shrink:0}
 .gesture-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(4px,1vw,8px)}
-.gesture-btn{background:linear-gradient(180deg,#21262d,#161b22);border:2px solid rgba(255,255,255,.12);color:#e6edf3;border-radius:clamp(10px,1.5vh,16px);padding:clamp(6px,1vh,10px) 2px;font-size:13px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 0 rgba(0,0,0,.4);-webkit-appearance:none;touch-action:manipulation}
-.gesture-btn:active:not(.disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
-.gesture-btn.selected{background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border-color:rgba(240,136,62,.5)}
-.gesture-btn.disabled{opacity:.35;pointer-events:none}
-.gesture-btn .big{font-size:clamp(16px,2.8vh,24px);display:block;line-height:1}
-.gesture-btn .small{font-size:clamp(8px,1.1vh,10px);opacity:.9;margin-top:2px;display:block;font-weight:700}
-.overlay{position:fixed;inset:0;background:rgba(1,4,9,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;animation:oi .4s ease}
+.gesture-btn{background:linear-gradient(180deg,rgba(30,41,59,.9),rgba(15,23,42,.95));border:1.5px solid rgba(148,163,184,.15);color:#e2e8f0;border-radius:clamp(10px,1.5vh,14px);padding:clamp(5px,.8vh,8px) 2px;font-size:13px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 3px 0 rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);-webkit-appearance:none;touch-action:manipulation;position:relative;overflow:hidden}
+.gesture-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent);pointer-events:none;border-radius:inherit}
+.gesture-btn:active:not(.disabled){transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.gesture-btn.selected{background:linear-gradient(180deg,#f59e0b,#d97706);color:#fff;border-color:rgba(245,158,11,.5);box-shadow:0 3px 0 rgba(120,53,0,.4),0 0 20px rgba(245,158,11,.25)}
+.gesture-btn.disabled{opacity:.3;pointer-events:none}
+.gesture-btn .big{font-size:clamp(16px,2.8vh,22px);display:block;line-height:1}
+.gesture-btn .small{font-size:clamp(7px,1vh,9px);color:#94a3b8;margin-top:1px;display:block;font-weight:700}
+.gesture-btn.selected .small{color:rgba(255,255,255,.8)}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.94);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-y:auto;animation:oi .4s ease;scroll-behavior:smooth}
 @keyframes oi{from{opacity:0}to{opacity:1}}
 .overlay.hidden{display:none!important}
-.overlay h1{font-size:clamp(22px,3.2vh,28px);margin:0 0 8px}
-.overlay h2{font-size:clamp(13px,1.8vh,16px);margin:10px 0 4px;opacity:.9}
-.overlay p{font-size:clamp(12px,1.6vh,14px);opacity:.9;margin:5px 0;line-height:1.5;max-width:320px}
-.overlay input{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:#fff;padding:11px 14px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;width:100%;max-width:260px;margin:6px 0;outline:none;-webkit-appearance:none}
-.overlay button{margin-top:10px;background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:12px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.4);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation}
-.overlay button:active:not(:disabled){transform:translateY(2px)}
-.overlay button.secondary{background:rgba(255,255,255,.06);color:#e6edf3;box-shadow:none;border:1px solid rgba(255,255,255,.12)}
-.overlay button.danger{background:rgba(248,81,73,.15);color:#f85149;box-shadow:none;border:1px solid rgba(248,81,73,.3)}
+.overlay h1{font-size:clamp(22px,3.2vh,28px);margin:0 0 8px;color:#f8fafc;font-weight:900}
+.overlay h2{font-size:clamp(13px,1.8vh,16px);margin:10px 0 4px;color:#e2e8f0;font-weight:700}
+.overlay p{font-size:clamp(12px,1.6vh,14px);color:#94a3b8;margin:5px 0;line-height:1.5;max-width:320px}
+.overlay input{background:rgba(30,41,59,.8);border:1.5px solid rgba(148,163,184,.2);color:#f1f5f9;padding:11px 14px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;width:100%;max-width:260px;margin:6px 0;outline:none;-webkit-appearance:none;transition:border-color .2s}
+.overlay input:focus{border-color:#f59e0b}
+.overlay button{margin-top:10px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:12px;cursor:pointer;box-shadow:0 4px 0 rgba(120,53,0,.4),0 4px 16px rgba(245,158,11,.2);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
+.overlay button:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 rgba(120,53,0,.4)}
+.overlay button.secondary{background:rgba(30,41,59,.8);color:#e2e8f0;box-shadow:none;border:1.5px solid rgba(148,163,184,.2)}
+.overlay button.secondary:hover{border-color:rgba(148,163,184,.4);background:rgba(51,65,85,.6)}
+.overlay button.danger{background:rgba(239,68,68,.15);color:#fb7185;box-shadow:none;border:1.5px solid rgba(239,68,68,.25)}
 .overlay button.small{padding:9px 18px;font-size:13px;max-width:200px}
 .overlay button:disabled{opacity:.4;pointer-events:none}
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;width:100%;max-width:300px}
 .mode-grid.three-col{grid-template-columns:1fr 1fr 1fr}
-.mode-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#e6edf3;padding:14px 8px;border-radius:14px;cursor:pointer;text-align:center;-webkit-appearance:none;touch-action:manipulation}
+.mode-btn{background:rgba(30,41,59,.7);border:1.5px solid rgba(148,163,184,.1);color:#e2e8f0;padding:14px 8px;border-radius:14px;cursor:pointer;text-align:center;-webkit-appearance:none;touch-action:manipulation;transition:all .2s cubic-bezier(.34,1.56,.64,1)}
 .mode-btn:active{transform:scale(.97)}
 .mode-btn .icon{font-size:28px;display:block;margin-bottom:4px}
 .mode-btn .title{font-size:14px;font-weight:800;display:block}
-.mode-btn .desc{font-size:10px;opacity:.85;display:block;margin-top:3px;font-weight:600}
-.share-box{background:rgba(255,255,255,.1);border:1px dashed rgba(255,255,255,.3);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#f0883e;font-weight:600;max-width:280px}
-.player-list{max-height:clamp(120px,22vh,200px);overflow-y:auto;width:100%;max-width:280px;background:rgba(255,255,255,.05);border-radius:12px;padding:8px;margin:8px 0}
-.player-item{padding:6px 8px;background:rgba(255,255,255,.1);margin:3px 0;border-radius:8px;font-size:11px;display:flex;justify-content:space-between}
+.mode-btn .desc{font-size:10px;color:#94a3b8;display:block;margin-top:3px;font-weight:600}
+.share-box{background:rgba(30,41,59,.6);border:1px dashed rgba(148,163,184,.25);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#f59e0b;font-weight:600;max-width:280px}
+.player-list{max-height:clamp(120px,22vh,200px);overflow-y:auto;width:100%;max-width:280px;background:rgba(30,41,59,.5);border-radius:12px;padding:8px;margin:8px 0}
+.player-item{padding:6px 8px;background:rgba(30,41,59,.8);margin:3px 0;border-radius:8px;font-size:11px;display:flex;justify-content:space-between;color:#e2e8f0}
 .coin-container{width:clamp(90px,14vh,115px);height:clamp(90px,14vh,115px);margin:14px auto;position:relative;perspective:1000px}
 .coin{width:100%;height:100%;position:relative;transform-style:preserve-3d}
 .coin.flipping{animation:cf 2.5s ease-out forwards}
 @keyframes cf{0%{transform:rotateY(0)}100%{transform:rotateY(1800deg)}}
-.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,#f0883e,#d2772f);border:4px solid #b85c2a;color:#fff}
-.coin-tails{transform:rotateY(180deg);background:linear-gradient(135deg,#e5e7eb,#9ca3af);border-color:#6b7280}
+.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,#f59e0b,#d97706);border:4px solid #b45309;color:#fff}
+.coin-tails{transform:rotateY(180deg);background:linear-gradient(135deg,#e2e8f0,#94a3b8);border-color:#64748b}
 .flash{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:clamp(38px,7vh,56px);font-weight:900;opacity:0;pointer-events:none;z-index:5;white-space:nowrap}
 .flash.show{animation:fi 1.1s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes fi{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}35%{transform:translate(-50%,-50%) scale(1.25);opacity:1}100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}
-.flash.six{color:#f0883e;text-shadow:0 0 30px rgba(240,136,62,1)}
+.flash.six{color:#f59e0b;text-shadow:0 0 30px rgba(245,158,11,1)}
 .flash.out{color:#ef4444;text-shadow:0 0 30px rgba(239,68,68,1)}
-.flash.runs{color:#fff;text-shadow:0 0 20px rgba(255,255,255,.7)}
-.flash.noball{color:#f97316;text-shadow:0 0 30px rgba(249,115,22,1)}
-.flash.dot{color:#94a3b8}
+.flash.runs{color:#f1f5f9;text-shadow:0 0 20px rgba(241,245,249,.7)}
+.flash.noball{color:#f59e0b;text-shadow:0 0 30px rgba(245,158,11,1)}
+.flash.dot{color:#64748b}
 #app.shake{animation:ss .5s}
 @keyframes ss{0%,100%{transform:translate(0,0)}20%{transform:translate(-8px,4px)}40%{transform:translate(6px,-4px)}60%{transform:translate(-4px,6px)}80%{transform:translate(4px,-2px)}}
 .balls-row{display:flex;justify-content:center;gap:4px;padding:2px 0;flex-wrap:wrap;flex-shrink:0}
-.ball-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:800}
-.ball-dot.done{background:rgba(255,255,255,.6);color:#000}
+.ball-dot{width:16px;height:16px;border-radius:50%;background:rgba(148,163,184,.12);border:1.5px solid rgba(148,163,184,.2);font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#94a3b8}
+.ball-dot.done{background:rgba(148,163,184,.5);color:#0f172a}
 .ball-dot.wicket{background:#ef4444;color:#fff;border-color:#fca5a5}
-.ball-dot.six{background:#f0883e;color:#000;border-color:#fef08a}
-.ball-dot.noball{background:#f97316;color:#fff}
-.ball-dot.dotball{background:#64748b;color:#fff}
+.ball-dot.six{background:#f59e0b;color:#0f172a;border-color:#fde68a}
+.ball-dot.noball{background:#f59e0b;color:#fff}
+.ball-dot.dotball{background:#475569;color:#e2e8f0}
 .confetti{position:absolute;width:10px;height:10px;top:50%;left:50%;pointer-events:none;z-index:4;border-radius:2px}
-.footer-credit{text-align:center;padding:4px 8px calc(6px + env(safe-area-inset-bottom));font-size:10px;color:rgba(255,255,255,.5);flex-shrink:0;font-weight:600}
-.footer-credit a{color:#f0883e;text-decoration:none;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(240,136,62,.08);border:1px solid rgba(240,136,62,.15)}
-.conn-log{font-size:11px;color:#86efac;margin:6px 0;max-width:280px;text-align:left;line-height:1.6;min-height:50px;max-height:130px;overflow-y:auto}
-.conn-log .err{color:#fca5a5}.conn-log .warn{color:#f0883e}
-.mc-num{font-size:clamp(80px,20vh,140px);font-weight:900;color:#f0883e;text-shadow:0 0 40px rgba(240,136,62,.9);animation:mcp 1s ease-in-out infinite}
+.footer-credit{text-align:center;padding:4px 8px calc(6px + env(safe-area-inset-bottom));font-size:10px;color:#475569;flex-shrink:0;font-weight:600}
+.footer-credit a{color:#f59e0b;text-decoration:none;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15)}
+.conn-log{font-size:11px;color:#34d399;margin:6px 0;max-width:280px;text-align:left;line-height:1.6;min-height:50px;max-height:130px;overflow-y:auto}
+.conn-log .err{color:#fb7185}.conn-log .warn{color:#f59e0b}
+.mc-num{font-size:clamp(80px,20vh,140px);font-weight:900;color:#f59e0b;text-shadow:0 0 40px rgba(245,158,11,.8);animation:mcp 1s ease-in-out infinite}
 @keyframes mcp{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-.connected-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;color:#86efac;margin:8px 0}
-.connected-badge .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e}
-.search-spinner{width:40px;height:40px;border:4px solid rgba(255,255,255,.15);border-top-color:#f0883e;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto}
+.connected-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;color:#34d399;margin:8px 0}
+.connected-badge .dot{width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981}
+.search-spinner{width:40px;height:40px;border:4px solid rgba(148,163,184,.15);border-top-color:#f59e0b;border-radius:50%;animation:spin 1s linear infinite;margin:16px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .pool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:clamp(150px,30vh,250px);overflow-y:auto;width:100%;max-width:300px;margin:8px 0;padding:4px}
-.pool-item{padding:6px 8px;background:rgba(255,255,255,.08);border:2px solid transparent;border-radius:10px;font-size:11px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s}
+.pool-item{padding:6px 8px;background:rgba(30,41,59,.7);border:1.5px solid rgba(148,163,184,.1);border-radius:10px;font-size:11px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s;color:#e2e8f0}
 .pool-item:active{transform:scale(.97)}
-.pool-item.picked{background:rgba(240,136,62,.15);border-color:#f0883e;color:#f0883e}
+.pool-item.picked{background:rgba(245,158,11,.12);border-color:#f59e0b;color:#f59e0b}
 .pool-item .role-badge{font-size:8px;padding:2px 5px;border-radius:6px;font-weight:700;text-transform:uppercase}
-.pool-item .role-badge.batter{background:rgba(59,130,246,.2);color:#93c5fd}
-.pool-item .role-badge.bowler{background:rgba(239,68,68,.2);color:#fca5a5}
-.pool-item .role-badge.all{background:rgba(168,85,247,.2);color:#d8b4fe}
+.pool-item .role-badge.batter{background:rgba(59,130,246,.15);color:#93c5fd}
+.pool-item .role-badge.bowler{background:rgba(239,68,68,.15);color:#fca5a5}
+.pool-item .role-badge.all{background:rgba(168,85,247,.15);color:#d8b4fe}
 .team-size-select{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0;width:100%;max-width:360px}
-.team-size-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
-.team-size-btn.active{background:linear-gradient(180deg,#f0883e,#d2772f);color:#fff;border-color:rgba(240,136,62,.5)}
-.inning-info{font-size:10px;color:#86efac;margin:4px 0;font-weight:600}
+.team-size-btn{background:rgba(30,41,59,.7);border:1.5px solid rgba(148,163,184,.15);color:#e2e8f0;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s}
+.team-size-btn.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:rgba(245,158,11,.5)}
+.inning-info{font-size:10px;color:#34d399;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}}
 @media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}}
 @media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
 @media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}}
-.home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f0883e 0%,#fff 50%,#86efac 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
+.home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f59e0b 0%,#fff 50%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
 @keyframes titleIn{from{opacity:0;transform:translateY(-30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
 .home-subtitle{font-size:clamp(11px,1.8vh,15px);opacity:.7;margin:4px 0 6px;font-weight:600;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .6s .2s both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:.7;transform:translateY(0)}}
@@ -165,11 +155,17 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-hand{width:clamp(60px,12vh,90px);height:clamp(78px,16vh,115px);position:relative;animation:handFloat 3s ease-in-out infinite}
 .home-hand.left{animation-delay:0s;transform:scaleX(-1)}
 .home-hand.right{animation-delay:1.5s;animation-name:handFloatR}
-.home-hand .css-hand{width:100%;height:100%;transform:scale(1.1)}
-.home-hand .css-fingers{height:60%}
-.home-hand .css-finger .tip{border-radius:10px 10px 6px 6px}
-.home-hand .css-finger:nth-child(1){transform:rotate(-18deg) translateX(-2px)}
-.home-hand .css-finger:nth-child(5){transform:rotate(12deg) translateX(1px)}
+.home-hand .css-hand{width:100%;height:100%;transform:scale(1.1);display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.home-hand .css-fingers{display:flex;gap:2px;align-items:flex-end;justify-content:center;height:60%}
+.home-hand .css-finger{width:8px;height:40px;position:relative}
+.home-hand .css-finger .tip{width:100%;height:55%;position:absolute;bottom:0;border-radius:8px 8px 5px 5px;background:linear-gradient(180deg,#fcd9b6 0%,#f0b888 50%,#d4956a 100%);border:1px solid rgba(196,135,106,.4);box-shadow:inset 0 1px 2px rgba(255,255,255,.3),0 2px 4px rgba(0,0,0,.2)}
+.home-hand .css-finger.down .tip{transform:rotateX(70deg) scaleY(.3);opacity:.3}
+.home-hand .css-finger:nth-child(1){transform:rotate(-16deg);transform-origin:bottom center}
+.home-hand .css-finger:nth-child(2){transform:rotate(-4deg);transform-origin:bottom center}
+.home-hand .css-finger:nth-child(3){transform:rotate(4deg);transform-origin:bottom center}
+.home-hand .css-finger:nth-child(4){transform:rotate(10deg);transform-origin:bottom center}
+.home-hand .css-finger:nth-child(5){width:7px;transform:rotate(14deg);transform-origin:bottom center}
+.home-hand .css-palm{width:40%;height:18%;background:linear-gradient(180deg,#f0b888 0%,#d4956a 100%);border-radius:4px 4px 12px 12px;border:1px solid rgba(196,135,106,.3)}
 @keyframes handFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(3deg)}}
 @keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
 .home-ball{width:clamp(18px,3vh,26px);height:clamp(18px,3vh,26px);background:radial-gradient(circle at 35% 35%,#ef4444,#b91c1c 60%,#7f1d1d);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5),inset 0 -2px 4px rgba(0,0,0,.3);animation:ballBounce 2s ease-in-out infinite}
@@ -180,40 +176,176 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .mode-btn:nth-child(1){animation-delay:.5s}
 .mode-btn:nth-child(2){animation-delay:.6s}
 .mode-btn:nth-child(3){animation-delay:.7s}
+.mode-btn:nth-child(4){animation-delay:.8s}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
-.mode-btn:hover{transform:translateY(-3px);border-color:rgba(240,136,62,.4);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.mode-btn:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.4);box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .mode-btn:active{transform:translateY(1px) scale(.97)}
 .home-profile-wrap{animation:fadeUp .6s .8s both;margin-top:14px}
 .home-version{font-size:9px;opacity:.4;margin-top:12px;animation:fadeUp .6s 1s both}
 .home-credit{font-size:10px;opacity:.5;margin-top:6px;animation:fadeUp .6s 1.1s both}
-.home-credit a{color:#f0883e;text-decoration:none;font-weight:700}
-.pre-stats-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px;margin:10px auto;max-width:280px;text-align:left;max-height:40vh;overflow-y:auto}
-.pre-stats-title{font-size:14px;font-weight:800;color:#f0883e;margin-bottom:8px;text-align:center}
-.pre-rank{font-size:10px;opacity:.7;font-weight:600;color:#86efac}
-.pre-stats-section{margin:8px 0;padding:8px 0;border-top:1px solid rgba(255,255,255,.08)}
-.pre-section-label{font-size:10px;font-weight:700;color:#86efac;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;opacity:.8}
-.pre-stat-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;font-weight:600}
+.home-credit a{color:#f59e0b;text-decoration:none;font-weight:700}
+.pre-stats-box{background:rgba(30,41,59,.6);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px;margin:10px auto;max-width:280px;text-align:left;max-height:40vh;overflow-y:auto}
+.pre-stats-title{font-size:14px;font-weight:800;color:#f59e0b;margin-bottom:8px;text-align:center}
+.pre-rank{font-size:10px;font-weight:600;color:#34d399}
+.pre-stats-section{margin:8px 0;padding:8px 0;border-top:1px solid rgba(148,163,184,.1)}
+.pre-section-label{font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.pre-stat-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;font-weight:600;color:#cbd5e1}
 .pre-stat-row span{opacity:.7}
-.pre-stat-row b{color:#f0883e}
+.pre-stat-row b{color:#f59e0b}
 .home-username{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 4px;animation:fadeUp .5s .5s both}
-.home-username-text{font-size:15px;font-weight:800;color:#f0883e;text-shadow:0 0 12px rgba(240,136,62,.3)}
-.edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s}
-.edit-name-btn:hover{background:rgba(255,255,255,.15)}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:280px;margin:8px auto}
-.stat-item{background:rgba(255,255,255,.08);border-radius:10px;padding:10px 6px;text-align:center}
-.stat-item .val{font-size:clamp(18px,3.5vh,24px);font-weight:900;color:#f0883e}
-.stat-item .lbl{font-size:10px;opacity:.7;font-weight:600;margin-top:2px}
-.profile-card{background:rgba(255,255,255,.06);border-radius:16px;padding:16px;width:100%;max-width:300px;border:1px solid rgba(255,255,255,.1);max-height:70vh;overflow-y:auto}
-.profile-card h3{margin:0 0 8px;font-size:18px;font-weight:900;color:#f0883e}
-.profile-card .profile-rank{font-size:11px;opacity:.7;font-weight:600;margin-bottom:10px}
-.profile-section{margin:10px 0;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
-.profile-section h3{font-size:13px;font-weight:800;color:#86efac;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px}
+.home-username-text{font-size:15px;font-weight:800;color:#f59e0b;text-shadow:0 0 12px rgba(245,158,11,.3)}
+.edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s;color:#f1f5f9}
+.edit-name-btn:hover{background:rgba(148,163,184,.15)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:320px;margin:8px auto}
+.stat-item{background:rgba(30,41,59,.6);border-radius:10px;padding:8px 4px;text-align:center}
+.stat-item .val{font-size:clamp(16px,3vh,22px);font-weight:900;color:#f59e0b}
+.stat-item .lbl{font-size:9px;color:#94a3b8;font-weight:600;margin-top:2px}
+.profile-card{background:rgba(30,41,59,.6);border-radius:16px;padding:14px;width:100%;max-width:340px;border:1px solid rgba(148,163,184,.1);margin-top:10px}
+.profile-card h3{margin:0 0 8px;font-size:18px;font-weight:900;color:#f59e0b}
+.profile-card .profile-rank{font-size:11px;color:#94a3b8;font-weight:600;margin-bottom:10px}
+.profile-section{margin:10px 0;padding:10px 0;border-top:1px solid rgba(148,163,184,.1)}
+.profile-section h3{font-size:13px;font-weight:800;color:#34d399;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px}
 .stat-grid.two-col{grid-template-columns:repeat(2,1fr)}
-.opp-profile-card{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid rgba(255,255,255,.1);margin:8px auto;cursor:pointer;transition:all .2s}
-.opp-profile-card:hover{background:rgba(255,255,255,.12);border-color:rgba(240,136,62,.3)}
+.opp-profile-card{background:rgba(30,41,59,.6);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid rgba(148,163,184,.1);margin:8px auto;cursor:pointer;transition:all .2s}
+.opp-profile-card:hover{background:rgba(30,41,59,.9);border-color:rgba(245,158,11,.3)}
 .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.particle{position:absolute;width:3px;height:3px;background:rgba(240,136,62,.3);border-radius:50%;animation:particleFloat linear infinite}
+.particle{position:absolute;width:3px;height:3px;background:rgba(245,158,11,.2);border-radius:50%;animation:particleFloat linear infinite}
 @keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
+
+/* ====== v3 ROLE SYSTEM + STORY MODE + UI REFRESH ====== */
+:root{--accent:#f59e0b;--accent2:#d97706;--green:#34d399;--red:#ef4444;--blue:#60a5fa;--text:#f1f5f9}
+.gesture-btn.restricted{opacity:.25;pointer-events:none;filter:grayscale(1);border-color:rgba(255,255,255,.04)!important;background:rgba(255,255,255,.02)!important}
+.gesture-btn.restricted .big{opacity:.3}
+.gesture-btn.restricted .small{opacity:.2}
+.role-badge-inline{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-left:6px;vertical-align:middle;letter-spacing:.5px}
+.role-badge-inline.agg{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.role-badge-inline.def{background:rgba(96,165,250,.2);color:#93c5fd;border:1px solid rgba(96,165,250,.3)}
+.role-badge-inline.bal{background:rgba(74,222,128,.2);color:#86efac;border:1px solid rgba(74,222,128,.3)}
+.role-reveal-banner{text-align:center;padding:6px 12px;font-size:clamp(11px,1.4vh,13px);font-weight:700;background:linear-gradient(90deg,transparent,rgba(168,85,247,.2),transparent);color:#d8b4fe;display:none;flex-shrink:0;animation:fadeUp .4s ease}
+.role-reveal-banner.show{display:block}
+.role-reveal-banner .hl-agg{color:#fca5a5;font-weight:900}
+.role-reveal-banner .hl-def{color:#93c5fd;font-weight:900}
+.role-reveal-banner .hl-bal{color:#86efac;font-weight:900}
+
+/* Role Assignment Overlay */
+.role-assign-overlay{position:fixed;inset:0;background:rgba(15,23,42,.94);z-index:15;display:flex;flex-direction:column;align-items:center;padding:16px;overflow-y:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.role-assign-overlay.hidden{display:none!important}
+.role-assign-title{font-size:clamp(18px,3vh,24px);font-weight:900;color:var(--accent);margin:8px 0 4px;text-align:center}
+.role-assign-sub{font-size:clamp(11px,1.5vh,13px);opacity:.7;text-align:center;margin-bottom:10px}
+.role-assign-grid{width:100%;max-width:420px;display:flex;flex-direction:column;gap:6px}
+.role-row{display:grid;grid-template-columns:32px 1fr auto auto;gap:8px;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;transition:all .2s}
+.role-row:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+.role-row .num{font-size:12px;font-weight:800;opacity:.5;text-align:center}
+.role-row .pname{font-size:13px;font-weight:700;color:var(--text)}
+.role-row .ptype{font-size:9px;opacity:.6;font-weight:600;text-transform:uppercase}
+.role-select{display:flex;gap:4px}
+.role-select button{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:800;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);-webkit-appearance:none;touch-action:manipulation}
+.role-select button:active{transform:scale(.95)}
+.role-select button.sel-agg{background:rgba(239,68,68,.2);color:#fca5a5;border-color:#ef4444}
+.role-select button.sel-def{background:rgba(96,165,250,.2);color:#93c5fd;border-color:#60a5fa}
+.role-select button.sel-bal{background:rgba(74,222,128,.2);color:#86efac;border-color:#4ade80}
+.role-bowl-select{display:flex;gap:4px}
+.role-bowl-select button{padding:4px 6px;border-radius:6px;font-size:9px;font-weight:700;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);-webkit-appearance:none;touch-action:manipulation}
+.role-bowl-select button:active{transform:scale(.95)}
+.role-bowl-select button.sel-agg{background:rgba(239,68,68,.15);color:#fca5a5;border-color:rgba(239,68,68,.5)}
+.role-bowl-select button.sel-def{background:rgba(96,165,250,.15);color:#93c5fd;border-color:rgba(96,165,250,.5)}
+.role-bowl-select button.sel-bal{background:rgba(74,222,128,.15);color:#86efac;border-color:rgba(74,222,128,.5)}
+.role-assign-btns{display:flex;gap:8px;margin-top:12px;width:100%;max-width:420px}
+.role-assign-btns button{flex:1;padding:10px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.role-assign-btns .ra-primary{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.4)}
+.role-assign-btns .ra-secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
+.role-assign-btns .ra-accent{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.3)}
+.role-constraints{font-size:10px;opacity:.6;text-align:center;margin-top:8px;width:100%;max-width:420px}
+
+/* Story Mode Overlays */
+.story-home{position:fixed;inset:0;background:rgba(15,23,42,.95);z-index:15;display:flex;flex-direction:column;align-items:center;padding:20px 16px;overflow-y:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:oi .4s ease}
+.story-home.hidden{display:none!important}
+.story-home h1{font-size:clamp(22px,3.5vh,30px);font-weight:900;color:var(--accent);margin:10px 0 4px}
+.story-home .sub{font-size:clamp(11px,1.5vh,14px);opacity:.7;margin-bottom:12px}
+.story-trophy-shelf{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:8px 0 12px;max-width:360px}
+.story-trophy{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);transition:all .3s}
+.story-trophy.earned{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);box-shadow:0 0 12px rgba(245,158,11,.2);animation:trophyGlow 2s ease-in-out infinite}
+@keyframes trophyGlow{0%,100%{box-shadow:0 0 12px rgba(245,158,11,.2)}50%{box-shadow:0 0 20px rgba(245,158,11,.4)}}
+.story-progress{width:100%;max-width:320px;margin:8px 0}
+.story-progress-bar{height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden}
+.story-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.story-progress-text{font-size:10px;opacity:.6;text-align:center;margin-top:4px}
+.story-tier-card{width:100%;max-width:340px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin:6px 0;text-align:left;transition:all .2s}
+.story-tier-card.current{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.06)}
+.story-tier-card.completed{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.04)}
+.story-tier-card.locked{opacity:.4;pointer-events:none}
+.story-tier-card .tier-header{display:flex;justify-content:space-between;align-items:center}
+.story-tier-card .tier-name{font-size:14px;font-weight:800}
+.story-tier-card .tier-badge{font-size:10px;padding:2px 8px;border-radius:8px;font-weight:700}
+.story-tier-card .tier-badge.active{background:rgba(245,158,11,.2);color:var(--accent)}
+.story-tier-card .tier-badge.done{background:rgba(74,222,128,.2);color:var(--green)}
+.story-tier-card .tier-badge.lock{background:rgba(255,255,255,.08);color:rgba(255,255,255,.4)}
+.story-tier-card .tier-sub{font-size:11px;opacity:.7;margin-top:4px}
+.story-tier-card .tier-matches{font-size:10px;opacity:.5;margin-top:6px}
+.story-tier-card .tier-matches .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin:0 2px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)}
+.story-tier-card .tier-matches .dot.won{background:var(--green);border-color:var(--green)}
+.story-tier-card .tier-matches .dot.lost{background:var(--red);border-color:var(--red)}
+.story-tier-card .tier-matches .dot.current{background:var(--accent);border-color:var(--accent);animation:dotPulse 1.5s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* Story Dialogue Box */
+.story-dialogue{position:fixed;bottom:0;left:0;right:0;z-index:20;padding:12px 16px max(env(safe-area-inset-bottom),12px);background:linear-gradient(180deg,transparent,rgba(15,23,42,.95) 30%);pointer-events:none;animation:dialogueIn .5s ease}
+.story-dialogue.hidden{display:none!important}
+.story-dialogue-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;max-width:400px;margin:0 auto;pointer-events:auto;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.story-dialogue-speaker{font-size:12px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.story-dialogue-text{font-size:13px;line-height:1.5;color:var(--text)}
+.story-dialogue-btn{display:block;margin:10px auto 0;padding:8px 24px;border-radius:8px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:12px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+@keyframes dialogueIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* Roast Display */
+.roast-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:12px 14px;margin:10px auto;max-width:340px;text-align:center}
+.roast-text{font-size:13px;color:#fca5a5;font-weight:700;line-height:1.5}
+.roast-emoji{font-size:24px;margin-bottom:6px}
+
+/* Trophy Celebration */
+.trophy-celebrate{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,23,42,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:oi .5s ease}
+.trophy-celebrate.hidden{display:none!important}
+.trophy-big{font-size:clamp(60px,14vh,100px);animation:trophyBounce 1s cubic-bezier(.34,1.56,.64,1)}
+@keyframes trophyBounce{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.trophy-title{font-size:clamp(20px,4vh,32px);font-weight:900;color:var(--accent);margin:12px 0 4px;text-shadow:0 0 30px rgba(245,158,11,.5)}
+.trophy-sub{font-size:clamp(12px,2vh,16px);opacity:.8;margin-bottom:16px}
+.trophy-cert{background:rgba(255,255,255,.06);border:2px solid rgba(245,158,11,.3);border-radius:16px;padding:20px;max-width:320px;width:90%;text-align:center}
+.trophy-cert h3{font-size:16px;font-weight:900;color:var(--accent);margin:0 0 8px}
+.trophy-cert p{font-size:12px;opacity:.7;margin:4px 0}
+.trophy-cert .cert-line{width:60%;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:12px auto}
+
+/* Language Selector */
+.lang-select{display:flex;gap:10px;margin:10px 0}
+.lang-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:800;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
+.lang-btn.active{border-color:var(--accent);background:rgba(245,158,11,.1);color:var(--accent)}
+.lang-btn:active{transform:scale(.97)}
+
+/* Story Team Builder */
+.story-team-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:clamp(150px,30vh,250px);overflow-y:auto;width:100%;max-width:400px;margin:8px 0;padding:4px}
+.story-player-card{background:rgba(255,255,255,.06);border:2px solid transparent;border-radius:10px;padding:8px 10px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+.story-player-card:active{transform:scale(.97)}
+.story-player-card.picked{background:rgba(245,158,11,.1);border-color:var(--accent)}
+.story-player-card .sp-name{font-size:12px;font-weight:700}
+.story-player-card .sp-info{font-size:9px;opacity:.6}
+
+/* Home Brightness Fix */
+.home-title{background:linear-gradient(135deg,var(--accent) 0%,#fff 50%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mode-btn{border:1px solid rgba(255,255,255,.1);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.mode-btn:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.4);box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 20px rgba(245,158,11,.15)}
+.mode-btn:active{transform:translateY(1px) scale(.97)}
+.overlay button{background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.overlay button.secondary{background:rgba(255,255,255,.06)}
+.overlay button.danger{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.gesture-btn.selected{background:linear-gradient(180deg,var(--accent),var(--accent2));box-shadow:0 4px 0 rgba(0,0,0,.4),0 0 15px rgba(245,158,11,.3)}
+.batting-indicator{background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.flash.six{color:var(--accent);text-shadow:0 0 30px rgba(245,158,11,1)}
+.status .hl{color:var(--accent)}
+.home-username-text{color:var(--accent)}
+.stat-item .val{color:var(--accent)}
+.profile-card h3{color:var(--accent)}
+.pre-stats-title{color:var(--accent)}
+.pre-stat-row b{color:var(--accent)}
+.footer-credit a{color:var(--accent);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15)}
 </style>
 </head>
 <body>
@@ -229,7 +361,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
 <div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"><div class="css-hand" id="cssHandPlayer"><div class="css-fingers" id="cssFingersPlayer"></div><div class="css-palm"></div></div><img id="handImgPlayer" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelPlayer">-</div></div>
-<div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
+<div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#d97706"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
 <div class="countdown" id="countdown"></div>
 <div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"><div class="css-hand" id="cssHandOpponent"><div class="css-fingers" id="cssFingersOpponent"></div><div class="css-palm"></div></div><img id="handImgOpponent" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelOpponent">-</div></div>
 <div class="flash" id="flash"></div>
@@ -249,6 +381,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <h1 class="home-title">Hand Cricket Pro</h1>
 <p class="home-subtitle">Street Cricket Reimagined</p>
 <div class="home-username" id="homeUsername" style="display:none"><span class="home-username-text" id="homeUsernameText"></span><button class="edit-name-btn" id="btnEditName" title="Change name">✏️</button></div>
+<div id="homeTrophyShelf" style="display:none;margin:4px 0;animation:fadeUp .6s .6s both"></div>
 <div class="mode-grid three-col">
 <div class="mode-btn" id="modeOffline"><span class="icon">🤖</span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
 <div class="mode-btn" id="modeOnline"><span class="icon">🌐</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
@@ -259,7 +392,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="home-version">v2.0</div>
 </div>
 
-<div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Bot reads your patterns!</p>
+<div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Champion AI awaits!</p>
 <div id="offlineBotStats" style="display:none"></div>
 <h2>Choose Format</h2>
 <div class="team-size-select" id="offlineSize">
@@ -294,7 +427,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="matchmakingOverlay"><h1>Finding Opponent</h1>
 <div class="search-spinner" id="searchSpinner"></div>
 <p id="matchStatus">Searching for a real player...</p>
-<p id="matchTimer" style="font-size:24px;font-weight:900;color:#f0883e;margin:8px 0"></p>
+<p id="matchTimer" style="font-size:24px;font-weight:900;color:#f59e0b;margin:8px 0"></p>
 <div class="team-size-select" id="mmSize">
 <div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
 <div class="team-size-btn" data-size="2">2v2<br><small>2 wk, 2 ov</small></div>
@@ -349,14 +482,86 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="leaveOverlay"><h1>Leave?</h1><p>Progress lost.</p>
 <button id="btnYesLeave" class="danger">Yes, Leave</button>
 <button id="btnNoLeave" class="secondary">Continue</button></div>
-<div class="overlay hidden" id="profileOverlay"><h1 id="profileTitle">My Profile</h1>
+<div class="overlay hidden" id="profileOverlay"><h1 id="profileTitle" style="margin-bottom:4px">My Profile</h1>
 <div class="profile-card" id="profileCard"></div>
-<button id="btnCloseProfile" class="secondary small">Close</button></div>
+<button id="btnCloseProfile" class="secondary small" style="margin-top:10px;position:sticky;bottom:10px;z-index:2">Close</button></div>
 <div class="overlay hidden" id="usernameOverlay"><h1>Welcome!</h1><p style="font-size:13px;opacity:.8;margin-bottom:12px">What should we call you?</p>
 <input type="text" id="usernameInput" placeholder="Your Name" maxlength="16" autocomplete="off" style="text-align:center;font-size:18px;padding:12px;width:220px"/>
 <button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button></div>
+
+<div class="role-reveal-banner" id="roleRevealBanner"></div>
+
+<div class="role-assign-overlay hidden" id="roleAssignOverlay">
+<div class="role-assign-title">Assign Team Roles</div>
+<div class="role-assign-sub">Batting: Aggressive (3-6) | Defensive (1-4) | Balanced (1-6)<br>Bowling: Hidden from opponent — revealed after wicket or over</div>
+<div class="role-assign-grid" id="roleAssignGrid"></div>
+<div class="role-constraints" id="roleConstraints"></div>
+<div class="role-assign-btns">
+<button class="ra-secondary" id="btnRoleAllBal">All Balanced</button>
+<button class="ra-accent" id="btnRoleRandom">Randomize</button>
+<button class="ra-accent" id="btnRoleReal">Use Real Types</button>
+<button class="ra-primary" id="btnRoleStart">Start Match</button>
+</div>
+<button class="secondary small" id="btnRoleBack" style="margin-top:10px">Back</button>
 </div>
 
+<div class="story-home hidden" id="storyHome">
+<h1>Story Mode</h1>
+<div class="sub" id="storySub">Cricket's Greatest Journey</div>
+<div class="lang-select" id="storyLang">
+<button class="lang-btn active" data-lang="en">English</button>
+<button class="lang-btn" data-lang="hi">Hinglish</button>
+</div>
+<div class="story-trophy-shelf" id="storyTrophyShelf"></div>
+<div class="story-progress" id="storyProgressWrap">
+<div class="story-progress-bar"><div class="story-progress-fill" id="storyProgressFill" style="width:0%"></div></div>
+<div class="story-progress-text" id="storyProgressText">0 / 37 matches</div>
+</div>
+<div id="storyTierList"></div>
+<div style="display:flex;gap:8px;margin-top:12px;width:100%;max-width:340px">
+<button class="secondary small" id="btnStoryBack">Back to Menu</button>
+</div>
+</div>
+
+<div class="story-home hidden" id="storyTeamBuilder">
+<h1>Build Your Team</h1>
+<div class="sub">Pick 11 players from the world's best</div>
+<input type="text" id="storyTeamName" placeholder="Team Name" maxlength="20" autocomplete="off" style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);color:#fff;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:700;text-align:center;width:100%;max-width:340px;margin:8px 0"/>
+<div style="font-size:12px;font-weight:700;margin:6px 0">Pick <span id="storyPickCount">0</span>/11</div>
+<div class="story-team-grid" id="storyPlayerPool"></div>
+<button id="btnStoryTeamConfirm" style="width:100%;max-width:340px;margin-top:8px" disabled>Confirm Team</button>
+<button class="secondary small" id="btnStoryTeamBack" style="margin-top:8px">Back</button>
+</div>
+
+<div class="story-dialogue hidden" id="storyDialogue">
+<div class="story-dialogue-box">
+<div class="story-dialogue-speaker" id="dlgSpeaker"></div>
+<div class="story-dialogue-text" id="dlgText"></div>
+<button class="story-dialogue-btn" id="dlgBtn">Continue</button>
+</div>
+</div>
+
+<div class="trophy-celebrate hidden" id="trophyCelebrate">
+<div class="trophy-big" id="trophyBigIcon"></div>
+<div class="trophy-title" id="trophyTitle"></div>
+<div class="trophy-sub" id="trophySub"></div>
+<div class="trophy-cert">
+<h3 id="certTitle">Certificate of Achievement</h3>
+<div class="cert-line"></div>
+<p id="certName"></p>
+<p id="certDesc"></p>
+<p style="margin-top:8px;font-size:10px;opacity:.5">Hand Cricket Pro — Story Mode</p>
+</div>
+<button class="secondary small" id="btnTrophyClose" style="margin-top:16px">Continue</button>
+</div>
+
+<div class="roast-box hidden" id="roastBox">
+<div class="roast-emoji">😤</div>
+<div class="roast-text" id="roastText"></div>
+</div>
+</div>
+
+<script src="src/story-data.js"></script>
 <script>
 const TEAMS={csk:{name:'CSK',players:[{name:'Gaikwad',role:'batter'},{name:'Conway',role:'batter'},{name:'Rahane',role:'batter'},{name:'Dube',role:'all'},{name:'Jadeja',role:'all'},{name:'Moeen',role:'all'},{name:'Dhoni',role:'batter'},{name:'Chahar',role:'bowler'},{name:'Pathirana',role:'bowler'},{name:'Deshpande',role:'bowler'},{name:'Ravindra',role:'all'}]},mi:{name:'MI',players:[{name:'Rohit',role:'batter'},{name:'Ishan',role:'batter'},{name:'SKY',role:'batter'},{name:'Tilak',role:'batter'},{name:'Hardik',role:'all'},{name:'David',role:'batter'},{name:'Green',role:'all'},{name:'Bumrah',role:'bowler'},{name:'Chawla',role:'bowler'},{name:'Madhwal',role:'bowler'},{name:'Dhir',role:'all'}]},rcb:{name:'RCB',players:[{name:'Kohli',role:'batter'},{name:'Faf',role:'batter'},{name:'Patidar',role:'batter'},{name:'Maxwell',role:'all'},{name:'Karthik',role:'batter'},{name:'Lomror',role:'all'},{name:'Jacks',role:'all'},{name:'Siraj',role:'bowler'},{name:'Harshal',role:'bowler'},{name:'Ferguson',role:'bowler'},{name:'Dayal',role:'bowler'}]},kkr:{name:'KKR',players:[{name:'Iyer',role:'batter'},{name:'Rinku',role:'batter'},{name:'Rana',role:'all'},{name:'Russell',role:'all'},{name:'Narine',role:'all'},{name:'Venkatesh',role:'all'},{name:'Gurbaz',role:'batter'},{name:'Starc',role:'bowler'},{name:'Varun',role:'bowler'},{name:'Harshit',role:'bowler'},{name:'Angkrish',role:'batter'}]},dc:{name:'DC',players:[{name:'Warner',role:'batter'},{name:'Shaw',role:'batter'},{name:'Pant',role:'batter'},{name:'Stubbs',role:'batter'},{name:'Axar',role:'all'},{name:'Marsh',role:'all'},{name:'Porel',role:'batter'},{name:'Kuldeep',role:'bowler'},{name:'Nortje',role:'bowler'},{name:'Mukesh',role:'bowler'},{name:'Rahul',role:'batter'}]},rr:{name:'RR',players:[{name:'Samson',role:'batter'},{name:'Jaiswal',role:'batter'},{name:'Buttler',role:'batter'},{name:'Hetmyer',role:'batter'},{name:'Parag',role:'all'},{name:'Ashwin',role:'all'},{name:'Jurel',role:'batter'},{name:'Chahal',role:'bowler'},{name:'Sandeep',role:'bowler'},{name:'Boult',role:'bowler'},{name:'Bolt',role:'bowler'}]},srh:{name:'SRH',players:[{name:'Head',role:'batter'},{name:'Abhishek',role:'batter'},{name:'Markram',role:'all'},{name:'Klaasen',role:'batter'},{name:'Samad',role:'all'},{name:'Shahbaz',role:'all'},{name:'Viv',role:'batter'},{name:'Bhuvi',role:'bowler'},{name:'Nattu',role:'bowler'},{name:'Umran',role:'bowler'},{name:'Farooqi',role:'bowler'}]},pbks:{name:'PBKS',players:[{name:'Dhawan',role:'batter'},{name:'Bairstow',role:'batter'},{name:'Livingstone',role:'all'},{name:'SamCurran',role:'all'},{name:'Jitesh',role:'batter'},{name:'Shahrukh',role:'batter'},{name:'Ashutosh',role:'all'},{name:'Arshdeep',role:'bowler'},{name:'Rabada',role:'bowler'},{name:'Chahar',role:'bowler'},{name:'Ellis',role:'bowler'}]}};
 const ALL_PLAYERS=Object.values(TEAMS).flatMap(t=>t.players);
@@ -375,7 +580,7 @@ const BotAI={
  consecutiveSame:0,lastPlayerPick:null,streakType:null,streakLen:0,
  defensiveMode:false,wicketsDown:0,requiredRate:0,matchPhase:'start',
 
- reset(){this.history=[];this.transitions={};this.ballCount=0;this.playerPatterns={};this.recentChoices=[];this.consecutiveSame=0;this.lastPlayerPick=null;this.streakType=null;this.streakLen=0;this.defensiveMode=false;this.wicketsDown=0;this.requiredRate=0;this.matchPhase='start'},
+ difficulty:0,reset(d){this.history=[];this.transitions={};this.ballCount=0;this.difficulty=d||0;this.playerPatterns={};this.recentChoices=[];this.consecutiveSame=0;this.lastPlayerPick=null;this.streakType=null;this.streakLen=0;this.defensiveMode=false;this.wicketsDown=0;this.requiredRate=0;this.matchPhase='start'},
 
  record(p){
   if(this.history.length>0){const prev=this.history[this.history.length-1];if(!this.transitions[prev])this.transitions[prev]={};this.transitions[prev][p]=(this.transitions[prev][p]||0)+1}
@@ -452,22 +657,23 @@ const BotAI={
  },
 
  bowl(){
-  if(this.ballCount<3)return this.rand();
-  const d=Math.min(this.ballCount/8,1);
-  const pr=this.predict();
-  const anti=this.antiPattern();
+   const diff=this.difficulty||0;
+   if(this.ballCount<3)return this.rand();
+   const d=Math.min(this.ballCount/8,1);
+   const pr=this.predict();
+   const anti=this.antiPattern();
 
-  if(anti&&Math.random()<(.55+d*.35)){
-   return anti;
-  }
-  if(pr&&Math.random()<(.45+d*.4)){
-   const opts=[1,2,3,4,5,6];
-   const safe=opts.filter(n=>n!==pr);
-   if(Math.random()<.6)return pr;
-   return safe[Math.floor(Math.random()*safe.length)];
-  }
-  return this.contextBowl();
- },
+   if(anti&&Math.random()<(.55+d*.35+diff*.2)){
+    return anti;
+   }
+   if(pr&&Math.random()<(.45+d*.4+diff*.15)){
+    const opts=[1,2,3,4,5,6];
+    const safe=opts.filter(n=>n!==pr);
+    if(Math.random()<.6+diff*.15)return pr;
+    return safe[Math.floor(Math.random()*safe.length)];
+   }
+   return this.contextBowl();
+  },
 
  contextBowl(){
   if(this.matchPhase==='end'&&Math.random()<.6){
@@ -482,34 +688,35 @@ const BotAI={
  },
 
  bat(){
-  if(this.ballCount<3)return this.rand();
-  const d=Math.min(this.ballCount/8,1);
-  const pr=this.predict();
-  let opts=[1,2,3,4,5,6];
+   const diff=this.difficulty||0;
+   if(this.ballCount<3)return this.rand();
+   const d=Math.min(this.ballCount/8,1);
+   const pr=this.predict();
+   let opts=[1,2,3,4,5,6];
 
-  if(pr&&Math.random()<(.5+d*.35)){
-   opts=opts.filter(n=>n!==pr);
-  }
+   if(pr&&Math.random()<(.5+d*.35+diff*.2)){
+    opts=opts.filter(n=>n!==pr);
+   }
 
-  if(this.defensiveMode){
-   const w=opts.map(n=>{let x=1;if(n>=5)x+=4;else if(n>=3)x+=2;return x});
-   return this.wp(opts,w);
-  }
+   if(this.defensiveMode){
+    const w=opts.map(n=>{let x=1;if(n>=5)x+=4;else if(n>=3)x+=2;return x});
+    return this.wp(opts,w);
+   }
 
-  if(this.matchPhase==='end'){
-   const target=G.target;if(target!==null){
-    const needed=target-G.me.score;
-    if(needed<=12&&this.ballCount<G.totalBalls){
-     const w=opts.map(n=>{let x=n>=4?4:1;if(n>=5)x+=3;return x});
-     return this.wp(opts,w);
+   if(this.matchPhase==='end'){
+    const target=G.target;if(target!==null){
+     const needed=target-G.me.score;
+     if(needed<=12&&this.ballCount<G.totalBalls){
+      const w=opts.map(n=>{let x=n>=4?4:1;if(n>=5)x+=3;return x});
+      return this.wp(opts,w);
+     }
     }
    }
-  }
 
-  if(this.matchPhase==='start'){
-   const w=opts.map(n=>{let x=n>=4?2.5:1;if(n===6)x+=1.5;return x});
-   return this.wp(opts,w);
-  }
+   if(this.matchPhase==='start'){
+    const w=opts.map(n=>{let x=n>=4?2.5:1;if(n===6)x+=1.5;return x});
+    return this.wp(opts,w);
+   }
 
   const w=opts.map(n=>{let x=n;if(d>.4&&n>=5)x+=2;return x});
   return this.wp(opts,w);
@@ -534,38 +741,50 @@ function restore(s,iAmHost){G.teamSize=s.teamSize||1;G.innings=s.innings;G.targe
 function persist(){if(G.isHost&&G.roomId)saveSnap(makeSnap())}
 function setStage(s){G.stage=s;persist()}
 
-function buildFingers(container,v){
- container.innerHTML='';
- const upMap={1:[1,0,0,0,0],2:[1,1,0,0,0],3:[1,1,1,0,0],4:[1,1,1,1,0],5:[1,1,1,1,1],6:[0,0,0,0,1]};
- const ups=v===null?[]:(upMap[v]||[]);
- for(let i=0;i<5;i++){
-  const f=document.createElement('div');f.className='css-finger'+(ups[i]?'':' down');
-  const tip=document.createElement('div');tip.className='tip';f.appendChild(tip);
-  container.appendChild(f);
+function handSVG(v){
+ const upMap={0:[0,0,0,0,0],1:[1,0,0,0,0],2:[1,1,0,0,0],3:[1,1,1,0,0],4:[1,1,1,1,0],5:[1,1,1,1,1]};
+ const ups=v===6?[0,0,0,0,0]:(upMap[v]||[0,0,0,0,0]);
+ const id='h'+v+'_'+Math.random().toString(36).substr(2,4);
+ const sk='#f0b888',skl='#fcd9b6',skd='#c4876a',nl='#fde0cc';
+ let s='<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">';
+ s+='<defs><linearGradient id="g'+id+'" x1="0" y1="0" x2=".4" y2="1"><stop offset="0%" stop-color="'+skl+'"/><stop offset="100%" stop-color="'+sk+'"/></linearGradient>';
+ s+='<filter id="f'+id+'"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity=".35"/></filter></defs>';
+ s+='<rect x="18" y="80" width="64" height="40" rx="14" fill="url(#g'+id+')" filter="url(#f'+id+')"/>';
+ s+='<path d="M30,94 Q50,90 70,95" fill="none" stroke="'+skd+'" stroke-width="1" opacity=".3"/>';
+ if(v===6){
+  s+='<rect x="8" y="20" width="16" height="50" rx="8" fill="url(#g'+id+')" filter="url(#f'+id+')"/>';
+  s+='<rect x="10" y="20" width="12" height="10" rx="6" fill="'+nl+'"/>';
+  s+='<rect x="22" y="70" width="56" height="14" rx="7" fill="'+sk+'" opacity=".7"/>';
+ }else{
+  s+='<g transform="translate(18,86) rotate(55)"><rect x="-4" y="-6" width="13" height="20" rx="6" fill="url(#g'+id+')" filter="url(#f'+id+')"/></g>';
+  var fds=[{x:24,w:13,hu:56,hd:18},{x:38,w:13,hu:62,hd:20},{x:52,w:12,hu:56,hd:18},{x:64,w:11,hu:42,hd:14}];
+  fds.forEach(function(f,i){
+   var u=ups[i],h=u?f.hu:f.hd,y=80-h;
+   s+='<rect x="'+f.x+'" y="'+y+'" width="'+f.w+'" height="'+h+'" rx="'+(f.w/2)+'" fill="url(#g'+id+')" filter="url(#f'+id+')"/>';
+   if(u){s+='<rect x="'+(f.x+2)+'" y="'+y+'" width="'+(f.w-4)+'" height="8" rx="4" fill="'+nl+'"/>';s+='<line x1="'+(f.x+2)+'" y1="'+(y+h*.5)+'" x2="'+(f.x+f.w-2)+'" y2="'+(y+h*.5)+'" stroke="'+skd+'" stroke-width=".8" opacity=".25"/>';}
+  });
  }
- const hand=container.closest('.css-hand');
- const oldBadge=hand.querySelector('.num-badge');if(oldBadge)oldBadge.remove();
- const badge=document.createElement('div');badge.className='num-badge';
- badge.textContent=v===null?'':(v===0?'0':v);
- hand.appendChild(badge);
+ s+='</svg>';return s;
 }
 function setHandGesture(imgEl,wrapperEl,v){
- const cssEl=wrapperEl.querySelector('.css-hand');
- const fingersEl=wrapperEl.querySelector('.css-fingers');
+ var oldSvg=wrapperEl.querySelector('svg.hand-svg');if(oldSvg)oldSvg.remove();
+ var cssEl=wrapperEl.querySelector('.css-hand');
  if(v===null||v===undefined){
-  if(cssEl)cssEl.classList.remove('shake','reveal');
+  if(cssEl)cssEl.style.display='none';
+  imgEl.style.display='none';
   wrapperEl.classList.remove('shake','reveal');
-  if(fingersEl)buildFingers(fingersEl,v);
   return;
  }
- if(fingersEl)buildFingers(fingersEl,v);
- if(cssEl){cssEl.classList.remove('shake','reveal');void cssEl.offsetWidth;cssEl.classList.add('reveal');setTimeout(()=>cssEl.classList.remove('reveal'),650)}
+ var tmp=document.createElement('div');tmp.innerHTML=handSVG(v);
+ var svgEl=tmp.firstChild;svgEl.classList.add('hand-svg');
+ wrapperEl.insertBefore(svgEl,imgEl);
+ if(cssEl)cssEl.style.display='none';
  imgEl.src='HandGesture/'+v+'.png';
  imgEl.alt='Gesture '+v;
- imgEl.onload=()=>{imgEl.style.display='block';if(cssEl)cssEl.style.display='none'};
- imgEl.onerror=()=>{imgEl.style.display='none';if(cssEl)cssEl.style.display='flex'};
- if(!imgEl.complete||imgEl.naturalWidth===0){imgEl.style.display='none';if(cssEl)cssEl.style.display='flex'}
- wrapperEl.classList.remove('shake');void wrapperEl.offsetWidth;wrapperEl.classList.add('reveal');setTimeout(()=>wrapperEl.classList.remove('reveal'),650);
+ imgEl.onload=function(){imgEl.style.display='block';svgEl.style.display='none'};
+ imgEl.onerror=function(){imgEl.style.display='none';svgEl.style.display='block'};
+ if(!imgEl.complete||imgEl.naturalWidth===0){imgEl.style.display='none';svgEl.style.display='block'}
+ wrapperEl.classList.remove('shake');void wrapperEl.offsetWidth;wrapperEl.classList.add('reveal');setTimeout(function(){wrapperEl.classList.remove('reveal')},650);
 }
 
 function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
@@ -582,7 +801,7 @@ function updFH(){$('fhBanner').classList.toggle('show',G.freeHit)}
 function flash(t,c){const f=$('flash');f.className='flash '+(c||'');f.textContent=t;void f.offsetWidth;f.classList.add('show');setTimeout(()=>f.classList.remove('show'),1100)}
 function showCD(n){const c=$('countdown');c.textContent=n;c.classList.remove('go');void c.offsetWidth;c.classList.add('go')}
 function shake(){const a=$('app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake');haptic(40);setTimeout(()=>a.classList.remove('shake'),500)}
-function confetti(n){const cols=['#f0883e','#f97316','#ef4444','#22c55e','#3b82f6','#a855f7'];const ar=document.querySelector('.arena');for(let i=0;i<(n||30);i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[Math.floor(Math.random()*cols.length)];const a=Math.random()*Math.PI*2,d=120+Math.random()*200,dx=Math.cos(a)*d,dy=Math.sin(a)*d,r=Math.random()*720;c.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:1},{transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(1.2) rotate('+r+'deg)',opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'});ar.appendChild(c);setTimeout(()=>c.remove(),1400)}}
+function confetti(n){const cols=['#f59e0b','#d97706','#ef4444','#34d399','#60a5fa','#a855f7'];const ar=document.querySelector('.arena');for(let i=0;i<(n||30);i++){const c=document.createElement('div');c.className='confetti';c.style.background=cols[Math.floor(Math.random()*cols.length)];const a=Math.random()*Math.PI*2,d=120+Math.random()*200,dx=Math.cos(a)*d,dy=Math.sin(a)*d,r=Math.random()*720;c.animate([{transform:'translate(-50%,-50%) scale(0)',opacity:1},{transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(1.2) rotate('+r+'deg)',opacity:0}],{duration:900+Math.random()*400,easing:'cubic-bezier(.2,.7,.3,1)'});ar.appendChild(c);setTimeout(()=>c.remove(),1400)}}
 function setBtns(en){$('gestureGrid').querySelectorAll('.gesture-btn').forEach(b=>{b.classList.toggle('disabled',!en);b.classList.remove('selected')})}
 function showLeave(s){$('leaveBtn').style.display=s?'block':'none'}
 function updBotLvl(){if(G.mode==='offline')$('botLvl').textContent='Bot: '+BotAI.level();else $('botLvl').textContent=''}
@@ -612,7 +831,7 @@ function getRank(s){
  const pts=s.wins*10+s.sixes*2+s.fours+s.highestScore*0.5+sr*0.1;
  if(pts>=500)return'Legendary';if(pts>=300)return'Master';if(pts>=150)return'Champion';if(pts>=80)return'Pro';if(pts>=30)return'Rising Star';return'Newcomer';
 }
-function loadStats(){try{const s=JSON.parse(localStorage.getItem('hc_stats'))||defaultStats();s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';return s}catch(e){return defaultStats()}}
+function loadStats(){try{const s=JSON.parse(localStorage.getItem('hc_stats'))||defaultStats();if(s.wins>s.matches)s.wins=s.matches;if(s.losses>s.matches)s.losses=s.matches;s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';return s}catch(e){return defaultStats()}}
 function defaultStats(){return{name:'',matches:0,wins:0,losses:0,ties:0,runs:0,ballsFaced:0,sixes:0,fours:0,dots:0,highestScore:0,wicketsTaken:0,ballsBowled:0,runsConceded:0,hatricks:0,winStreak:0,bestWinStreak:0,streak:0}}
 function saveStats(s){localStorage.setItem('hc_stats',JSON.stringify(s))}
 function updateStatsAfterMatch(result){
@@ -624,6 +843,9 @@ function updateStatsAfterMatch(result){
  s.highestScore=Math.max(s.highestScore,result.myRuns);
  s.wicketsTaken+=result.oppWickets;s.ballsBowled+=result.oppBalls;s.runsConceded+=result.oppRuns;
  if(result.myWickets>=3)s.hatricks++;
+ s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';
+ s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';
+ s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';
  saveStats(s);
 }
 
@@ -645,9 +867,25 @@ function ensureUsername(cb){
 $('btnSaveUsername').onclick=()=>{sfx('tap');const v=$('usernameInput').value.trim();if(!v){$('usernameInput').focus();return}setUsername(v);$('usernameOverlay').classList.add('hidden');updHomeUsername();if(window._pendingCb){window._pendingCb();window._pendingCb=null}};
 $('usernameInput').onkeydown=(e)=>{if(e.key==='Enter')$('btnSaveUsername').click()};
 $('btnEditName').onclick=()=>{sfx('tap');$('usernameOverlay').classList.remove('hidden');$('usernameInput').value=getUsername();$('usernameInput').focus();window._pendingCb=null};
-function updHomeUsername(){const u=getUsername();if(u){$('homeUsername').style.display='flex';$('homeUsernameText').textContent=u}else{$('homeUsername').style.display='none'}}
+function updHomeUsername(){const u=getUsername();if(u){$('homeUsername').style.display='flex';$('homeUsernameText').textContent=u}else{$('homeUsername').style.display='none'}updHomeTrophies()}
+function updHomeTrophies(){
+  var sp=storyProgress;var el=$('homeTrophyShelf');
+  if(!sp||!sp.completedTiers||sp.completedTiers.length===0){el.style.display='none';return}
+  var icons=['🥉','🥈','🥇','💎','🔥','⚡','👑','🏆'];
+  var names=['Gully','Area','Village','City','District','State','National Q','National'];
+  el.style.display='flex';el.style.gap='4px';el.style.justifyContent='center';el.style.flexWrap='wrap';
+  el.innerHTML='<span style="font-size:9px;opacity:.5;width:100%;text-align:center">Trophies</span>';
+  for(var i=0;i<8;i++){
+    var earned=sp.completedTiers.indexOf(i)>=0;
+    var d=document.createElement('div');
+    d.style.cssText='width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;background:'+(earned?'rgba(245,158,11,.15)':'rgba(255,255,255,.04)')+';border:1px solid '+(earned?'rgba(245,158,11,.3)':'rgba(255,255,255,.08)');
+    d.textContent=earned?icons[i]:'🔒';
+    d.title=names[i];
+    el.appendChild(d);
+  }
+}
 
-$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='offline'; G.oppStats={name:'Ultra Bot',matches:Math.floor(Math.random()*80)+20,wins:Math.floor(Math.random()*45)+10,losses:Math.floor(Math.random()*30)+3,ties:Math.floor(Math.random()*5),runs:Math.floor(Math.random()*800)+100,ballsFaced:Math.floor(Math.random()*600)+80,sixes:Math.floor(Math.random()*50)+5,fours:Math.floor(Math.random()*70)+10,dots:Math.floor(Math.random()*150)+20,highestScore:Math.floor(Math.random()*100)+15,wicketsTaken:Math.floor(Math.random()*60)+8,ballsBowled:Math.floor(Math.random()*500)+50,runsConceded:Math.floor(Math.random()*600)+60,hatricks:Math.floor(Math.random()*5),winStreak:0,bestWinStreak:Math.floor(Math.random()*12)+2,streak:0};
+$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='offline'; const bMatches=Math.floor(Math.random()*80)+20; const bWins=Math.min(Math.floor(Math.random()*45)+10, bMatches); G.oppStats={name:'Ultra Bot',matches:bMatches,wins:bWins,losses:Math.max(0,bMatches-bWins-Math.floor(Math.random()*5)),ties:Math.floor(Math.random()*5),runs:Math.floor(Math.random()*800)+100,ballsFaced:Math.floor(Math.random()*600)+80,sixes:Math.floor(Math.random()*50)+5,fours:Math.floor(Math.random()*70)+10,dots:Math.floor(Math.random()*150)+20,highestScore:Math.floor(Math.random()*100)+15,wicketsTaken:Math.floor(Math.random()*60)+8,ballsBowled:Math.floor(Math.random()*500)+50,runsConceded:Math.floor(Math.random()*600)+60,hatricks:Math.floor(Math.random()*5),winStreak:0,bestWinStreak:Math.floor(Math.random()*12)+2,streak:0};
  const s=G.oppStats;s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';const sb=$('offlineBotStats');sb.style.display='block';
  sb.innerHTML='<div class="pre-stats-box"><div class="pre-stats-title">Ultra Bot <span class="pre-rank">'+getRank(s)+'</span></div>'
  +'<div class="pre-stats-section"><div class="pre-section-label">Career</div>'
@@ -682,8 +920,13 @@ function resetOffline(){$('coinBox').style.display='none';$('tossResult').textCo
 $('btnHeads').onclick=()=>offlineToss('heads');
 $('btnTails').onclick=()=>offlineToss('tails');
 function offlineToss(call){sfx('coin');haptic(20);$('btnHeads').disabled=true;$('btnTails').disabled=true;$('coinBox').style.display='block';$('tossResult').textContent='Flipping...';const c=$('coin');c.classList.remove('flipping');c.style.transform='';void c.offsetWidth;c.classList.add('flipping');const res=Math.random()<.5?'heads':'tails';setTimeout(()=>{c.classList.remove('flipping');c.style.transform=res==='heads'?'rotateY(0)':'rotateY(180deg)';if(res===call){$('tossResult').innerHTML=res.toUpperCase()+'! You won!';$('tossDecision').style.display='block'}else{$('tossResult').innerHTML=res.toUpperCase()+'! Bot won.';setTimeout(()=>{const bc=Math.random()<.5?'bat':'bowl';G.iBat=bc==='bowl';$('tossResult').innerHTML+='<br>Bot chose <b>'+bc+'</b>.';setTimeout(startOffline,1500)},1200)}},2500)}
-$('btnBatFirst').onclick=()=>{sfx('tap');G.iBat=true;startOffline()};
-$('btnBowlFirst').onclick=()=>{sfx('tap');G.iBat=false;startOffline()};
+$('btnBatFirst').onclick=()=>{sfx('tap');G.iBat=true;showRoleForOffline()};
+$('btnBowlFirst').onclick=()=>{sfx('tap');G.iBat=false;showRoleForOffline()};
+function showRoleForOffline(){
+if(G.teamSize>1){G.myPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle='balanced';if(!p.bowlingStyle)p.bowlingStyle='balanced'});
+G.oppPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)];if(!p.bowlingStyle)p.bowlingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]});
+showRoleAssign(G.myPlayers,'offline',function(players){G.myPlayers=players;startOffline()})}
+else{startOffline()}}
 
 function startOffline(){
  $('offlineSetup').classList.add('hidden');
@@ -692,7 +935,7 @@ function startOffline(){
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
  const botName=genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
-  G.oppStats={name:botName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+   const bM2=Math.floor(Math.random()*50)+10; const bW2=Math.min(Math.floor(Math.random()*25)+5, bM2); G.oppStats={name:botName,matches:bM2,wins:bW2,losses:Math.max(0,bM2-bW2-Math.floor(Math.random()*3)),ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
   const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
  if(G.teamSize===1){G.myPlayers=[{name:'You',role:'all'}];G.oppPlayers=[{name:botName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:'Player '+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?botName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
@@ -834,7 +1077,11 @@ function showTeamSel(){
 }
 function selTeam(k){sfx('tap');document.querySelectorAll('.team-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.team-btn[data-team="'+k+'"]').classList.add('active');G.myTeam=k;G.myPlayers=TEAMS[k].players.slice();const pl=$('playerList');pl.innerHTML='';G.myPlayers.forEach((p,i)=>{const d=document.createElement('div');d.className='player-item';d.innerHTML='<span>'+(i+1)+'. '+p.name+'</span><span style="font-size:9px;opacity:.7">'+p.role+'</span>';pl.appendChild(d)})}
 $('btnConfirmTeam').onclick=()=>{if(!G.myTeam){alert('Pick a team!');return}sfx('tap');sendMsg({type:'team',team:G.myTeam,players:G.myPlayers});$('teamWait').style.display='block';$('btnConfirmTeam').disabled=true;checkTeams()};
-function checkTeams(){if(G.myTeam&&G.oppTeam){$('teamOverlay').classList.add('hidden');$('btnConfirmTeam').disabled=false;startOnlineToss()}}
+function checkTeams(){if(G.myTeam&&G.oppTeam){$('teamOverlay').classList.add('hidden');$('btnConfirmTeam').disabled=false;
+if(G.myPlayers.length>1){G.myPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle='balanced';if(!p.bowlingStyle)p.bowlingStyle='balanced'});
+G.oppPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)];if(!p.bowlingStyle)p.bowlingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]});
+showRoleAssign(G.myPlayers,'online',function(players){G.myPlayers=players;startOnlineToss()})}
+else{startOnlineToss()}}}
 
 function getCustomTeams(){try{return JSON.parse(localStorage.getItem('hc_custom_teams'))||[]}catch(e){return[]}}
 function saveCustomTeams(t){localStorage.setItem('hc_custom_teams',JSON.stringify(t))}
@@ -952,7 +1199,7 @@ function nextBall(){
  setBtns(true);setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='?';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='?';
-  if(G.mode==='offline'){BotAI.updateContext(G.target,G.me.score,G.me.wkts,G.totalBalls);if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
+  if(G.mode==='offline'){BotAI.updateContext(G.target,G.me.score,G.me.wkts,G.totalBalls);BotAI.difficulty=G.storyDifficulty||0;if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
  const fh=G.freeHit?' FREE HIT':'';
  $('status').innerHTML=G.iBat?'BAT!'+fh:'BOWL!'+fh;
  updFH();startTimer();armWD();
@@ -964,7 +1211,7 @@ function dotBall(){G.state='processing';setBtns(false);const bat=curBat();bat.ba
 function noBall(){G.state='processing';setBtns(false);const bat=curBat();bat.score+=1;bat.hist.push('NB');flash('NO BALL!','noball');sfx('nb');haptic(25);$('status').innerHTML='<span class="hl">NO BALL!</span> +1 & FREE HIT!';G.freeHit=true;updScore();renderBalls();updFH();persist();G.state='idle';setTimeout(()=>{sfx('fh');nextBall()},1800)}
 function checkReveal(){if(G.state!=='waiting')return;if(G.myPick!==null&&G.oppPick!==null){triggerReveal()}else if(G.myPick!==null){$('labelPlayer').textContent='Locked';$('labelPlayer').classList.add('show');$('status').innerHTML='Waiting...'}}
 function triggerReveal(){if(G.state!=='waiting')return;G.state='revealing';stopTimer();setBtns(false);if(G.mode==='offline'){BotAI.record(G.myPick);updBotLvl()}setTimeout(revealBall,G.mode==='offline'?400:50)}
-$('gestureGrid').addEventListener('click',e=>{const btn=e.target.closest('.gesture-btn');if(!btn||btn.classList.contains('disabled')||G.state!=='waiting')return;ensureAudio();const val=parseInt(btn.dataset.val,10);G.myPick=val;sfx('tap');haptic(10);$('gestureGrid').querySelectorAll('.gesture-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');if(G.mode==='online'){sendMsg({type:'choice',value:val,auto:false});checkReveal()}else{triggerReveal()}});
+$('gestureGrid').addEventListener('click',e=>{const btn=e.target.closest('.gesture-btn');if(!btn||btn.classList.contains('disabled')||btn.classList.contains('restricted')||G.state!=='waiting')return;ensureAudio();const val=parseInt(btn.dataset.val,10);G.myPick=val;sfx('tap');haptic(10);$('gestureGrid').querySelectorAll('.gesture-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');if(G.mode==='online'){sendMsg({type:'choice',value:val,auto:false});checkReveal()}else{triggerReveal()}});
 function revealBall(){if(G.state!=='revealing')return;G.state='processing';try{
 const batAuto=G.iBat?G.iAuto:G.oppAuto,bowlAuto=G.iBat?G.oppAuto:G.iAuto;
 if(batAuto&&!bowlAuto){dotBall();return}
@@ -1014,7 +1261,7 @@ $('btnNextInn').onclick=()=>{sfx('tap');$('inningsOverlay').classList.add('hidde
 $('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');clearSnap();if(G.mode==='online'&&G.isHost){doRematch();sendMsg({type:'rematch'})}};
 function doRematch(){G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;$('resultOverlay').classList.add('hidden');startInnings(1)}
 $('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){$('menuOverlay').classList.remove('hidden');resetGame()}else{G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;startInnings(1)}};
-$('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();history.replaceState({},'',location.pathname)};
+$('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();updHomeTrophies();history.replaceState({},'',location.pathname)};
 function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;G.oppStats=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
 
 function showProfile(name,stats){
@@ -1044,15 +1291,624 @@ function showProfile(name,stats){
  +'<div class="stat-item"><div class="val">'+s.ballsBowled+'</div><div class="lbl">Balls Bowled</div></div>'
  +'<div class="stat-item"><div class="val">'+s.hatricks+'</div><div class="lbl">Hatricks</div></div>'
  +'<div class="stat-item"><div class="val">'+s.dots+'</div><div class="lbl">Dot Balls</div></div>'
- +'</div></div>';
- $('profileOverlay').classList.remove('hidden');
+  +'</div></div>'
+  +(name?'':(function(){
+  var sp=storyProgress;
+  var trophyHTML='<div class="profile-section"><h3>Story Mode</h3>';
+  if(sp&&sp.myTeam){
+    trophyHTML+='<div class="stat-grid two-col">'
+    +'<div class="stat-item"><div class="val">'+(sp.stats?sp.stats.matchesPlayed:0)+'</div><div class="lbl">Matches</div></div>'
+    +'<div class="stat-item"><div class="val">'+(sp.stats?sp.stats.wins:0)+'</div><div class="lbl">Wins</div></div>'
+    +'<div class="stat-item"><div class="val">'+(sp.stats?sp.stats.totalRuns:0)+'</div><div class="lbl">Total Runs</div></div>'
+    +'<div class="stat-item"><div class="val">'+(sp.stats?sp.stats.totalWickets:0)+'</div><div class="lbl">Wickets</div></div>'
+    +'</div>';
+    var tierNames=['Gully','Area','Village','City','District','State','National Q','National'];
+    var tierIcons=['🥉','🥈','🥇','💎','🔥','⚡','👑','🏆'];
+    trophyHTML+='<div style="margin-top:8px;font-size:11px;font-weight:700;color:#86efac">Trophies & Certificates</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">';
+    for(var ti=0;ti<8;ti++){
+      var earned=sp.completedTiers&&sp.completedTiers.indexOf(ti)>=0;
+      trophyHTML+='<div style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:'+(earned?'rgba(245,158,11,.15)':'rgba(255,255,255,.05)')+';border:1px solid '+(earned?'rgba(245,158,11,.4)':'rgba(255,255,255,.1)')+'" title="'+tierNames[ti]+'">'+(earned?tierIcons[ti]:'🔒')+'</div>';
+    }
+    trophyHTML+='</div>';
+    if(sp.completedTiers&&sp.completedTiers.length>0){
+      trophyHTML+='<div style="margin-top:10px;font-size:10px;opacity:.6">';
+      sp.completedTiers.forEach(function(cti){trophyHTML+='<div style="padding:2px 0">✅ '+tierIcons[cti]+' '+tierNames[cti]+' Champion — Certificate Earned</div>';});
+      trophyHTML+='</div>';
+    }
+    if(sp.currentTier<8){
+      var currTier=STORY_DATA.tiers[sp.currentTier];
+      trophyHTML+='<div style="margin-top:6px;font-size:10px;color:#ff8c42">Current: '+(currTier?currTier.name[storyLang||'en']:'—')+' (Match '+(sp.currentMatch+1)+'/'+(currTier?currTier.matches.length:0)+')</div>';
+    }
+  }else{
+    trophyHTML+='<div style="font-size:11px;opacity:.5;text-align:center;padding:10px">No story progress yet. Play Story Mode to earn trophies!</div>';
+  }
+  trophyHTML+='</div>';
+  return trophyHTML;
+  })());
+  $('profileOverlay').classList.remove('hidden');
 }
 function showOppProfile(){
  if(!G.oppStats){return}
  showProfile(G.oppName,G.oppStats);
 }
 
-let mmSearching=false;
+/* ================================================================
+   v3: ROLE SYSTEM + STORY MODE + CLOUD SAVE + UI REFRESH
+   ================================================================ */
+
+// ---- ROLE SYSTEM ----
+// Player roles: battingStyle = 'aggressive'|'defensive'|'balanced'
+//               bowlingStyle = 'aggressive'|'defensive'|'balanced'
+// Batting restricts YOUR gesture picks. Bowling restricts YOUR picks when bowling.
+// Bowling role is HIDDEN from opponent until wicket or over ends.
+
+const ROLE_LIMITS = {
+  aggressive: { bat: [3,4,5,6], bowl: [3,4,5,6] },
+  defensive:  { bat: [1,2,3,4], bowl: [1,2,3,4] },
+  balanced:   { bat: [1,2,3,4,5,6], bowl: [1,2,3,4,5,6] }
+};
+
+const ROLE_COLORS = { aggressive: 'agg', defensive: 'def', balanced: 'bal' };
+const ROLE_LABELS = { aggressive: 'AGG', defensive: 'DEF', balanced: 'BAL' };
+const ROLE_LABELS_FULL = { aggressive: 'Aggressive', defensive: 'Defensive', balanced: 'Balanced' };
+
+function getRoleBadgeHTML(style, type) {
+  const cls = ROLE_COLORS[style] || 'bal';
+  const label = ROLE_LABELS[style] || 'BAL';
+  const icon = type === 'bat' ? '🏏' : '⚾';
+  return '<span class="role-badge-inline ' + cls + '">' + icon + ' ' + label + '</span>';
+}
+
+function getAllowedGestures(player, isBatting) {
+  if (!player) return [1,2,3,4,5,6];
+  const style = isBatting ? (player.battingStyle || 'balanced') : (player.bowlingStyle || 'balanced');
+  return ROLE_LIMITS[style] || [1,2,3,4,5,6];
+}
+
+function applyGestureRestrictions() {
+  const isBatting = G.iBat;
+  const myPlayer = isBatting ? curBatter() : curBowler();
+  const allowed = getAllowedGestures(myPlayer, isBatting);
+  const btns = $('gestureGrid').querySelectorAll('.gesture-btn');
+  btns.forEach(b => {
+    const val = parseInt(b.dataset.val);
+    const isAllowed = allowed.includes(val);
+    b.classList.toggle('restricted', !isAllowed && G.state === 'waiting');
+  });
+}
+
+function removeGestureRestrictions() {
+  $('gestureGrid').querySelectorAll('.gesture-btn').forEach(b => b.classList.remove('restricted'));
+}
+
+// Bowler role reveal after wicket or over
+function revealBowlerRole(isWicket) {
+  const bowler = G.iBat ? curBowler() : curBatter();
+  if (!bowler || !bowler.bowlingStyle || bowler.bowlingStyle === 'balanced') return;
+  const style = bowler.bowlingStyle;
+  const cls = ROLE_COLORS[style];
+  const label = ROLE_LABELS_FULL[style];
+  const reason = isWicket ? 'Wicket taken!' : 'Over completed!';
+  const banner = $('roleRevealBanner');
+  banner.innerHTML = reason + ' ' + bowler.name + ' was bowling — <span class="hl-' + cls + '">' + label + ' Style</span>';
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 3500);
+}
+
+// Role assignment overlay
+let roleAssignCallback = null;
+let roleAssignPlayers = [];
+let roleAssignMode = 'story'; // 'story', 'offline', 'online', 'instant'
+
+function showRoleAssign(players, mode, callback) {
+  roleAssignPlayers = players;
+  roleAssignMode = mode;
+  roleAssignCallback = callback;
+  renderRoleGrid();
+  $('roleAssignOverlay').classList.remove('hidden');
+}
+
+function renderRoleGrid() {
+  const grid = $('roleAssignGrid');
+  grid.innerHTML = '';
+  roleAssignPlayers.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'role-row';
+    const batStyle = p.battingStyle || 'balanced';
+    const bowlStyle = p.bowlingStyle || 'balanced';
+    const showBowl = p.role === 'bowler' || p.role === 'all';
+    row.innerHTML = '<div class="num">' + (i + 1) + '</div>'
+      + '<div><div class="pname">' + p.name + '</div><div class="ptype">' + p.role + '</div></div>'
+      + '<div class="role-select">'
+      + '<button data-role="aggressive" data-idx="' + i + '" data-field="battingStyle" class="' + (batStyle === 'aggressive' ? 'sel-agg' : '') + '">AGG</button>'
+      + '<button data-role="defensive" data-idx="' + i + '" data-field="battingStyle" class="' + (batStyle === 'defensive' ? 'sel-def' : '') + '">DEF</button>'
+      + '<button data-role="balanced" data-idx="' + i + '" data-field="battingStyle" class="' + (batStyle === 'balanced' ? 'sel-bal' : '') + '">BAL</button>'
+      + '</div>'
+      + (showBowl ? '<div class="role-bowl-select">'
+      + '<button data-role="aggressive" data-idx="' + i + '" data-field="bowlingStyle" class="' + (bowlStyle === 'aggressive' ? 'sel-agg' : '') + '">A</button>'
+      + '<button data-role="defensive" data-idx="' + i + '" data-field="bowlingStyle" class="' + (bowlStyle === 'defensive' ? 'sel-def' : '') + '">D</button>'
+      + '<button data-role="balanced" data-idx="' + i + '" data-field="bowlingStyle" class="' + (bowlStyle === 'balanced' ? 'sel-bal' : '') + '">B</button>'
+      + '</div>' : '<div style="width:52px"></div>');
+    grid.appendChild(row);
+  });
+  grid.querySelectorAll('button[data-role]').forEach(btn => {
+    btn.onclick = () => {
+      sfx('tap');
+      const idx = parseInt(btn.dataset.idx);
+      const field = btn.dataset.field;
+      const role = btn.dataset.role;
+      roleAssignPlayers[idx][field] = role;
+      renderRoleGrid();
+      validateRoles();
+    };
+  });
+  validateRoles();
+}
+
+function getRoleLimits(ts){
+ if(ts<=1)return null;
+ if(ts===2)return{maxAgg:1,maxDef:1,minBal:0};
+ if(ts===3)return{maxAgg:1,maxDef:1,minBal:1};
+ if(ts===5)return{maxAgg:2,maxDef:2,minBal:1};
+ return{maxAgg:4,maxDef:4,minBal:3};
+}
+function validateRoles(){
+ const ts=G.teamSize||11;
+ const lim=getRoleLimits(ts);
+ if(!lim){$('roleConstraints').textContent='Single player — no roles needed';$('roleConstraints').style.color='#94a3b8';$('btnRoleStart').disabled=false;return true;}
+ const bats=roleAssignPlayers.map(p=>p.battingStyle||'balanced');
+ const aggCount=bats.filter(s=>s==='aggressive').length;
+ const defCount=bats.filter(s=>s==='defensive').length;
+ const balCount=bats.filter(s=>s==='balanced').length;
+ const ok=aggCount<=lim.maxAgg&&defCount<=lim.maxDef&&balCount>=lim.minBal;
+ $('roleConstraints').textContent='Aggressive: '+aggCount+'/'+lim.maxAgg+' | Defensive: '+defCount+'/'+lim.maxDef+' | Balanced: '+balCount+'/'+ts+' (min '+lim.minBal+')';
+ $('roleConstraints').style.color=ok?'#34d399':'#fb7185';
+ $('btnRoleStart').disabled=!ok;
+ return ok;
+}
+
+$('btnRoleAllBal').onclick = () => {
+  sfx('tap');
+  roleAssignPlayers.forEach(p => { p.battingStyle = 'balanced'; p.bowlingStyle = 'balanced'; });
+  renderRoleGrid();
+};
+$('btnRoleRandom').onclick = () => {
+  sfx('tap');
+  const styles = ['aggressive', 'defensive', 'balanced'];
+  roleAssignPlayers.forEach(p => {
+    p.battingStyle = styles[Math.floor(Math.random() * 3)];
+    p.bowlingStyle = styles[Math.floor(Math.random() * 3)];
+  });
+  renderRoleGrid();
+};
+$('btnRoleReal').onclick = () => {
+  sfx('tap');
+  // Use the predefined styles from story data or defaults
+  roleAssignPlayers.forEach(p => {
+    if (p._realBattingStyle) p.battingStyle = p._realBattingStyle;
+    if (p._realBowlingStyle) p.bowlingStyle = p._realBowlingStyle;
+  });
+  renderRoleGrid();
+};
+$('btnRoleStart').onclick = () => {
+  sfx('tap');
+  if (!validateRoles()) return;
+  $('roleAssignOverlay').classList.add('hidden');
+  if (roleAssignCallback) roleAssignCallback(roleAssignPlayers);
+};
+$('btnRoleBack').onclick = () => {
+  sfx('tap');
+  $('roleAssignOverlay').classList.add('hidden');
+};
+
+// ---- STORY MODE ----
+let storyLang = 'en';
+let storyProgress = null; // { user, currentTier, currentMatch, myTeam, completedTiers, trophies, stats }
+
+function defaultStoryProgress() {
+  return {
+    user: getUsername() || 'player',
+    language: 'en',
+    currentTier: 0,
+    currentMatch: 0,
+    myTeam: null,
+    completedTiers: [],
+    trophies: [],
+    matchResults: [],
+    stats: { matchesPlayed: 0, wins: 0, losses: 0, totalRuns: 0, totalWickets: 0 }
+  };
+}
+
+function getStoryTrophyIcon(tierIdx) {
+  const icons = ['🥉', '🥈', '🥇', '💎', '🔥', '⚡', '👑', '🏆'];
+  return icons[tierIdx] || '🏆';
+}
+
+function renderStoryHome() {
+  if (!storyProgress) storyProgress = defaultStoryProgress();
+  const sp = storyProgress;
+
+  // Trophy shelf
+  const shelf = $('storyTrophyShelf');
+  shelf.innerHTML = '';
+  for (let i = 0; i < 8; i++) {
+    const t = document.createElement('div');
+    t.className = 'story-trophy' + (sp.completedTiers.includes(i) ? ' earned' : '');
+    t.textContent = sp.completedTiers.includes(i) ? getStoryTrophyIcon(i) : '🔒';
+    t.title = STORY_DATA.tiers[i] ? STORY_DATA.tiers[i].name[storyLang] : '';
+    shelf.appendChild(t);
+  }
+
+  // Progress
+  const totalMatches = STORY_DATA.tiers.reduce((s, t) => s + t.matches.length, 0);
+  const doneMatches = sp.matchResults ? sp.matchResults.length : 0;
+  const pct = Math.round((doneMatches / totalMatches) * 100);
+  $('storyProgressFill').style.width = pct + '%';
+  $('storyProgressText').textContent = doneMatches + ' / ' + totalMatches + ' matches';
+
+  // Tier list
+  const list = $('storyTierList');
+  list.innerHTML = '';
+  STORY_DATA.tiers.forEach((tier, ti) => {
+    const card = document.createElement('div');
+    const isCompleted = sp.completedTiers.includes(ti);
+    const isCurrent = ti === sp.currentTier && !isCompleted;
+    const isLocked = ti > sp.currentTier || (ti === sp.currentTier && isCompleted);
+    card.className = 'story-tier-card' + (isCurrent ? ' current' : '') + (isCompleted ? ' completed' : '') + (isLocked && !isCurrent ? ' locked' : '');
+
+    const matchDots = tier.matches.map((m, mi) => {
+      const resultIdx = sp.matchResults ? sp.matchResults.findIndex(r => r.tier === ti && r.match === mi) : -1;
+      const result = resultIdx >= 0 ? sp.matchResults[resultIdx] : null;
+      let cls = 'dot';
+      if (result) cls += result.won ? ' won' : ' lost';
+      else if (isCurrent && mi === sp.currentMatch) cls += ' current';
+      return '<span class="' + cls + '"></span>';
+    }).join('');
+
+    card.innerHTML = '<div class="tier-header">'
+      + '<div class="tier-name">' + tier.name[storyLang] + '</div>'
+      + '<div class="tier-badge ' + (isCompleted ? 'done' : isCurrent ? 'active' : 'lock') + '">'
+      + (isCompleted ? '✓ Done' : isCurrent ? 'Playing' : 'Locked')
+      + '</div></div>'
+      + '<div class="tier-sub">' + tier.subtitle[storyLang] + '</div>'
+      + '<div class="tier-matches">' + matchDots + '</div>';
+
+    if (isCurrent && !isCompleted) {
+      card.onclick = () => {
+        sfx('tap');
+        startStoryMatch();
+      };
+    }
+    list.appendChild(card);
+  });
+}
+
+function startStoryMatch() {
+  if (!storyProgress || !storyProgress.myTeam) {
+    showStoryTeamBuilder();
+    return;
+  }
+  const tier = STORY_DATA.tiers[storyProgress.currentTier];
+  if (!tier) { showStoryComplete(); return; }
+  const match = tier.matches[storyProgress.currentMatch];
+  if (!match) { showStoryTierComplete(); return; }
+
+  // Show pre-match narrative
+  showStoryDialogue(
+    match.narrative.pre[storyLang] || match.narrative.pre.en,
+    () => {
+      // Set up the match
+      G.mode = 'offline';
+      G.teamSize = 11;
+      G.totalBalls = 120;
+      G.totalWkts = 10;
+      G.isBot = true;
+      G.oppName = match.oppName;
+      G.isHost = true;
+
+      // Set up opponent team
+      G.oppPlayers = match.oppPlayers.map(p => ({
+        name: p.name,
+        role: p.role,
+        battingStyle: p.battingStyle || 'balanced',
+        bowlingStyle: p.bowlingStyle || 'balanced'
+      }));
+
+      // Set up my team from story progress
+      G.myPlayers = storyProgress.myTeam.players.map(p => ({
+        name: p.name,
+        role: p.role,
+        battingStyle: p.battingStyle || 'balanced',
+        bowlingStyle: p.bowlingStyle || 'balanced',
+        _realBattingStyle: p.battingStyle,
+        _realBowlingStyle: p.bowlingStyle
+      }));
+
+      G.myName = storyProgress.myTeam.name;
+      G.oppStats = genStoryBotStats(tier.difficulty, match.oppName);
+
+      $('labelA').textContent = G.myName;
+      $('labelB').textContent = G.oppName;
+      $('nameA').textContent = G.myName;
+      $('nameB').textContent = G.oppName;
+
+      // Show role assignment
+      showRoleAssign(G.myPlayers, 'story', (players) => {
+        G.myPlayers = players;
+        // Start toss
+        showStoryToss();
+      });
+    }
+  );
+}
+
+function genStoryBotStats(difficulty, name) {
+  const base = Math.floor(20 + difficulty * 60);
+  const wins = Math.floor(base * (0.3 + difficulty * 0.4));
+  const m = {
+    name: name,
+    matches: base,
+    wins: wins,
+    losses: base - wins - Math.floor(Math.random() * 3),
+    ties: Math.floor(Math.random() * 3),
+    runs: Math.floor(base * (15 + Math.random() * 25)),
+    ballsFaced: Math.floor(base * (10 + Math.random() * 15)),
+    sixes: Math.floor(Math.random() * base * 0.3),
+    fours: Math.floor(Math.random() * base * 0.5),
+    dots: Math.floor(Math.random() * base * 0.2),
+    highestScore: Math.floor(base * 0.8 + Math.random() * 30),
+    wicketsTaken: Math.floor(base * (0.2 + Math.random() * 0.3)),
+    ballsBowled: Math.floor(base * (8 + Math.random() * 10)),
+    runsConceded: Math.floor(base * (10 + Math.random() * 20)),
+    hatricks: Math.floor(Math.random() * 3),
+    winStreak: 0,
+    bestWinStreak: Math.floor(Math.random() * 10) + 2,
+    streak: 0
+  };
+  m.winPct = m.matches ? ((m.wins / m.matches) * 100).toFixed(0) + '%' : '0%';
+  m.strikeRate = m.ballsFaced ? ((m.runs / m.ballsFaced) * 100).toFixed(1) : '0.0';
+  m.bowlingAvg = m.wicketsTaken ? (m.runsConceded / m.wicketsTaken).toFixed(1) : '-';
+  return m;
+}
+
+function showStoryToss() {
+  // Quick toss for story mode
+  const won = Math.random() < 0.5;
+  if (won) {
+    G.iBat = Math.random() < 0.5;
+    startStoryMatchPlay();
+  } else {
+    G.iBat = Math.random() < 0.5; // Bot decides
+    startStoryMatchPlay();
+  }
+}
+
+function startStoryMatchPlay() {if(typeof storyProgress!=='undefined'&&storyProgress){var tier=STORY_DATA.tiers[storyProgress.currentTier];G.storyDifficulty=tier?tier.difficulty:0;BotAI.difficulty=G.storyDifficulty;}
+  BotAI.reset();
+  $('menuOverlay').classList.add('hidden');
+  $('offlineSetup').classList.add('hidden');
+  $('storyHome').classList.add('hidden');
+  updScore();
+  renderBalls();
+  updFH();
+  showLeave(true);
+  startInnings(1);
+}
+
+function showStoryDialogue(text, callback) {
+  const dlg = $('storyDialogue');
+  const lines = text.split('\n');
+  let speaker = '';
+  let content = text;
+  if (lines.length > 1 && lines[0].includes(':')) {
+    const firstLine = lines[0];
+    const colonIdx = firstLine.indexOf(':');
+    speaker = firstLine.substring(0, colonIdx).trim();
+    content = lines.slice(1).join('\n').trim() || firstLine.substring(colonIdx + 1).trim();
+  }
+  $('dlgSpeaker').textContent = speaker || 'Narrator';
+  $('dlgText').textContent = content;
+  dlg.classList.remove('hidden');
+  $('dlgBtn').onclick = () => {
+    sfx('tap');
+    dlg.classList.add('hidden');
+    if (callback) callback();
+  };
+}
+
+function showStoryRoast(tierIdx, matchIdx, callback) {
+  const tier = STORY_DATA.tiers[tierIdx];
+  if (!tier) { if (callback) callback(); return; }
+  const match = tier.matches[matchIdx];
+  if (!match) { if (callback) callback(); return; }
+  const roasts = match.roasts[storyLang] || match.roasts.en;
+  const roast = roasts[Math.floor(Math.random() * roasts.length)];
+  $('roastText').textContent = roast;
+  $('roastBox').classList.remove('hidden');
+  setTimeout(() => {
+    $('roastBox').classList.add('hidden');
+    if (callback) callback();
+  }, 4000);
+}
+
+function showStoryTierComplete() {
+  const tier = STORY_DATA.tiers[storyProgress.currentTier];
+  if (!tier) { showStoryComplete(); return; }
+  if (!storyProgress.completedTiers.includes(storyProgress.currentTier)) {
+    storyProgress.completedTiers.push(storyProgress.currentTier);
+    if (!storyProgress.trophies) storyProgress.trophies = [];
+    storyProgress.trophies.push(tier.id);
+  }
+  cloudSaveStory();
+  showTrophyCelebration(
+    getStoryTrophyIcon(storyProgress.currentTier),
+    tier.name[storyLang] + ' Complete!',
+    tier.trophy ? (tier.trophy[storyLang] || tier.name[storyLang]) : 'Champion',
+    storyProgress.myTeam ? storyProgress.myTeam.name : 'Your Team'
+  );
+}
+
+function showStoryComplete() {
+  showTrophyCelebration('🏆', 'NATIONAL CHAMPION!', 'You conquered every tier!', storyProgress.myTeam ? storyProgress.myTeam.name : 'Your Team');
+}
+
+function showTrophyCelebration(icon, title, sub, teamName) {
+  $('trophyBigIcon').textContent = icon;
+  $('trophyTitle').textContent = title;
+  $('trophySub').textContent = sub;
+  $('certTitle').textContent = 'Certificate of Achievement';
+  $('certName').textContent = teamName;
+  $('certDesc').textContent = title;
+  $('trophyCelebrate').classList.remove('hidden');
+  sfx('win'); confetti(80);
+}
+$('btnTrophyClose').onclick = () => {
+  sfx('tap'); $('trophyCelebrate').classList.add('hidden');
+  storyProgress.currentTier++; storyProgress.currentMatch = 0;
+  cloudSaveStory();
+  $('menuOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden');
+  renderStoryHome();
+};
+
+function showStoryTeamBuilder() {
+  $('storyHome').classList.add('hidden'); $('storyTeamBuilder').classList.remove('hidden');
+  storyBuilderPicks = []; $('storyTeamName').value = ''; $('storyPickCount').textContent = '0';
+  $('btnStoryTeamConfirm').disabled = true;
+  const pool = $('storyPlayerPool'); pool.innerHTML = '';
+  if (!STORY_DATA || !STORY_DATA.playerPool) return;
+  STORY_DATA.playerPool.forEach((p, i) => {
+    const card = document.createElement('div'); card.className = 'story-player-card'; card.dataset.idx = i;
+    const rc = p.role === 'batter' ? '🏏' : p.role === 'bowler' ? '⚾' : '🔄';
+    card.innerHTML = '<div><div class="sp-name">' + rc + ' ' + p.name + '</div><div class="sp-info">' + p.country + ' — ' + p.role + '</div></div>'
+      + '<div style="font-size:9px;opacity:.5;text-align:right">' + (p.battingStyle || 'balanced').charAt(0).toUpperCase() + '/' + (p.bowlingStyle || 'balanced').charAt(0).toUpperCase() + '</div>';
+    card.onclick = () => toggleStoryPick(i, card); pool.appendChild(card);
+  });
+}
+let storyBuilderPicks = [];
+function toggleStoryPick(idx, el) {
+  sfx('tap');
+  if (storyBuilderPicks.includes(idx)) { storyBuilderPicks = storyBuilderPicks.filter(i => i !== idx); el.classList.remove('picked'); }
+  else if (storyBuilderPicks.length < 11) { storyBuilderPicks.push(idx); el.classList.add('picked'); }
+  $('storyPickCount').textContent = storyBuilderPicks.length;
+  $('btnStoryTeamConfirm').disabled = storyBuilderPicks.length !== 11;
+}
+$('btnStoryTeamConfirm').onclick = () => {
+  if (storyBuilderPicks.length !== 11) return; sfx('tap');
+  const teamName = $('storyTeamName').value.trim() || 'My Team';
+  const players = storyBuilderPicks.map(i => { const src = STORY_DATA.playerPool[i]; return { name: src.name, role: src.role, battingStyle: src.battingStyle || 'balanced', bowlingStyle: src.bowlingStyle || 'balanced' }; });
+  storyProgress.myTeam = { name: teamName, players: players }; cloudSaveStory();
+  $('storyTeamBuilder').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome();
+};
+$('btnStoryTeamBack').onclick = () => { sfx('tap'); $('storyTeamBuilder').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome(); };
+
+async function cloudSaveStory() {
+  if (!storyProgress) return;
+  storyProgress.user = getUsername() || 'player';
+  try { await fetch('/api/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: storyProgress.user, data: storyProgress }) }); }
+  catch (e) { localStorage.setItem('hcp_story', JSON.stringify(storyProgress)); }
+}
+async function cloudLoadStory() {
+  const user = getUsername() || 'player';
+  try { const r = await fetch('/api/load?user=' + encodeURIComponent(user)); const j = await r.json(); if (j.data) { storyProgress = j.data; return true; } } catch (e) {}
+  try { const s = JSON.parse(localStorage.getItem('hcp_story')); if (s) { storyProgress = s; return true; } } catch (e) {}
+  return false;
+}
+
+$('btnStoryBack').onclick = () => { sfx('tap'); $('storyHome').classList.add('hidden'); $('menuOverlay').classList.remove('hidden'); };
+function enterStoryMode() {
+  ensureUsername(async () => {
+    $('menuOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden');
+    await cloudLoadStory();
+    if (!storyProgress) storyProgress = defaultStoryProgress();
+    storyLang = storyProgress.language || 'en';
+    document.querySelectorAll('#storyLang .lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === storyLang));
+    renderStoryHome();
+  });
+}
+document.querySelectorAll('#storyLang .lang-btn').forEach(b => {
+  b.onclick = () => { sfx('tap'); storyLang = b.dataset.lang;
+    document.querySelectorAll('#storyLang .lang-btn').forEach(x => x.classList.remove('active')); b.classList.add('active');
+    if (storyProgress) { storyProgress.language = storyLang; cloudSaveStory(); } renderStoryHome();
+  };
+});
+
+(function(){
+  const _nb = nextBall;
+  nextBall = function(){ _nb.apply(this, arguments); setTimeout(applyGestureRestrictions, 80); };
+})();
+
+(function(){
+  const _rb = revealBall;
+  revealBall = function(){
+    const wkBefore = curBat().wkts;
+    _rb.apply(this, arguments);
+    setTimeout(()=>{
+      if(curBat().wkts > wkBefore) revealBowlerRole(true);
+      else if(curBat().balls % 6 === 0 && curBat().balls > 0) revealBowlerRole(false);
+      applyGestureRestrictions();
+    }, 900);
+  };
+})();
+
+(function(){
+  const _fm = finishMatch;
+  finishMatch = function(){
+    _fm.apply(this, arguments);
+    if(G.mode==='offline' && storyProgress && storyProgress.myTeam){
+      const won = G.me.score > G.opp.score;
+      const ti = storyProgress.currentTier, mi = storyProgress.currentMatch;
+      const tier = STORY_DATA.tiers[ti];
+      if(!storyProgress.matchResults) storyProgress.matchResults = [];
+      storyProgress.matchResults.push({ tier: ti, match: mi, won: won });
+      storyProgress.stats.matchesPlayed++; if(won) storyProgress.stats.wins++; else storyProgress.stats.losses++;
+      storyProgress.stats.totalRuns += G.me.score; storyProgress.stats.totalWickets += G.opp.wkts;
+      cloudSaveStory();
+      setTimeout(()=>{
+        if(won){
+          const n = tier && tier.matches[mi] ? (tier.matches[mi].narrative.win[storyLang] || tier.matches[mi].narrative.win.en) : '';
+          if(n) showStoryDialogue(n, ()=>{ storyProgress.currentMatch++; advanceStoryAfterWin(); });
+          else advanceStoryAfterWin();
+        } else {
+          showStoryRoast(ti, mi, ()=>{
+            const n = tier && tier.matches[mi] ? (tier.matches[mi].narrative.lose[storyLang] || tier.matches[mi].narrative.lose.en) : '';
+            if(n) showStoryDialogue(n, ()=>{ $('resultOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome(); });
+            else { $('resultOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome(); }
+          });
+        }
+      }, 1500);
+    }
+  };
+  function advanceStoryAfterWin(){
+    const tier = STORY_DATA.tiers[storyProgress.currentTier];
+    if(storyProgress.currentMatch >= tier.matches.length){ storyProgress.currentMatch = 0; showStoryTierComplete(); }
+    else { cloudSaveStory(); $('resultOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome(); }
+  }
+})();
+
+(function(){
+  const _so = startOffline;
+  startOffline = function(){
+    _so.apply(this, arguments);
+    if(G.teamSize > 1){
+      G.myPlayers.forEach(p=>{ if(!p.battingStyle) p.battingStyle='balanced'; if(!p.bowlingStyle) p.bowlingStyle='balanced'; });
+      G.oppPlayers.forEach(p=>{ if(!p.battingStyle) p.battingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]; if(!p.bowlingStyle) p.bowlingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]; });
+    }
+  };
+})();
+
+(function(){
+  const mg = document.querySelector('.mode-grid');
+  if(mg){
+    mg.classList.remove('three-col');
+    mg.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    mg.style.maxWidth = '380px';
+    const sb = document.createElement('div'); sb.className='mode-btn'; sb.id='modeStory';
+    sb.innerHTML='<span class="icon">📖</span><span class="title">Story</span><span class="desc">Build your legacy</span>';
+    sb.onclick = ()=>{ ensureAudio(); sfx('tap'); haptic(); enterStoryMode(); };
+    mg.appendChild(sb);
+  }
+})();
+G.storyDifficulty=0;let mmSearching=false;
 $('btnMMCancel').onclick=()=>{mmSearching=false;destroyPeer();clearInterval(matchTimer);$('matchmakingOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden')};
 function startMatchmaking(){
  G.teamSize=getTeamSize();
@@ -1079,7 +1935,7 @@ function startMatchmaking(){
 }
 function startBotMatch(){
  G.isBot=true;G.botProfile=genBotProfile();G.oppName=G.botProfile.name;G.isHost=true;
-  G.oppStats={name:G.oppName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
+   const bM3=Math.floor(Math.random()*50)+10; const bW3=Math.min(Math.floor(Math.random()*25)+5, bM3); G.oppStats={name:G.oppName,matches:bM3,wins:bW3,losses:Math.max(0,bM3-bW3-Math.floor(Math.random()*3)),ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
   const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
  G.totalBalls=G.teamSize===11?120:G.teamSize*6;
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
@@ -1087,14 +1943,18 @@ function startBotMatch(){
  if(G.teamSize===1){G.myPlayers=[{name:G.myName,role:'all'}];G.oppPlayers=[{name:G.oppName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:G.myName+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?G.oppName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
  G.myTeam='opp';G.oppTeam='opp';
- $('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;
- showMC(true);
+  $('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;
+  if(G.teamSize>1){
+  G.myPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle='balanced';if(!p.bowlingStyle)p.bowlingStyle='balanced'});
+  G.oppPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)];if(!p.bowlingStyle)p.bowlingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]});
+  showRoleAssign(G.myPlayers,'instant',function(players){G.myPlayers=players;showMC(true)})}
+  else{showMC(true)}
 }
 
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 ['touchstart','click'].forEach(ev=>document.addEventListener(ev,()=>ensureAudio(),{passive:true}));
-updScore();renderBalls();updHomeUsername();
+updScore();renderBalls();updHomeUsername();updHomeTrophies();
 try{
  const hc=document.getElementById('homeHands');if(hc){
   function buildHomeHand(v,cls){
