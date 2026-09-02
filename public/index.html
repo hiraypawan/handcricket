@@ -35,10 +35,35 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .leave-btn{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);color:#fca5a5;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
 .arena{flex:1;display:flex;justify-content:space-around;align-items:center;padding:4px 6px;position:relative;min-height:0}
 .player-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
-.player-side .name{font-size:clamp(10px,1.4vh,13px);font-weight:800;letter-spacing:2px;opacity:.9;text-align:center}
+.player-side .name{font-size:clamp(10px,1.4vh,13px);font-weight:800;letter-spacing:2px;opacity:.9;text-align:center;cursor:pointer;transition:color .2s}
+.player-side .name:hover{color:#fde047}
 .hand-wrap{width:clamp(80px,16vh,140px);height:clamp(105px,22vh,185px);position:relative;display:flex;justify-content:center;align-items:flex-end;transition:transform .3s cubic-bezier(.34,1.56,.64,1);perspective:600px}
 .hand-wrap.shake{animation:hs .35s ease-in-out infinite}
 .hand-wrap.reveal{animation:rp .6s cubic-bezier(.34,1.8,.64,1)}
+.hand-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:2}
+.hand-wrap img[style*="display:none"]+.css-hand,.hand-wrap img[src=""]+.css-hand{display:block}
+.hand-wrap img:not([style*="display:none"]):not([src=""])+.css-hand{display:none}
+.css-hand{width:100%;height:100%;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.css-fingers{display:flex;gap:clamp(2px,.5vw,4px);align-items:flex-end;justify-content:center;height:62%;margin-bottom:0}
+.css-finger{width:clamp(12px,2.2vw,18px);height:100%;position:relative;transform-style:preserve-3d;transition:height .4s cubic-bezier(.5,1.6,.4,1),opacity .3s}
+.css-finger .tip{width:100%;height:52%;border-radius:12px 12px 8px 8px;position:absolute;bottom:0;transition:transform .45s cubic-bezier(.5,1.6,.5,1),opacity .3s,border-radius .3s;transform-origin:bottom center;box-shadow:inset 0 2px 4px rgba(255,255,255,.25),inset 0 -3px 6px rgba(0,0,0,.15),0 2px 8px rgba(0,0,0,.2)}
+.css-finger .tip::after{content:'';position:absolute;width:60%;height:3px;background:rgba(255,255,255,.2);top:12%;left:20%;border-radius:2px}
+.css-finger.down .tip{transform:rotateX(70deg) scaleY(.35) translateY(4px);opacity:.25;border-radius:8px}
+.css-finger:nth-child(1) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060}
+.css-finger:nth-child(2) .tip{background:linear-gradient(180deg,#fcd9b0 0%,#ecd0a0 50%,#e8b88a 100%);border:1.5px solid #c49060}
+.css-finger:nth-child(3) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060}
+.css-finger:nth-child(4) .tip{background:linear-gradient(180deg,#fcd9b0 0%,#ecd0a0 50%,#e8b88a 100%);border:1.5px solid #c49060}
+.css-finger:nth-child(5) .tip{background:linear-gradient(180deg,#f5d0a8 0%,#e0b088 50%,#dba57a 100%);border:1.5px solid #c49060;width:85%;left:7.5%;border-radius:10px 10px 7px 7px}
+.css-finger:nth-child(1){transform:rotate(-18deg) translateX(-2px);transform-origin:bottom center}
+.css-finger:nth-child(5){transform:rotate(12deg) translateX(1px);transform-origin:bottom center}
+.css-palm{width:58%;height:26%;background:linear-gradient(180deg,#ecd0a0 0%,#e0b088 40%,#d9a070 100%);border-radius:4px 4px 20px 20px;border:1.5px solid #c49060;border-top:none;box-shadow:inset 0 -4px 8px rgba(0,0,0,.12),inset 0 3px 6px rgba(255,255,255,.1),0 4px 12px rgba(0,0,0,.25);position:relative}
+.css-palm::before{content:'';position:absolute;width:70%;height:4px;background:rgba(255,255,255,.12);top:20%;left:15%;border-radius:2px}
+.css-hand .num-badge{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vh,32px);font-weight:900;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(253,224,71,.5),0 0 48px rgba(253,224,71,.2);z-index:3;pointer-events:none;animation:numPulse 2s ease-in-out infinite}
+@keyframes numPulse{0%,100%{text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(253,224,71,.5)}50%{text-shadow:0 2px 16px rgba(0,0,0,.9),0 0 32px rgba(253,224,71,.7),0 0 48px rgba(249,115,22,.3)}}
+@keyframes fistShake{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-3deg)}75%{transform:translateY(-4px) rotate(3deg)}}
+.css-hand.shake{animation:fistShake .35s ease-in-out infinite}
+@keyframes fistReveal{0%{transform:scale(.4) rotate(-20deg) translateY(20px);opacity:.2;filter:blur(4px)}40%{transform:scale(1.12) rotate(4deg) translateY(-5px);opacity:1;filter:blur(0)}70%{transform:scale(.97) rotate(-2deg) translateY(2px);opacity:1}100%{transform:scale(1) rotate(0) translateY(0);opacity:1}}
+.css-hand.reveal{animation:fistReveal .55s cubic-bezier(.34,1.8,.64,1)}
 @keyframes hs{0%,100%{transform:translateY(0) rotate(0) rotateY(0)}25%{transform:translateY(-8px) rotate(-4deg) rotateY(-3deg)}75%{transform:translateY(-8px) rotate(4deg) rotateY(3deg)}}
 @keyframes rp{0%{transform:scale(.6) rotate(-10deg) translateZ(-20px);opacity:.4}60%{transform:scale(1.18) rotate(5deg) translateZ(30px)}100%{transform:scale(1) rotate(0) translateZ(0);opacity:1}}
 .gesture-label{font-size:clamp(11px,1.5vh,14px);font-weight:800;min-height:20px;color:#fde047;opacity:0;transform:translateY(6px);transition:all .35s ease;text-align:center}
@@ -134,7 +159,10 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .team-size-btn{background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.2);color:#fff;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3}
 .team-size-btn.active{background:linear-gradient(180deg,#fde047,#eab308);color:#000;border-color:#fff}
 .inning-info{font-size:10px;color:#86efac;margin:4px 0;font-weight:600}
-@media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}}
+@media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}}
+@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}}
+@media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
+@media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}}
 .home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#fde047 0%,#fff 50%,#86efac 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
 @keyframes titleIn{from{opacity:0;transform:translateY(-30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
 .home-subtitle{font-size:clamp(11px,1.8vh,15px);opacity:.7;margin:4px 0 6px;font-weight:600;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .6s .2s both}
@@ -143,6 +171,11 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-hand{width:clamp(60px,12vh,90px);height:clamp(78px,16vh,115px);position:relative;animation:handFloat 3s ease-in-out infinite}
 .home-hand.left{animation-delay:0s;transform:scaleX(-1)}
 .home-hand.right{animation-delay:1.5s;animation-name:handFloatR}
+.home-hand .css-hand{width:100%;height:100%;transform:scale(1.1)}
+.home-hand .css-fingers{height:60%}
+.home-hand .css-finger .tip{border-radius:10px 10px 6px 6px}
+.home-hand .css-finger:nth-child(1){transform:rotate(-18deg) translateX(-2px)}
+.home-hand .css-finger:nth-child(5){transform:rotate(12deg) translateX(1px)}
 @keyframes handFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(3deg)}}
 @keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
 .home-ball{width:clamp(18px,3vh,26px);height:clamp(18px,3vh,26px);background:radial-gradient(circle at 35% 35%,#ef4444,#b91c1c 60%,#7f1d1d);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5),inset 0 -2px 4px rgba(0,0,0,.3);animation:ballBounce 2s ease-in-out infinite}
@@ -160,6 +193,19 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-version{font-size:9px;opacity:.4;margin-top:12px;animation:fadeUp .6s 1s both}
 .home-credit{font-size:10px;opacity:.5;margin-top:6px;animation:fadeUp .6s 1.1s both}
 .home-credit a{color:#fde047;text-decoration:none;font-weight:700}
+.home-username{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 4px;animation:fadeUp .5s .5s both}
+.home-username-text{font-size:15px;font-weight:800;color:#fde047;text-shadow:0 0 12px rgba(253,224,71,.3)}
+.edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s}
+.edit-name-btn:hover{background:rgba(255,255,255,.15)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:280px;margin:8px auto}
+.stat-item{background:rgba(255,255,255,.08);border-radius:10px;padding:10px 6px;text-align:center}
+.stat-item .val{font-size:clamp(18px,3.5vh,24px);font-weight:900;color:#fde047}
+.stat-item .lbl{font-size:10px;opacity:.7;font-weight:600;margin-top:2px}
+.profile-card{background:rgba(255,255,255,.06);border-radius:16px;padding:16px;width:100%;max-width:300px;border:1px solid rgba(255,255,255,.1)}
+.profile-card h3{margin:0 0 8px;font-size:18px;font-weight:900;color:#fde047}
+.profile-card .profile-rank{font-size:11px;opacity:.7;font-weight:600;margin-bottom:10px}
+.opp-profile-card{background:rgba(255,255,255,.06);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid rgba(255,255,255,.1);margin:8px auto;cursor:pointer;transition:all .2s}
+.opp-profile-card:hover{background:rgba(255,255,255,.12);border-color:rgba(253,224,71,.3)}
 .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .particle{position:absolute;width:3px;height:3px;background:rgba(253,224,71,.3);border-radius:50%;animation:particleFloat linear infinite}
 @keyframes particleFloat{0%{transform:translateY(100vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) scale(1);opacity:0}}
@@ -177,10 +223,10 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="balls-row" id="ballsRow"></div>
 <div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
-<div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"><img id="handImgPlayer" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:none"/></div><div class="gesture-label" id="labelPlayer">-</div></div>
+<div class="player-side"><div class="name" id="nameA">YOU</div><div class="hand-wrap" id="handPlayer"><div class="css-hand" id="cssHandPlayer"><div class="css-fingers" id="cssFingersPlayer"></div><div class="css-palm"></div></div><img id="handImgPlayer" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelPlayer">-</div></div>
 <div class="timer-wrap" id="timerWrap" style="display:none"><svg class="timer-circle" viewBox="0 0 100 100"><defs><linearGradient id="tg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fde047"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs><circle class="timer-bg" cx="50" cy="50" r="44"/><circle class="timer-fg" id="timerFg" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="timer-text" id="timerText">5</div></div>
 <div class="countdown" id="countdown"></div>
-<div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"><img id="handImgOpponent" src="" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:none"/></div><div class="gesture-label" id="labelOpponent">-</div></div>
+<div class="player-side"><div class="name" id="nameB">BOT</div><div class="hand-wrap" id="handOpponent"><div class="css-hand" id="cssHandOpponent"><div class="css-fingers" id="cssFingersOpponent"></div><div class="css-palm"></div></div><img id="handImgOpponent" src="" alt="" style="display:none"/></div><div class="gesture-label" id="labelOpponent">-</div></div>
 <div class="flash" id="flash"></div>
 </div>
 <div class="controls"><div class="gesture-grid" id="gestureGrid">
@@ -197,6 +243,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="home-hands" id="homeHands"></div>
 <h1 class="home-title">Hand Cricket Pro</h1>
 <p class="home-subtitle">Street Cricket Reimagined</p>
+<div class="home-username" id="homeUsername" style="display:none"><span class="home-username-text" id="homeUsernameText"></span><button class="edit-name-btn" id="btnEditName" title="Change name">✏️</button></div>
 <div class="mode-grid three-col">
 <div class="mode-btn" id="modeOffline"><span class="icon">🤖</span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
 <div class="mode-btn" id="modeOnline"><span class="icon">🌐</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
@@ -294,9 +341,12 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="leaveOverlay"><h1>Leave?</h1><p>Progress lost.</p>
 <button id="btnYesLeave" class="danger">Yes, Leave</button>
 <button id="btnNoLeave" class="secondary">Continue</button></div>
-<div class="overlay hidden" id="profileOverlay"><h1>My Profile</h1>
+<div class="overlay hidden" id="profileOverlay"><h1 id="profileTitle">My Profile</h1>
 <div class="profile-card" id="profileCard"></div>
 <button id="btnCloseProfile" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="usernameOverlay"><h1>Welcome!</h1><p style="font-size:13px;opacity:.8;margin-bottom:12px">What should we call you?</p>
+<input type="text" id="usernameInput" placeholder="Your Name" maxlength="16" autocomplete="off" style="text-align:center;font-size:18px;padding:12px;width:220px"/>
+<button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button></div>
 </div>
 
 <script>
@@ -327,7 +377,7 @@ const BotAI={history:[],transitions:{},ballCount:0,
  level(){if(this.ballCount<3)return'Easy';if(this.ballCount<6)return'Medium';return'Hard'}};
 
 const TIMER=5,CIRC=2*Math.PI*44,WATCHDOG=12000;
-const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null};
+const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null,oppStats:null};
 const $=id=>document.getElementById(id);
 let audioCtx=null,peer=null,conn=null,pollTimer=null,connGen=0,joinAttempts=0,readyGen=-1,rejoinTimer=null,matchTimer=null;
 
@@ -341,14 +391,36 @@ function restore(s,iAmHost){G.teamSize=s.teamSize||1;G.innings=s.innings;G.targe
 function persist(){if(G.isHost&&G.roomId)saveSnap(makeSnap())}
 function setStage(s){G.stage=s;persist()}
 
+function buildFingers(container,v){
+ container.innerHTML='';
+ const upMap={1:[1,0,0,0,0],2:[1,1,0,0,0],3:[1,1,1,0,0],4:[1,1,1,1,0],5:[1,1,1,1,1],6:[0,0,0,0,1]};
+ const ups=v===null?[]:(upMap[v]||[]);
+ for(let i=0;i<5;i++){
+  const f=document.createElement('div');f.className='css-finger'+(ups[i]?'':' down');
+  const tip=document.createElement('div');tip.className='tip';f.appendChild(tip);
+  container.appendChild(f);
+ }
+ const badge=document.createElement('div');badge.className='num-badge';
+ badge.textContent=v===null?'':(v===0?'0':v);
+ container.closest('.css-hand').appendChild(badge);
+}
 function setHandGesture(imgEl,wrapperEl,v){
- if(v===null||v===undefined){imgEl.style.display='none';wrapperEl.classList.remove('shake','closed');return}
+ const cssEl=wrapperEl.querySelector('.css-hand');
+ const fingersEl=wrapperEl.querySelector('.css-fingers');
+ if(v===null||v===undefined){
+  if(cssEl)cssEl.classList.remove('shake','reveal');
+  wrapperEl.classList.remove('shake','reveal');
+  if(fingersEl)buildFingers(fingersEl,v);
+  return;
+ }
+ if(fingersEl)buildFingers(fingersEl,v);
+ if(cssEl){cssEl.classList.remove('shake','reveal');void cssEl.offsetWidth;cssEl.classList.add('reveal');setTimeout(()=>cssEl.classList.remove('reveal'),650)}
  imgEl.src='HandGesture/'+v+'.png';
  imgEl.alt='Gesture '+v;
- imgEl.style.display='block';
- wrapperEl.classList.remove('shake','closed');
- wrapperEl.classList.add('reveal');
- setTimeout(()=>wrapperEl.classList.remove('reveal'),650);
+ imgEl.onload=()=>{imgEl.style.display='block';if(cssEl)cssEl.style.display='none'};
+ imgEl.onerror=()=>{imgEl.style.display='none';if(cssEl)cssEl.style.display='flex'};
+ if(!imgEl.complete||imgEl.naturalWidth===0){imgEl.style.display='none';if(cssEl)cssEl.style.display='flex'}
+ wrapperEl.classList.remove('shake');void wrapperEl.offsetWidth;wrapperEl.classList.add('reveal');setTimeout(()=>wrapperEl.classList.remove('reveal'),650);
 }
 
 function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
@@ -388,6 +460,13 @@ function updatePlayerDisplay(){
  }else{$('playerA').textContent='';$('playerB').textContent=''}
 }
 
+function getUsername(){return localStorage.getItem('hcp_username')||''}
+function setUsername(n){localStorage.setItem('hcp_username',n);G.myName=n}
+function getRank(s){
+ const sr=s.ballsFaced?(s.runs/s.ballsFaced)*100:0;
+ const pts=s.wins*10+s.sixes*2+s.fours+s.highestScore*0.5+sr*0.1;
+ if(pts>=500)return'Legendary';if(pts>=300)return'Master';if(pts>=150)return'Champion';if(pts>=80)return'Pro';if(pts>=30)return'Rising Star';return'Newcomer';
+}
 function loadStats(){try{const s=JSON.parse(localStorage.getItem('hc_stats'))||defaultStats();s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';return s}catch(e){return defaultStats()}}
 function defaultStats(){return{name:'',matches:0,wins:0,losses:0,ties:0,runs:0,ballsFaced:0,sixes:0,fours:0,dots:0,highestScore:0,wicketsTaken:0,ballsBowled:0,runsConceded:0,hatricks:0,winStreak:0,bestWinStreak:0,streak:0}}
 function saveStats(s){localStorage.setItem('hc_stats',JSON.stringify(s))}
@@ -410,13 +489,28 @@ function stopTimer(){if(G.timerId){cancelAnimationFrame(G.timerId);G.timerId=nul
 $('leaveBtn').onclick=()=>{sfx('tap');$('leaveOverlay').classList.remove('hidden')};
 $('btnYesLeave').onclick=()=>{$('leaveOverlay').classList.add('hidden');destroyPeer();clearWD();stopTimer();clearSnap();$('menuOverlay').classList.remove('hidden');showLeave(false);resetGame();history.replaceState({},'',location.pathname)};
 $('btnNoLeave').onclick=()=>{$('leaveOverlay').classList.add('hidden')};
-$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();G.mode='offline';$('menuOverlay').classList.add('hidden');$('offlineSetup').classList.remove('hidden');resetOffline()};
-$('modeOnline').onclick=()=>{ensureAudio();sfx('tap');haptic();G.mode='online';$('menuOverlay').classList.add('hidden');$('onlineLobby').classList.remove('hidden');const rid=new URLSearchParams(location.search).get('room');if(rid){$('btnJoin').style.display='block';$('btnCreate').style.display='none';$('hostFormat').style.display='none';$('joinerNote').style.display='block'}else{$('btnCreate').style.display='block';$('btnJoin').style.display='none';$('hostFormat').style.display='block';$('joinerNote').style.display='none'}};
-$('modeInstant').onclick=()=>{ensureAudio();sfx('tap');haptic();G.mode='online';$('menuOverlay').classList.add('hidden');$('matchmakingOverlay').classList.remove('hidden');startMatchmaking()};
+function ensureUsername(cb){
+ const u=getUsername();
+ if(u){G.myName=u;cb();return}
+ $('usernameOverlay').classList.remove('hidden');
+ $('usernameInput').value='';
+ $('usernameInput').focus();
+ window._pendingCb=cb;
+}
+$('btnSaveUsername').onclick=()=>{sfx('tap');const v=$('usernameInput').value.trim();if(!v){$('usernameInput').focus();return}setUsername(v);$('usernameOverlay').classList.add('hidden');updHomeUsername();if(window._pendingCb){window._pendingCb();window._pendingCb=null}};
+$('usernameInput').onkeydown=(e)=>{if(e.key==='Enter')$('btnSaveUsername').click()};
+$('btnEditName').onclick=()=>{sfx('tap');$('usernameOverlay').classList.remove('hidden');$('usernameInput').value=getUsername();$('usernameInput').focus();window._pendingCb=null};
+function updHomeUsername(){const u=getUsername();if(u){$('homeUsername').style.display='flex';$('homeUsernameText').textContent=u}else{$('homeUsername').style.display='none'}}
+
+$('modeOffline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='offline';$('menuOverlay').classList.add('hidden');$('offlineSetup').classList.remove('hidden');resetOffline()})};
+$('modeOnline').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='online';$('menuOverlay').classList.add('hidden');$('onlineLobby').classList.remove('hidden');$('nameInput').value=getUsername();const rid=new URLSearchParams(location.search).get('room');if(rid){$('btnJoin').style.display='block';$('btnCreate').style.display='none';$('hostFormat').style.display='none';$('joinerNote').style.display='block'}else{$('btnCreate').style.display='block';$('btnJoin').style.display='none';$('hostFormat').style.display='block';$('joinerNote').style.display='none'}})};
+$('modeInstant').onclick=()=>{ensureAudio();sfx('tap');haptic();ensureUsername(()=>{G.mode='online';$('menuOverlay').classList.add('hidden');$('matchmakingOverlay').classList.remove('hidden');startMatchmaking()})};
 $('btnProfile').onclick=()=>{sfx('tap');showProfile()};
 $('btnBack1').onclick=()=>{$('offlineSetup').classList.add('hidden');$('menuOverlay').classList.remove('hidden')};
 $('btnBack2').onclick=()=>{$('onlineLobby').classList.add('hidden');$('menuOverlay').classList.remove('hidden')};
 $('btnCloseProfile').onclick=()=>{$('profileOverlay').classList.add('hidden')};
+$('nameB').onclick=()=>{if(G.mode==='online'&&!G.isBot&&G.oppStats){sfx('tap');showOppProfile()}};
+$('nameA').onclick=()=>{sfx('tap');showProfile()};
 
 document.querySelectorAll('#offlineSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#offlineSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
 document.querySelectorAll('#onlineSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#onlineSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
@@ -436,6 +530,7 @@ function startOffline(){
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
  const botName=genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
+ G.oppStats={name:botName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
  if(G.teamSize===1){G.myPlayers=[{name:'You',role:'all'}];G.oppPlayers=[{name:botName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:'Player '+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?botName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
  $('labelA').textContent='YOU';$('labelB').textContent=botName;$('nameA').textContent='YOU';$('nameB').textContent=botName;
@@ -516,13 +611,14 @@ function setupConn(c,gen,isJoiner){
 
 function startAutoRejoin(){if(rejoinTimer)return;let n=0;rejoinTimer=setInterval(()=>{n++;if(n>30){stopRejoin();$('btnRetry').style.display='block';return}if(peer&&!peer.destroyed){joinHost()}},3000)}
 function connReady(){if(readyGen===connGen)return;readyGen=connGen;connLog('Hello...');sendHello(0)}
-function sendHello(att){if(att>=20){connLog('Hello failed',true);$('btnRetry').style.display='block';return}if(conn&&conn.open){try{conn.send({type:'hello',name:G.myName,teamSize:G.teamSize,rejoin:G.wantRejoin});connLog('Sent!')}catch(e){setTimeout(()=>sendHello(att+1),500)}}else setTimeout(()=>sendHello(att+1),500)}
+function sendHello(att){if(att>=20){connLog('Hello failed',true);$('btnRetry').style.display='block';return}if(conn&&conn.open){try{conn.send({type:'hello',name:G.myName,teamSize:G.teamSize,rejoin:G.wantRejoin,stats:loadStats()});connLog('Sent!')}catch(e){setTimeout(()=>sendHello(att+1),500)}}else setTimeout(()=>sendHello(att+1),500)}
 
 function handleNet(d){
  if(!d||!d.type)return;
  if(d.type==='hello'){
   stopRejoin();G.oppName=d.name;
   if(!G.isHost){G.teamSize=d.teamSize||G.teamSize}
+  G.oppStats=d.stats||null;
   const inProg=(G.stage==='playing'||G.stage==='break');
   if(d.rejoin&&G.isHost&&inProg){const snap=makeSnap();sendMsg({type:'sync',snap:snap});$('waitingOverlay').classList.add('hidden');connLog('Resynced '+G.oppName);clearWD();stopTimer();G.state='idle';setTimeout(resumeFromStage,600)}
   else if(d.rejoin&&!G.isHost){normalHello()}
@@ -715,12 +811,14 @@ $('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden
 function doRematch(){G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;$('resultOverlay').classList.add('hidden');startInnings(1)}
 $('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){$('menuOverlay').classList.remove('hidden');resetGame()}else{G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;startInnings(1)}};
 $('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();history.replaceState({},'',location.pathname)};
-function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
+function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;G.oppStats=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
 
-function showProfile(){
- const s=loadStats();
+function showProfile(name,stats){
+ const s=stats||loadStats();
  const card=$('profileCard');
- card.innerHTML='<h3>'+(s.name||'Player')+'</h3>'
+ const rank=getRank(s);
+ $('profileTitle').textContent=name?(name+"'s Profile"):'My Profile';
+ card.innerHTML=(name?'':'<div class="profile-rank">'+rank+'</div>')
  +'<div class="stat-grid">'
  +'<div class="stat-item"><div class="val">'+s.matches+'</div><div class="lbl">Matches</div></div>'
  +'<div class="stat-item"><div class="val">'+s.wins+'</div><div class="lbl">Wins</div></div>'
@@ -736,6 +834,10 @@ function showProfile(){
  +'<div class="stat-item"><div class="val">'+s.hatricks+'</div><div class="lbl">Hatricks</div></div>'
  +'</div>';
  $('profileOverlay').classList.remove('hidden');
+}
+function showOppProfile(){
+ if(!G.oppStats){return}
+ showProfile(G.oppName,G.oppStats);
 }
 
 let mmSearching=false;
@@ -765,6 +867,7 @@ function startMatchmaking(){
 }
 function startBotMatch(){
  G.isBot=true;G.botProfile=genBotProfile();G.oppName=G.botProfile.name;G.isHost=true;
+ G.oppStats={name:G.oppName,matches:Math.floor(Math.random()*50)+10,wins:Math.floor(Math.random()*25)+5,losses:Math.floor(Math.random()*20)+2,ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
  G.totalBalls=G.teamSize===11?120:G.teamSize*6;
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
  G.freeHit=false;BotAI.reset();
@@ -778,21 +881,25 @@ function startBotMatch(){
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
 ['touchstart','click'].forEach(ev=>document.addEventListener(ev,()=>ensureAudio(),{passive:true}));
-updScore();renderBalls();
+updScore();renderBalls();updHomeUsername();
 try{
  const hc=document.getElementById('homeHands');if(hc){
-  function buildHomeHandImg(v,cls){
+  function buildHomeHand(v,cls){
    const w=document.createElement('div');w.className='home-hand '+cls;
-   const img=document.createElement('img');img.src='HandGesture/'+v+'.png';img.alt='Gesture '+v;
-   img.style.cssText='width:100%;height:100%;object-fit:contain';
-   w.appendChild(img);return w;
+   const ch=document.createElement('div');ch.className='css-hand';
+   const fng=document.createElement('div');fng.className='css-fingers';
+   const upMap={1:[1,0,0,0,0],2:[1,1,0,0,0],3:[1,1,1,0,0],4:[1,1,1,1,0],5:[1,1,1,1,1],6:[0,0,0,0,1]};
+   const ups=upMap[v]||[];
+   for(let i=0;i<5;i++){const f=document.createElement('div');f.className='css-finger'+(ups[i]?'':' down');const tip=document.createElement('div');tip.className='tip';f.appendChild(tip);fng.appendChild(f)}
+   const palm=document.createElement('div');palm.className='css-palm';
+   ch.appendChild(fng);ch.appendChild(palm);w.appendChild(ch);return w;
   }
   let seq=[6,5,4,3,2,1,2,3,4,5,6];
   let si=0;
   function cycleHands(){
    hc.innerHTML='';
-   hc.appendChild(buildHomeHandImg(seq[si],'left'));
-   hc.appendChild(buildHomeHandImg(seq[(si+5)%seq.length],'right'));
+   hc.appendChild(buildHomeHand(seq[si],'left'));
+   hc.appendChild(buildHomeHand(seq[(si+5)%seq.length],'right'));
    si=(si+1)%seq.length;
   }
   cycleHands();setInterval(cycleHands,1200);
