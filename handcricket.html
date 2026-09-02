@@ -72,7 +72,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .gesture-btn .big{font-size:clamp(16px,2.8vh,22px);display:block;line-height:1}
 .gesture-btn .small{font-size:clamp(7px,1vh,9px);color:#94a3b8;margin-top:1px;display:block;font-weight:700}
 .gesture-btn.selected .small{color:rgba(255,255,255,.8)}
-.overlay{position:fixed;inset:0;background:rgba(15,23,42,.94);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-y:auto;animation:oi .4s ease;scroll-behavior:smooth}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.94);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-y:auto;animation:oi .4s ease;scroll-behavior:smooth;max-height:100vh;max-height:100dvh}
 @keyframes oi{from{opacity:0}to{opacity:1}}
 .overlay.hidden{display:none!important}
 .overlay h1{font-size:clamp(22px,3.2vh,28px);margin:0 0 8px;color:#f8fafc;font-weight:900}
@@ -144,7 +144,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .team-size-btn.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:rgba(245,158,11,.5)}
 .inning-info{font-size:10px;color:#34d399;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}}
-@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}}
+@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}.role-row{grid-template-columns:24px 1fr auto auto;gap:4px;padding:6px 8px}.role-select button{padding:3px 6px;font-size:9px}.role-bowl-select button{padding:3px 5px;font-size:8px}.story-dialogue-box{padding:10px 12px}.gesture-grid{gap:3px}.gesture-btn{padding:clamp(4px,.6vh,6px) 1px;font-size:11px}}
 @media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
 @media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}}
 .home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f59e0b 0%,#fff 50%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
@@ -153,8 +153,10 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:.7;transform:translateY(0)}}
 .home-hands{display:flex;justify-content:center;align-items:center;gap:clamp(20px,5vw,50px);margin:10px 0 14px;height:clamp(90px,16vh,130px);animation:fadeUp .6s .3s both}
 .home-hand{width:clamp(60px,12vh,90px);height:clamp(78px,16vh,115px);position:relative;animation:handFloat 3s ease-in-out infinite}
-.home-hand.left{animation-delay:0s;transform:scaleX(-1)}
-.home-hand.right{animation-delay:1.5s;animation-name:handFloatR}
+.home-hand.left{animation-delay:0s;transform:scaleX(-1) translateY(0)}
+.home-hand.right{animation-delay:1.5s}
+@keyframes handFloat{0%,100%{transform:scaleX(-1) translateY(0) rotate(0)}50%{transform:scaleX(-1) translateY(-8px) rotate(3deg)}}
+@keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
 .home-hand .css-hand{width:100%;height:100%;transform:scale(1.1);display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
 .home-hand .css-fingers{display:flex;gap:2px;align-items:flex-end;justify-content:center;height:60%}
 .home-hand .css-finger{width:8px;height:40px;position:relative}
@@ -166,8 +168,6 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-hand .css-finger:nth-child(4){transform:rotate(10deg);transform-origin:bottom center}
 .home-hand .css-finger:nth-child(5){width:7px;transform:rotate(14deg);transform-origin:bottom center}
 .home-hand .css-palm{width:40%;height:18%;background:linear-gradient(180deg,#f0b888 0%,#d4956a 100%);border-radius:4px 4px 12px 12px;border:1px solid rgba(196,135,106,.3)}
-@keyframes handFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(3deg)}}
-@keyframes handFloatR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-8px) rotate(-3deg)}}
 .home-ball{width:clamp(18px,3vh,26px);height:clamp(18px,3vh,26px);background:radial-gradient(circle at 35% 35%,#ef4444,#b91c1c 60%,#7f1d1d);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5),inset 0 -2px 4px rgba(0,0,0,.3);animation:ballBounce 2s ease-in-out infinite}
 .home-ball::after{content:'';position:absolute;width:60%;height:1.5px;background:rgba(255,255,255,.25);top:45%;left:20%;border-radius:1px;transform:rotate(-15deg)}
 @keyframes ballBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}25%{transform:translate(-50%,-65%) scale(1.1)}50%{transform:translate(-50%,-50%) scale(1)}75%{transform:translate(-50%,-55%) scale(1.05)}}
@@ -294,7 +294,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .story-dialogue-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;max-width:400px;margin:0 auto;pointer-events:auto;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .story-dialogue-speaker{font-size:12px;font-weight:800;color:var(--accent);margin-bottom:4px}
 .story-dialogue-text{font-size:13px;line-height:1.5;color:var(--text)}
-.story-dialogue-btn{display:block;margin:10px auto 0;padding:8px 24px;border-radius:8px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:12px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.story-dialogue-btn{display:block;margin:10px auto 0;padding:10px 28px;border-radius:10px;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto;position:relative;z-index:25}
 @keyframes dialogueIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
 /* Roast Display */
@@ -477,7 +477,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="resultOverlay"><h1 id="resTitle">Over</h1><p id="resMsg"></p>
 <div id="matchStatsBox" style="display:none"></div>
 <button id="btnRematch" style="display:none">Rematch</button>
-<button id="btnAgain">Play Again</button>
+<button id="btnAgain" style="display:none">New Match</button>
 <button id="btnMenu" class="secondary">Main Menu</button></div>
 <div class="overlay hidden" id="leaveOverlay"><h1>Leave?</h1><p>Progress lost.</p>
 <button id="btnYesLeave" class="danger">Yes, Leave</button>
@@ -520,6 +520,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div id="storyTierList"></div>
 <div style="display:flex;gap:8px;margin-top:12px;width:100%;max-width:340px">
 <button class="secondary small" id="btnStoryBack">Back to Menu</button>
+<button class="secondary small" id="btnStoryRestart" style="color:#fb7185;border-color:rgba(239,68,68,.3)">Restart</button>
 </div>
 </div>
 
@@ -573,7 +574,7 @@ const BOT_SUFFIX=['_YT','_XD','_OP','_gg','_420','_69','YT','XD','OP','Playz','G
 const BOT_EMOJI=['🦁','🐯','🦅','🐺','💀','🔥','⚡','🎮','🎯','🗡️','🛡️','🏹','💣','🏆','⭐','👑','💎','🗡️','🐍','🕷️','🤖','👽','🧿','🍀','🎪'];
 
 function genBotName(){const f=BOT_FIRST[Math.floor(Math.random()*BOT_FIRST.length)];const l=BOT_LAST[Math.floor(Math.random()*BOT_LAST.length)];const usePfx=Math.random()>.5;const useSfx=Math.random()>.5;const num=Math.floor(Math.random()*99)+1;const sep=['_','-','.',''][Math.floor(Math.random()*4)];let name='';if(usePfx)name=BOT_PREFIX[Math.floor(Math.random()*BOT_PREFIX.length)];name+=f;if(Math.random()>.6)name+=sep+l;else name+=l;if(useSfx)name+=BOT_SUFFIX[Math.floor(Math.random()*BOT_SUFFIX.length)];else if(Math.random()>.7)name+=num;return name}
-function genBotProfile(){const n=genBotName();const m=Math.floor(Math.random()*80)+10;const w=Math.floor(m*(.3+Math.random()*.4));return{name:n,avatar:BOT_EMOJI[Math.floor(Math.random()*BOT_EMOJI.length)],matches:m,wins:w,losses:m-w-Math.floor(Math.random()*3),ties:Math.floor(Math.random()*3),runs:Math.floor(m*(15+Math.random()*25)),ballsFaced:Math.floor(m*(10+Math.random()*15)),sixes:Math.floor(Math.random()*m*.3),fours:Math.floor(Math.random()*m*.5),wicketsTaken:Math.floor(m*(.2+Math.random()*.3)),runsConceded:Math.floor(m*(10+Math.random()*20)),winStreak:Math.floor(Math.random()*8),bestWinStreak:Math.floor(Math.random()*12)+2,get strikeRate(){return this.ballsFaced?(this.runs/this.ballsFaced*100).toFixed(1):'0.0'},get bowlingAvg(){return this.wicketsTaken?(this.runsConceded/this.wicketsTaken).toFixed(1):'-'},get economy(){return this.ballsBowled?(this.runsConceded/this.ballsBowled*6).toFixed(1):'-'},get winPct(){return this.matches?((this.wins/this.matches)*100).toFixed(0)+'%':'0%'},get highestScore(){return Math.floor(this.runs/this.matches*1.5)+Math.floor(Math.random()*20)}}};
+function genBotProfile(){const n=genBotName();const m=Math.floor(Math.random()*80)+10;const w=Math.floor(m*(.3+Math.random()*.4));const hs=Math.floor(m*(15+Math.random()*25)/m*1.5)+Math.floor(Math.random()*20);return{name:n,avatar:BOT_EMOJI[Math.floor(Math.random()*BOT_EMOJI.length)],matches:m,wins:w,losses:m-w-Math.floor(Math.random()*3),ties:Math.floor(Math.random()*3),runs:Math.floor(m*(15+Math.random()*25)),ballsFaced:Math.floor(m*(10+Math.random()*15)),sixes:Math.floor(Math.random()*m*.3),fours:Math.floor(Math.random()*m*.5),wicketsTaken:Math.floor(m*(.2+Math.random()*.3)),runsConceded:Math.floor(m*(10+Math.random()*20)),winStreak:Math.floor(Math.random()*8),bestWinStreak:Math.floor(Math.random()*12)+2,get strikeRate(){return this.ballsFaced?(this.runs/this.ballsFaced*100).toFixed(1):'0.0'},get bowlingAvg(){return this.wicketsTaken?(this.runsConceded/this.wicketsTaken).toFixed(1):'-'},get economy(){return this.ballsBowled?(this.runsConceded/this.ballsBowled*6).toFixed(1):'-'},get winPct(){return this.matches?((this.wins/this.matches)*100).toFixed(0)+'%':'0%'},get highestScore(){return hs}}};
 
 const BotAI={
  history:[],transitions:{},ballCount:0,playerPatterns:{},recentChoices:[],
@@ -793,7 +794,7 @@ function sfx(n){ensureAudio();const B=beep;if(n==='tap')B(600,.05,'square',.08);
 function haptic(ms){if(navigator.vibrate)try{navigator.vibrate(ms||15)}catch(e){}}
 
 function gLabel(v){return v==null?'-':v===6?'SIX!':v+(v===1?' run':' runs')}
-function oversStr(b){const ov=G.totalBalls/6;return Math.floor(b/6)+'.'+(b%6)+' / '+ov+' ov'}
+function oversStr(b){const ov=Math.floor(G.totalBalls/6);return Math.floor(b/6)+'.'+(b%6)+' / '+ov+' ov'}
 function updScore(){$('scoreA').textContent=G.me.score;$('wicketsA').textContent=G.me.wkts;$('ballsA').textContent=oversStr(G.me.balls);$('scoreB').textContent=G.opp.score;$('wicketsB').textContent=G.opp.wkts;$('ballsB').textContent=oversStr(G.opp.balls);$('batA').style.display=G.iBat?'inline-block':'none';$('batB').style.display=G.iBat?'none':'inline-block';updatePlayerDisplay()}
 function popScore(s){const el=s==='A'?$('scoreBoxA'):$('scoreBoxB');if(!el)return;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}
 function renderBalls(){$('ballsRow').innerHTML='';const bat=G.iBat?G.me:G.opp;const max=Math.min(G.totalBalls,36);for(let i=0;i<max;i++){const d=document.createElement('div');d.className='ball-dot';if(i<bat.hist.length){d.classList.add('done');const h=bat.hist[i];if(h==='W'){d.classList.add('wicket');d.textContent='W'}else if(h===6){d.classList.add('six');d.textContent='6'}else if(h==='NB'){d.classList.add('noball');d.textContent='NB'}else if(h==='DOT'){d.classList.add('dotball');d.textContent='.'}else d.textContent=h}$('ballsRow').appendChild(d)}}
@@ -841,8 +842,9 @@ function updateStatsAfterMatch(result){
  else{s.ties++}
  s.runs+=result.myRuns;s.ballsFaced+=result.myBalls;s.sixes+=result.mySixes;s.fours+=result.myFours;
  s.highestScore=Math.max(s.highestScore,result.myRuns);
+ s.dots+=(result.myBalls-result.mySixes-result.myFours-Math.max(0,result.myRuns-result.mySixes*6-result.myFours*4));
  s.wicketsTaken+=result.oppWickets;s.ballsBowled+=result.oppBalls;s.runsConceded+=result.oppRuns;
- if(result.myWickets>=3)s.hatricks++;
+ if(result.oppWickets>=3)s.hatricks++;
  s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';
  s.bowlingAvg=s.wicketsTaken?(s.runsConceded/s.wicketsTaken).toFixed(1):'-';
  s.winPct=s.matches?((s.wins/s.matches)*100).toFixed(0)+'%':'0%';
@@ -933,10 +935,9 @@ function startOffline(){
  G.teamSize=getTeamSize();
  G.totalBalls=G.teamSize===11?120:G.teamSize*6;
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
- G.freeHit=false;BotAI.reset();
- const botName=genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
-   const bM2=Math.floor(Math.random()*50)+10; const bW2=Math.min(Math.floor(Math.random()*25)+5, bM2); G.oppStats={name:botName,matches:bM2,wins:bW2,losses:Math.max(0,bM2-bW2-Math.floor(Math.random()*3)),ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};
-  const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
+  G.freeHit=false;BotAI.reset(G.storyDifficulty||0);
+  const botName=G.oppStats?G.oppStats.name:genBotName();G.oppName=botName;G.isBot=true;G.botProfile=genBotProfile();G.botProfile.name=botName;
+ if(!G.oppStats){const bM2=Math.floor(Math.random()*50)+10;const bW2=Math.min(Math.floor(Math.random()*25)+5,bM2);G.oppStats={name:botName,matches:bM2,wins:bW2,losses:Math.max(0,bM2-bW2-Math.floor(Math.random()*3)),ties:Math.floor(Math.random()*3),runs:Math.floor(Math.random()*500)+50,ballsFaced:Math.floor(Math.random()*400)+40,sixes:Math.floor(Math.random()*30)+2,fours:Math.floor(Math.random()*40)+5,dots:Math.floor(Math.random()*100)+10,highestScore:Math.floor(Math.random()*80)+10,wicketsTaken:Math.floor(Math.random()*40)+3,ballsBowled:Math.floor(Math.random()*300)+30,runsConceded:Math.floor(Math.random()*400)+40,hatricks:Math.floor(Math.random()*3),winStreak:0,bestWinStreak:Math.floor(Math.random()*8)+1,streak:0};const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';}
  if(G.teamSize===1){G.myPlayers=[{name:'You',role:'all'}];G.oppPlayers=[{name:botName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:'Player '+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?botName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
  $('labelA').textContent='YOU';$('labelB').textContent=botName;$('nameA').textContent='YOU';$('nameB').textContent=botName;
@@ -1199,13 +1200,13 @@ function nextBall(){
  setBtns(true);setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='?';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='?';
-  if(G.mode==='offline'){BotAI.updateContext(G.target,G.me.score,G.me.wkts,G.totalBalls);BotAI.difficulty=G.storyDifficulty||0;if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
+  if(G.mode==='offline'){BotAI.updateContext(G.target,G.me.score,G.me.wkts,G.totalBalls);BotAI.difficulty=G.storyDifficulty||Math.min(0.1*(G.teamSize||1),0.5);if(G.iBat){G.oppPick=BotAI.bowl()}else{G.oppPick=BotAI.bat()}updBotLvl()}
  const fh=G.freeHit?' FREE HIT':'';
  $('status').innerHTML=G.iBat?'BAT!'+fh:'BOWL!'+fh;
  updFH();startTimer();armWD();
 }
 function onTimeUp(){stopTimer();if(G.state!=='waiting')return;
- if(G.mode==='offline'){if(G.myPick===null){if(G.iBat){dotBall()}else{noBall()}return}BotAI.record(G.myPick);triggerReveal()}
+ if(G.mode==='offline'){if(G.myPick===null){G.myPick=Math.floor(Math.random()*6)+1;G.iAuto=true}BotAI.record(G.myPick);triggerReveal()}
  else{if(G.myPick===null){G.myPick=Math.floor(Math.random()*6)+1;G.iAuto=true;sendMsg({type:'choice',value:G.myPick,auto:true})}else sendMsg({type:'choice',value:G.myPick,auto:false});checkReveal()}}
 function dotBall(){G.state='processing';setBtns(false);const bat=curBat();bat.balls++;bat.hist.push('DOT');flash('DOT!','dot');sfx('run');haptic(10);$('status').innerHTML='<span class="hl">DOT!</span> Missed pick.';if(G.freeHit){G.freeHit=false;updFH()}updScore();renderBalls();persist();G.state='idle';setTimeout(nextBall,1500)}
 function noBall(){G.state='processing';setBtns(false);const bat=curBat();bat.score+=1;bat.hist.push('NB');flash('NO BALL!','noball');sfx('nb');haptic(25);$('status').innerHTML='<span class="hl">NO BALL!</span> +1 & FREE HIT!';G.freeHit=true;updScore();renderBalls();updFH();persist();G.state='idle';setTimeout(()=>{sfx('fh');nextBall()},1800)}
@@ -1248,19 +1249,21 @@ function finishMatch(){
  else if(!won&&!tied){t='LOSE';m=mn+' '+my+'/'+G.me.wkts+' vs '+on+' '+op+'/'+G.opp.wkts;sfx('lose')}
  else{t='TIED';m='Both: '+my+'/'+G.me.wkts}
  $('resTitle').textContent=t;$('resMsg').innerHTML=m;
- const matchResult={won:!won&&!tied?false:won,tied,myRuns:G.me.score,myBalls:G.me.balls,mySixes:G.me.hist.filter(h=>h===6).length,myFours:G.me.hist.filter(h=>h===4).length,myWickets:G.opp.wkts,oppRuns:G.opp.score,oppBalls:G.opp.balls,oppWickets:G.me.wkts};
+ const matchResult={won:!won&&!tied?false:won,tied,myRuns:G.me.score,myBalls:G.me.balls,mySixes:G.me.hist.filter(h=>h===6).length,myFours:G.me.hist.filter(h=>h===4).length,myWickets:G.me.wkts,oppRuns:G.opp.score,oppBalls:G.opp.balls,oppWickets:G.opp.wkts};
  G.recentResult=matchResult;
  updateStatsAfterMatch(matchResult);
  const statsBox=$('matchStatsBox');statsBox.style.display='block';
  const s=loadStats();
   statsBox.innerHTML='<div class="profile-card"><div class="profile-section"><h3>Main Stats</h3><div class="stat-grid two-col"><div class="stat-item"><div class="val">'+s.matches+'</div><div class="lbl">Matches</div></div><div class="stat-item"><div class="val">'+s.wins+'</div><div class="lbl">Wins</div></div><div class="stat-item"><div class="val">'+s.winPct+'</div><div class="lbl">Win%</div></div><div class="stat-item"><div class="val">'+s.streak+'</div><div class="lbl">Streak</div></div></div></div><div class="profile-section"><h3>Batting</h3><div class="stat-grid"><div class="stat-item"><div class="val">'+s.runs+'</div><div class="lbl">Runs</div></div><div class="stat-item"><div class="val">'+s.strikeRate+'</div><div class="lbl">SR</div></div><div class="stat-item"><div class="val">'+s.highestScore+'</div><div class="lbl">Best</div></div><div class="stat-item"><div class="val">'+s.sixes+'</div><div class="lbl">Sixes</div></div><div class="stat-item"><div class="val">'+s.fours+'</div><div class="lbl">Fours</div></div></div></div><div class="profile-section"><h3>Bowling</h3><div class="stat-grid"><div class="stat-item"><div class="val">'+s.wicketsTaken+'</div><div class="lbl">Wkts</div></div><div class="stat-item"><div class="val">'+s.bowlingAvg+'</div><div class="lbl">Avg</div></div><div class="stat-item"><div class="val">'+s.dots+'</div><div class="lbl">Dots</div></div></div></div></div>';
- $('btnRematch').style.display=G.mode==='online'?'inline-block':'none';
- $('resultOverlay').classList.remove('hidden');showLeave(false);
+  $('btnRematch').style.display='inline-block';
+  $('btnAgain').style.display='none';
+  $('btnMenu').style.display='inline-block';
+  $('resultOverlay').classList.remove('hidden');showLeave(false);
 }
 $('btnNextInn').onclick=()=>{sfx('tap');$('inningsOverlay').classList.add('hidden');startInnings(2)};
-$('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');clearSnap();if(G.mode==='online'&&G.isHost){doRematch();sendMsg({type:'rematch'})}};
+$('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');clearSnap();if(G.mode==='online'&&G.isHost){doRematch();sendMsg({type:'rematch'})}else if(G.mode==='offline'){G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.target=null;G.innings=1;G.freeHit=false;BotAI.reset(G.storyDifficulty||0);startInnings(1)}};
 function doRematch(){G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;$('resultOverlay').classList.add('hidden');startInnings(1)}
-$('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){$('menuOverlay').classList.remove('hidden');resetGame()}else{G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;startInnings(1)}};
+$('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.target=null;G.innings=1;G.freeHit=false;BotAI.reset(G.storyDifficulty||0);startInnings(1)}else if(G.mode==='online'){if(G.isHost){doRematch();sendMsg({type:'rematch'})}else{$('status').innerHTML='<span class="hl">Waiting for host rematch...</span>'}}};
 $('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();updHomeTrophies();history.replaceState({},'',location.pathname)};
 function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;G.oppStats=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
 
@@ -1392,7 +1395,7 @@ function revealBowlerRole(isWicket) {
   const banner = $('roleRevealBanner');
   banner.innerHTML = reason + ' ' + bowler.name + ' was bowling — <span class="hl-' + cls + '">' + label + ' Style</span>';
   banner.classList.add('show');
-  setTimeout(() => banner.classList.remove('show'), 3500);
+  setTimeout(() => banner.classList.remove('show'), 2500);
 }
 
 // Role assignment overlay
@@ -1416,7 +1419,7 @@ function renderRoleGrid() {
     row.className = 'role-row';
     const batStyle = p.battingStyle || 'balanced';
     const bowlStyle = p.bowlingStyle || 'balanced';
-    const showBowl = p.role === 'bowler' || p.role === 'all';
+    const showBowl = true;
     row.innerHTML = '<div class="num">' + (i + 1) + '</div>'
       + '<div><div class="pname">' + p.name + '</div><div class="ptype">' + p.role + '</div></div>'
       + '<div class="role-select">'
@@ -1447,7 +1450,7 @@ function renderRoleGrid() {
 
 function getRoleLimits(ts){
  if(ts<=1)return null;
- if(ts===2)return{maxAgg:1,maxDef:1,minBal:0};
+ if(ts===2)return{maxAgg:1,maxDef:1,minBal:1};
  if(ts===3)return{maxAgg:1,maxDef:1,minBal:1};
  if(ts===5)return{maxAgg:2,maxDef:2,minBal:1};
  return{maxAgg:4,maxDef:4,minBal:3};
@@ -1474,19 +1477,45 @@ $('btnRoleAllBal').onclick = () => {
 };
 $('btnRoleRandom').onclick = () => {
   sfx('tap');
+  const ts = G.teamSize || 11;
+  const lim = getRoleLimits(ts);
   const styles = ['aggressive', 'defensive', 'balanced'];
+  const n = roleAssignPlayers.length;
+  let aggCount = 0, defCount = 0, balCount = 0;
   roleAssignPlayers.forEach(p => {
-    p.battingStyle = styles[Math.floor(Math.random() * 3)];
+    let style;
+    const maxAgg = lim ? lim.maxAgg : 4;
+    const maxDef = lim ? lim.maxDef : 4;
+    const minBal = lim ? lim.minBal : 1;
+    const remaining = n - aggCount - defCount - balCount;
+    const needBal = minBal - balCount;
+    if (remaining <= needBal) { style = 'balanced'; }
+    else {
+      const avail = [];
+      if (aggCount < maxAgg) avail.push('aggressive');
+      if (defCount < maxDef) avail.push('defensive');
+      avail.push('balanced');
+      style = avail[Math.floor(Math.random() * avail.length)];
+    }
+    p.battingStyle = style;
     p.bowlingStyle = styles[Math.floor(Math.random() * 3)];
+    if (style === 'aggressive') aggCount++;
+    else if (style === 'defensive') defCount++;
+    else balCount++;
   });
   renderRoleGrid();
 };
 $('btnRoleReal').onclick = () => {
   sfx('tap');
-  // Use the predefined styles from story data or defaults
   roleAssignPlayers.forEach(p => {
     if (p._realBattingStyle) p.battingStyle = p._realBattingStyle;
+    else if (p.role === 'batter') p.battingStyle = 'aggressive';
+    else if (p.role === 'bowler') p.battingStyle = 'defensive';
+    else p.battingStyle = 'balanced';
     if (p._realBowlingStyle) p.bowlingStyle = p._realBowlingStyle;
+    else if (p.role === 'bowler') p.bowlingStyle = 'aggressive';
+    else if (p.role === 'batter') p.bowlingStyle = 'balanced';
+    else p.bowlingStyle = 'balanced';
   });
   renderRoleGrid();
 };
@@ -1526,6 +1555,10 @@ function getStoryTrophyIcon(tierIdx) {
 
 function renderStoryHome() {
   if (!storyProgress) storyProgress = defaultStoryProgress();
+  if (!storyProgress.completedTiers) storyProgress.completedTiers = [];
+  if (!storyProgress.matchResults) storyProgress.matchResults = [];
+  if (!storyProgress.trophies) storyProgress.trophies = [];
+  if (!storyProgress.stats) storyProgress.stats = { matchesPlayed: 0, wins: 0, losses: 0, totalRuns: 0, totalWickets: 0 };
   const sp = storyProgress;
 
   // Trophy shelf
@@ -1672,14 +1705,25 @@ function genStoryBotStats(difficulty, name) {
 }
 
 function showStoryToss() {
-  // Quick toss for story mode
   const won = Math.random() < 0.5;
   if (won) {
-    G.iBat = Math.random() < 0.5;
-    startStoryMatchPlay();
+    showStoryDialogue(
+      (storyLang === 'hi' ? 'Toss jeet gaye! Kya karoge?' : 'You won the toss! What will you do?'),
+      () => {
+        const choice = Math.random() < 0.5;
+        G.iBat = choice;
+        showStoryDialogue(
+          (storyLang === 'hi' ? (choice ? 'Pehle batting karenge!' : 'Pehle bowling karenge!') : (choice ? 'You chose to bat first!' : 'You chose to bowl first!')),
+          () => { startStoryMatchPlay(); }
+        );
+      }
+    );
   } else {
-    G.iBat = Math.random() < 0.5; // Bot decides
-    startStoryMatchPlay();
+    G.iBat = Math.random() < 0.5;
+    showStoryDialogue(
+      (storyLang === 'hi' ? (G.iBat ? 'Toss haare, wo batting choose karte hain.' : 'Toss haare, wo bowling choose karte hain.') : (G.iBat ? 'Lost the toss. They chose to bat.' : 'Lost the toss. They chose to bowl.')),
+      () => { startStoryMatchPlay(); }
+    );
   }
 }
 
@@ -1705,11 +1749,25 @@ function showStoryDialogue(text, callback) {
     const colonIdx = firstLine.indexOf(':');
     speaker = firstLine.substring(0, colonIdx).trim();
     content = lines.slice(1).join('\n').trim() || firstLine.substring(colonIdx + 1).trim();
+  } else if (text.includes(':')) {
+    const colonIdx = text.indexOf(':');
+    speaker = text.substring(0, colonIdx).trim();
+    content = text.substring(colonIdx + 1).trim();
   }
-  $('dlgSpeaker').textContent = speaker || 'Narrator';
+  if (!speaker || speaker === 'Narrator') {
+    const oppTeam = storyProgress && storyProgress.currentTier !== undefined ? 
+      (STORY_DATA.tiers[storyProgress.currentTier] ? 
+        STORY_DATA.tiers[storyProgress.currentTier].matches[storyProgress.currentMatch]?.oppName || G.oppName || 'Opponent'
+        : G.oppName || 'Opponent') 
+      : G.oppName || 'Opponent';
+    speaker = oppTeam;
+  }
+  $('dlgSpeaker').textContent = speaker;
   $('dlgText').textContent = content;
   dlg.classList.remove('hidden');
-  $('dlgBtn').onclick = () => {
+  const btn = $('dlgBtn');
+  btn.onclick = null;
+  btn.onclick = () => {
     sfx('tap');
     dlg.classList.add('hidden');
     if (callback) callback();
@@ -1764,7 +1822,11 @@ function showTrophyCelebration(icon, title, sub, teamName) {
 }
 $('btnTrophyClose').onclick = () => {
   sfx('tap'); $('trophyCelebrate').classList.add('hidden');
-  storyProgress.currentTier++; storyProgress.currentMatch = 0;
+  if (!storyProgress.completedTiers.includes(storyProgress.currentTier)) {
+    storyProgress.completedTiers.push(storyProgress.currentTier);
+  }
+  storyProgress.currentTier++;
+  storyProgress.currentMatch = 0;
   cloudSaveStory();
   $('menuOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden');
   renderStoryHome();
@@ -1815,6 +1877,7 @@ async function cloudLoadStory() {
 }
 
 $('btnStoryBack').onclick = () => { sfx('tap'); $('storyHome').classList.add('hidden'); $('menuOverlay').classList.remove('hidden'); };
+$('btnStoryRestart').onclick = () => { sfx('tap'); if(confirm('Restart story? All progress will be lost!')){storyProgress=defaultStoryProgress();cloudSaveStory();renderStoryHome();} };
 function enterStoryMode() {
   ensureUsername(async () => {
     $('menuOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden');
@@ -1880,8 +1943,17 @@ document.querySelectorAll('#storyLang .lang-btn').forEach(b => {
   };
   function advanceStoryAfterWin(){
     const tier = STORY_DATA.tiers[storyProgress.currentTier];
-    if(storyProgress.currentMatch >= tier.matches.length){ storyProgress.currentMatch = 0; showStoryTierComplete(); }
-    else { cloudSaveStory(); $('resultOverlay').classList.add('hidden'); $('storyHome').classList.remove('hidden'); renderStoryHome(); }
+    if(!tier) { showStoryHome(); return; }
+    if(storyProgress.currentMatch >= tier.matches.length - 1){
+      storyProgress.currentMatch = 0;
+      showStoryTierComplete();
+    } else {
+      storyProgress.currentMatch++;
+      cloudSaveStory();
+      $('resultOverlay').classList.add('hidden');
+      $('storyHome').classList.remove('hidden');
+      renderStoryHome();
+    }
   }
 })();
 
@@ -1929,7 +2001,7 @@ function startMatchmaking(){
    setTimeout(()=>{$('matchmakingOverlay').classList.add('hidden');startBotMatch()},800);
   }
  },1000);
- G.myName='Player';
+ G.myName=getUsername()||'Player';
  saveSession({role:'host',room:roomId,name:G.myName});
  startPeer(true,roomId);
 }
@@ -1939,8 +2011,8 @@ function startBotMatch(){
   const bs=G.oppStats;bs.winPct=bs.matches?((bs.wins/bs.matches)*100).toFixed(0)+'%':'0%';bs.strikeRate=bs.ballsFaced?((bs.runs/bs.ballsFaced)*100).toFixed(1):'0.0';bs.bowlingAvg=bs.wicketsTaken?(bs.runsConceded/bs.wicketsTaken).toFixed(1):'-';
  G.totalBalls=G.teamSize===11?120:G.teamSize*6;
  G.totalWkts=G.teamSize===1?1:G.teamSize===11?10:G.teamSize;
- G.freeHit=false;BotAI.reset();
- if(G.teamSize===1){G.myPlayers=[{name:G.myName,role:'all'}];G.oppPlayers=[{name:G.oppName,role:'all'}]}
+  G.freeHit=false;BotAI.reset(G.storyDifficulty||0);
+  if(G.teamSize===1){G.myPlayers=[{name:G.myName,role:'all'}];G.oppPlayers=[{name:G.oppName,role:'all'}]}
  else{G.myPlayers=Array.from({length:G.teamSize},(_,i)=>({name:G.myName+(i+1),role:i<G.teamSize/2?'batter':'all'}));G.oppPlayers=Array.from({length:G.teamSize},(_,i)=>({name:i===0?G.oppName:'Bot '+(i+1),role:i<G.teamSize/2?'batter':'all'}))}
  G.myTeam='opp';G.oppTeam='opp';
   $('labelA').textContent=G.myName;$('labelB').textContent=G.oppName;$('nameA').textContent=G.myName;$('nameB').textContent=G.oppName;
