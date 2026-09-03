@@ -757,7 +757,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <button id="btnInnBreakNext">Start 2nd Innings</button>
 </div>
 
-<div class="overlay hidden" id="tutorialOverlay" style="background:rgba(15,23,42,.85)">
+<div class="overlay hidden" id="tutorialOverlay" style="background:rgba(15,23,42,.97)">
 <h1>How to Play</h1>
 <div class="tutorial" id="tutorialCard">
 <button class="tut-skip" id="tutSkip">Skip</button>
@@ -1496,10 +1496,10 @@ if(typeof botChat==='function'&&overEnded)botChat('onOverEnd');
 if(G.teamSize>1&&(wicketJustFell||overEnded)){
  if(wicketJustFell){
   if(G.iBat)showPlayerSelect('bat');
-  else showPlayerSelect('bat');
+  else autoSelectOpponent('bat');
  }else if(overEnded){
   if(!G.iBat)showPlayerSelect('bowl');
-  else showPlayerSelect('bowl');
+  else autoSelectOpponent('bowl');
  }
 }else{
  G.state='idle';setTimeout(nextBall,1500);
@@ -1635,7 +1635,9 @@ function getRoleBadgeHTML(style, type) {
 function getAllowedGestures(player, isBatting) {
   if (!player) return [1,2,3,4,5,6];
   const style = isBatting ? (player.battingStyle || 'balanced') : (player.bowlingStyle || 'balanced');
-  return ROLE_LIMITS[style] || [1,2,3,4,5,6];
+  const limits = ROLE_LIMITS[style];
+  if (!limits) return [1,2,3,4,5,6];
+  return isBatting ? limits.bat : limits.bowl;
 }
 
 function applyGestureRestrictions() {
@@ -1904,6 +1906,8 @@ function startStoryMatch() {
   showStoryDialogue(
     match.narrative.pre[storyLang] || match.narrative.pre.en,
     () => {
+      // Hide story home so role overlay is visible
+      $('storyHome').classList.add('hidden');
       // Set up the match
       G.mode = 'offline';
       G.teamSize = 11;
@@ -2284,6 +2288,27 @@ function curBowlStats(){
  const statsArr=isBowling?G.myBowlStats:G.oppBowlStats;
  const idx=G.bowlIdx;
  return statsArr[idx]||null;
+}
+
+function autoSelectOpponent(type){
+ if(type==='bat'){
+  const oppPlayers=G.oppPlayers;
+  const usedIdx=G.batIdx;
+  const stats=G.oppBatStats;
+  for(let i=0;i<oppPlayers.length;i++){
+   if(i!==usedIdx&&stats[i]&&!stats[i].out){G.batIdx=i;break}
+  }
+ }else{
+  const myPlayers=G.myPlayers;
+  const usedIdx=G.bowlIdx;
+  const stats=G.myBowlStats;
+  for(let i=0;i<myPlayers.length;i++){
+   if(i!==usedIdx&&stats[i]){G.bowlIdx=i;break}
+  }
+ }
+ updatePlayerDisplay();
+ G.state='idle';
+ setTimeout(nextBall,800);
 }
 
 function showPlayerSelect(type){
