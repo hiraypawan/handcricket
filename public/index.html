@@ -1943,6 +1943,7 @@ function showProfile(name,stats){
  +'<div class="prof-stat-card"><div class="prof-stat-icon">⚡</div><div class="prof-stat-val">'+s.ballsBowled+'</div><div class="prof-stat-lbl">Balls Bowled</div></div>'
  +'</div>'
  +(name?'':'<div class="g-signin">Sign in to save progress</div>');
+  $('profileOverlay').classList.remove('hidden');
 }
 const ProfileTabs={
  switch(tab,btn){
@@ -1955,8 +1956,6 @@ const ProfileTabs={
   sfx('tap');
  }
 };
-  $('profileOverlay').classList.remove('hidden');
-}
 function showOppProfile(){
  if(!G.oppStats){return}
  showProfile(G.oppName,G.oppStats);
