@@ -1663,7 +1663,8 @@ function handleNet(d){
   else normalHello();
  }
  else if(d.type==='sync'){stopRejoin();restore(d.snap,false);saveSession({role:'join',room:G.roomId,name:G.myName});$('waitingOverlay').classList.add('hidden');clearWD();stopTimer();G.state='idle';setTimeout(resumeFromStage,600)}
- else if(d.type==='team'){G.oppTeam=d.team;G.oppPlayers=d.players||[];checkTeams()}
+ else if(d.type==='team'){G.oppTeam=d.team;G.oppPlayers=(d.players||[]).map(function(p){return Object.assign({},p,{bowlingStyle:undefined})});checkTeams()}
+ else if(d.type==='roles'){if(d.players&&G.oppPlayers.length){d.players.forEach(function(dp){var match=G.oppPlayers.find(function(p){return p.name===dp.name});if(match&&dp.battingStyle)match.battingStyle=dp.battingStyle})}}
  else if(d.type==='toss_start'){runTossAnim(d.result,!d.hostWon)}
  else if(d.type==='toss_dec'){applyTossDec(d.choice,false)}
  else if(d.type==='choice'){G.oppPick=d.value;G.oppAuto=d.auto||false;checkReveal()}
@@ -1709,11 +1710,11 @@ function showTeamSel(){
  ts.appendChild(createBtn);
 }
 function selTeam(k){sfx('tap');document.querySelectorAll('.team-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.team-btn[data-team="'+k+'"]').classList.add('active');G.myTeam=k;G.myPlayers=TEAMS[k].players.slice();const pl=$('playerList');pl.innerHTML='';G.myPlayers.forEach((p,i)=>{const d=document.createElement('div');d.className='player-item';d.innerHTML='<span>'+(i+1)+'. '+p.name+'</span><span style="font-size:9px;opacity:.7">'+p.role+'</span>';pl.appendChild(d)})}
-$('btnConfirmTeam').onclick=()=>{if(!G.myTeam){alert('Pick a team!');return}sfx('tap');sendMsg({type:'team',team:G.myTeam,players:G.myPlayers});$('teamWait').style.display='block';$('btnConfirmTeam').disabled=true;checkTeams()};
+$('btnConfirmTeam').onclick=()=>{if(!G.myTeam){alert('Pick a team!');return}sfx('tap');sendMsg({type:'team',team:G.myTeam,players:G.myPlayers.map(function(p){return Object.assign({},p,{bowlingStyle:undefined})})});$('teamWait').style.display='block';$('btnConfirmTeam').disabled=true;checkTeams()};
 function checkTeams(){if(G.myTeam&&G.oppTeam){$('teamOverlay').classList.add('hidden');$('btnConfirmTeam').disabled=false;
 if(G.myPlayers.length>1){G.myPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle='balanced';if(!p.bowlingStyle)p.bowlingStyle='balanced'});
 G.oppPlayers.forEach(p=>{if(!p.battingStyle)p.battingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)];if(!p.bowlingStyle)p.bowlingStyle=['aggressive','defensive','balanced'][Math.floor(Math.random()*3)]});
-showRoleAssign(G.myPlayers,'online',function(players){G.myPlayers=players;startOnlineToss()})}
+showRoleAssign(G.myPlayers,'online',function(players){G.myPlayers=players;sendMsg({type:'roles',players:players.map(function(p){return{name:p.name,battingStyle:p.battingStyle}})});startOnlineToss()})}
 else{startOnlineToss()}}}
 
 function getCustomTeams(){try{return JSON.parse(localStorage.getItem('hc_custom_teams'))||[]}catch(e){return[]}}
