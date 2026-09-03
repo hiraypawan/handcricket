@@ -41,8 +41,8 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .status-bar{display:flex;align-items:center;justify-content:center;padding:4px 12px;min-height:26px;flex-shrink:0;gap:8px}
 .status{flex:1;text-align:center;font-size:clamp(12px,1.5vh,14px);font-weight:700;color:#3a1e00}
 .status .hl{color:#e8a020;font-weight:900}
-.leave-btn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.25);color:#dc2626;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
-.back-btn{background:rgba(255,250,240,.7);border:1.5px solid rgba(122,56,0,.15);color:var(--ink);padding:8px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
+.leave-btn{background:rgba(220,38,38,.12);border:1px solid rgba(220,38,38,.25);color:#dc2626;padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
+.back-btn{background:rgba(255,250,240,.7);border:1.5px solid rgba(122,56,0,.15);color:var(--ink);padding:8px 14px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s;pointer-events:auto}
 .back-btn:active{transform:scale(.95);background:rgba(255,255,255,.05)}
 .back-btn:hover{border-color:rgba(245,158,11,.3);color:#f59e0b}
 .arena{flex:1;display:flex;justify-content:space-around;align-items:center;padding:4px 6px;position:relative;min-height:0;overflow:hidden;border-radius:16px;margin:0 4px}
@@ -74,7 +74,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .cc-sep{width:1px;height:32px;background:rgba(122,56,0,.12);margin:0 10px}
 .cc-label{font-size:clamp(7px,.9vh,9px);color:rgba(122,56,0,.5);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .cc-val{font-size:clamp(20px,3.2vh,28px);font-weight:900;color:var(--ink);font-family:"Luckiest Guy","Rubik",cursive;line-height:1.2}
-.player-side .name{font-size:clamp(11px,1.5vh,14px);font-weight:900;letter-spacing:2px;color:#1a1a1a;text-align:center;cursor:pointer;transition:color .2s;text-shadow:0 1px 0 rgba(255,255,255,.5);padding:4px 14px;background:rgba(255,255,255,.8);border-radius:12px;margin-bottom:4px;font-family:"Rubik",sans-serif;border:1.5px solid rgba(122,56,0,.1)}
+.player-side .name{font-size:clamp(11px,1.5vh,14px);font-weight:900;letter-spacing:2px;color:#1a1a1a;text-align:center;cursor:pointer;transition:color .2s;text-shadow:0 1px 0 rgba(255,255,255,.5);padding:4px 14px;background:rgba(255,255,255,.8);border-radius:12px;margin-bottom:4px;font-family:"Rubik",sans-serif;border:1.5px solid rgba(122,56,0,.1);pointer-events:auto}
 .player-side .name:hover{color:#e8a020}
 .hand-wrap{width:clamp(140px,30vh,220px);height:clamp(170px,38vh,280px);position:relative;display:flex;justify-content:center;align-items:center;transition:transform .3s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 8px 24px rgba(0,0,0,.25))}
 .hand-wrap.shake{animation:hs .35s ease-in-out infinite}
@@ -134,7 +134,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 @keyframes cp{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.3);opacity:1}100%{transform:translate(-50%,-50%) scale(2);opacity:0}}
 .controls{padding:10px 12px 10px;flex-shrink:0;background:rgba(255,255,255,.85);border-radius:18px;margin:4px 4px 0;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1.5px solid rgba(122,56,0,.1);box-shadow:0 4px 16px rgba(122,56,0,.12)}
 .gesture-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:clamp(5px,1.2vw,10px)}
-.gesture-btn{background:linear-gradient(180deg,#f5f0e8,#ebe5d8);border:3px solid #c0b8a8;color:#1a1a1a;border-radius:20px;padding:clamp(8px,1.6vh,14px) 4px;font-size:14px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 0 #b8b0a0,0 6px 12px rgba(0,0,0,.2);-webkit-appearance:none;touch-action:manipulation;position:relative;overflow:hidden;font-family:"Rubik",sans-serif}
+.gesture-btn{background:linear-gradient(180deg,#f5f0e8,#ebe5d8);border:3px solid #c0b8a8;color:#1a1a1a;border-radius:20px;padding:clamp(8px,1.6vh,14px) 4px;font-size:14px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;box-shadow:0 4px 0 #b8b0a0,0 6px 12px rgba(0,0,0,.2);-webkit-appearance:none;touch-action:manipulation;position:relative;overflow:hidden;font-family:"Rubik",sans-serif;pointer-events:auto}
 .gesture-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 60%);pointer-events:none;border-radius:inherit}
 .gesture-btn:active:not(.disabled){transform:translateY(3px);box-shadow:0 1px 0 #b8b0a0}
 .gesture-btn.selected{background:linear-gradient(180deg,#f59e0b,#d97706);color:#fff;border-color:#b45309;box-shadow:0 4px 0 #92400e,0 0 28px rgba(245,158,11,.5),inset 0 1px 0 rgba(255,255,255,.25)}
@@ -148,6 +148,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .gesture-btn[data-val="4"]{border-color:#ffc107}
 .gesture-btn[data-val="5"]{border-color:#4caf50}
 .gesture-btn[data-val="6"]{border-color:#ffc107}
+@keyframes oi{from{opacity:0}to{opacity:1}}
 .overlay{position:fixed;inset:0;background:rgba(38,70,83,.94);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;padding-bottom:max(env(safe-area-inset-bottom),20px);z-index:12;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-y:auto;animation:oi .4s ease;scroll-behavior:smooth;max-height:100vh;max-height:100dvh;-webkit-overflow-scrolling:touch}
 .overlay.hidden{display:none!important}
 #menuOverlay{background:transparent;justify-content:center;backdrop-filter:none;-webkit-backdrop-filter:none}
@@ -174,7 +175,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .overlay p{font-size:clamp(12px,1.6vh,14px);color:rgba(122,56,0,.6);margin:5px 0;line-height:1.5;max-width:320px}
 .overlay input{background:rgba(255,255,255,.85);border:1.5px solid rgba(122,56,0,.15);color:#1a1a1a;padding:11px 14px;border-radius:12px;font-size:15px;font-weight:600;text-align:center;width:100%;max-width:260px;margin:6px 0;outline:none;-webkit-appearance:none;transition:border-color .2s}
 .overlay input:focus{border-color:#e8a020}
-.overlay button{margin-top:10px;background:linear-gradient(135deg,var(--teal),#125c52);color:#fff;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:14px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.1);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation;transition:all .15s;font-family:"Rubik",sans-serif}
+.overlay button{margin-top:10px;background:linear-gradient(135deg,var(--teal),#125c52);color:#fff;border:none;padding:clamp(11px,1.6vh,14px) 26px;font-size:clamp(13px,1.8vh,16px);font-weight:800;border-radius:14px;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.1);width:100%;max-width:260px;-webkit-appearance:none;touch-action:manipulation;transition:all .15s;font-family:"Rubik",sans-serif;pointer-events:auto;position:relative;z-index:1}
 .overlay button:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
 .overlay button.secondary{background:rgba(255,250,240,.8);color:var(--ink);box-shadow:none;border:1.5px solid var(--card-border)}
 .overlay button.secondary:hover{border-color:rgba(122,56,0,.3);background:rgba(255,250,240,.95)}
@@ -241,7 +242,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .search-spinner{width:40px;height:40px;border:4px solid rgba(122,56,0,.1);border-top-color:var(--coral);border-radius:50%;animation:spin 1s linear infinite;margin:16px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
 .pool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:clamp(150px,30vh,250px);overflow-y:auto;width:100%;max-width:300px;margin:8px 0;padding:4px}
-.pool-item{padding:6px 8px;background:rgba(255,250,240,.8);border:1.5px solid var(--card-border);border-radius:10px;font-size:11px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s;color:var(--ink)}
+.pool-item{padding:6px 8px;background:rgba(255,250,240,.8);border:1.5px solid var(--card-border);border-radius:10px;font-size:11px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:all .15s;color:var(--ink);pointer-events:auto;position:relative;z-index:1}
 .pool-item:active{transform:scale(.97)}
 .pool-item.picked{background:rgba(231,111,81,.08);border-color:var(--coral);color:var(--coral)}
 .pool-item .role-badge{font-size:8px;padding:2px 5px;border-radius:6px;font-weight:700;text-transform:uppercase}
@@ -249,7 +250,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .pool-item .role-badge.bowler{background:rgba(230,57,70,.12);color:#c1121f}
 .pool-item .role-badge.all{background:rgba(168,85,247,.12);color:#7c3aed}
 .team-size-select{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0;width:100%;max-width:360px}
-.team-size-btn{background:rgba(255,255,255,.7);border:1.5px solid rgba(122,56,0,.12);color:#3a1e00;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s}
+.team-size-btn{background:rgba(255,255,255,.7);border:1.5px solid rgba(122,56,0,.12);color:#3a1e00;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s;pointer-events:auto;position:relative;z-index:1}
 .team-size-btn.active{background:linear-gradient(135deg,#1a7a6d,#125c52);color:#fff;border-color:rgba(26,122,109,.5)}
 .inning-info{font-size:10px;color:var(--teal);margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(90px,24vh,130px);height:clamp(110px,30vh,160px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}.coin-container{width:70px;height:70px;margin:8px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:20px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:7px}.arena{border-radius:10px;margin:0 2px}.gesture-btn{padding:clamp(6px,1.2vh,10px) 3px}.gesture-btn .big{font-size:clamp(16px,2.8vh,22px)}}
@@ -298,12 +299,12 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .tutorial .tut-dots{display:flex;justify-content:center;gap:8px;margin:0 0 12px}
 .tutorial .tut-dots .d{width:8px;height:8px;border-radius:50%;background:rgba(122,56,0,.15);transition:background .2s}
 .tutorial .tut-dots .d.on{background:#e8a020}
-.tutorial .tut-skip{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(122,56,0,.5);font-size:11px;cursor:pointer;font-weight:700;padding:4px 8px;border-radius:6px;transition:color .2s}
+.tutorial .tut-skip{position:absolute;top:12px;right:14px;background:none;border:none;color:rgba(122,56,0,.5);font-size:11px;cursor:pointer;font-weight:700;padding:4px 8px;border-radius:6px;transition:color .2s;pointer-events:auto}
 .tutorial .tut-skip:hover{color:#e8a020}
-.tutorial .tut-next{display:block;margin:0 auto;padding:10px 24px;background:linear-gradient(180deg,#e8a020,#d49018);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;max-width:200px;-webkit-appearance:none;touch-action:manipulation;box-shadow:0 4px 12px rgba(232,160,32,.3)}
+.tutorial .tut-next{display:block;margin:0 auto;padding:10px 24px;background:linear-gradient(180deg,#e8a020,#d49018);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;max-width:200px;-webkit-appearance:none;touch-action:manipulation;box-shadow:0 4px 12px rgba(232,160,32,.3);pointer-events:auto}
 .tutorial .tut-next:active{transform:translateY(2px)}
-.tutorial .tut-dont{font-size:11px;color:rgba(122,56,0,.5);margin-top:10px;text-align:center;display:flex;justify-content:center;align-items:center;gap:6px;cursor:pointer}
-.tutorial .tut-dont input{accent-color:#e8a020;width:14px;height:14px;cursor:pointer}
+.tutorial .tut-dont{font-size:11px;color:rgba(122,56,0,.5);margin-top:10px;text-align:center;display:flex;justify-content:center;align-items:center;gap:6px;cursor:pointer;pointer-events:auto}
+.tutorial .tut-dont input{accent-color:#e8a020;width:14px;height:14px;cursor:pointer;pointer-events:auto}
 .pre-stats-box{background:rgba(255,250,240,.8);border:1px solid var(--card-border);border-radius:14px;padding:12px;margin:10px auto;max-width:280px;text-align:left;max-height:40vh;overflow-y:auto}
 .pre-stats-title{font-size:14px;font-weight:800;color:var(--coral);margin-bottom:8px;text-align:center}
 .pre-rank{font-size:10px;font-weight:600;color:var(--teal)}
@@ -314,7 +315,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .pre-stat-row b{color:var(--coral)}
 .home-username{display:flex;align-items:center;justify-content:center;gap:6px;margin:6px 0 4px;animation:fadeUp .5s .5s both}
 .home-username-text{font-size:15px;font-weight:800;color:#7a3800;text-shadow:0 1px 0 rgba(255,255,255,.3)}
-.edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s;color:#3a1e00}
+.edit-name-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:2px 4px;border-radius:6px;transition:background .2s;color:#3a1e00;pointer-events:auto}
 .edit-name-btn:hover{background:rgba(255,255,255,.3)}
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;max-width:320px;margin:8px auto}
 .stat-item{background:rgba(255,250,240,.8);border-radius:10px;padding:8px 4px;text-align:center;border:1px solid var(--card-border)}
@@ -339,7 +340,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .profile-section{margin:10px 0;padding:10px 0;border-top:1px solid var(--card-border)}
 .profile-section h3{font-size:13px;font-weight:800;color:var(--teal);margin:0 0 8px;text-transform:uppercase;letter-spacing:1px}
 .stat-grid.two-col{grid-template-columns:repeat(2,1fr)}
-.opp-profile-card{background:rgba(255,250,240,.8);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid var(--card-border);margin:8px auto;cursor:pointer;transition:all .2s}
+.opp-profile-card{background:rgba(255,250,240,.8);border-radius:12px;padding:10px;width:100%;max-width:260px;border:1px solid var(--card-border);margin:8px auto;cursor:pointer;transition:all .2s;pointer-events:auto}
 .opp-profile-card:hover{background:rgba(255,250,240,.95);border-color:rgba(231,111,81,.3)}
 .particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .particle{position:absolute;width:3px;height:3px;background:rgba(231,111,81,.2);border-radius:50%;animation:particleFloat linear infinite}
@@ -374,7 +375,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .role-row .pname{font-size:13px;font-weight:700;color:var(--ink)}
 .role-row .ptype{font-size:9px;color:rgba(122,56,0,.5);font-weight:600;text-transform:uppercase}
 .role-select{display:flex;gap:4px}
-.role-select button{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:800;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(122,56,0,.05);color:rgba(122,56,0,.4);-webkit-appearance:none;touch-action:manipulation}
+.role-select button{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:800;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(122,56,0,.05);color:rgba(122,56,0,.4);-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .role-select button:active{transform:scale(.95)}
 .role-select button.sel-agg{background:rgba(230,57,70,.12);color:#c1121f;border-color:var(--red)}
 .role-select button.sel-def{background:rgba(96,165,250,.12);color:#1d4ed8;border-color:var(--blue)}
@@ -382,14 +383,14 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .role-select button.sel-bal{background:rgba(42,157,143,.12);color:#1a6b60;border-color:var(--teal)}
 .role-select button.sel-bal:hover{background:rgba(42,157,143,.18)}
 .role-bowl-select{display:flex;gap:4px}
-.role-bowl-select button{padding:4px 6px;border-radius:6px;font-size:9px;font-weight:700;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);-webkit-appearance:none;touch-action:manipulation}
+.role-bowl-select button{padding:4px 6px;border-radius:6px;font-size:9px;font-weight:700;border:2px solid transparent;cursor:pointer;transition:all .15s;background:rgba(255,255,255,.04);color:rgba(255,255,255,.4);-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .role-bowl-select button:active{transform:scale(.95)}
 .role-bowl-select button.sel-agg{background:rgba(230,57,70,.12);color:#c1121f;border-color:rgba(230,57,70,.5)}
 .role-bowl-select button.sel-def{background:rgba(96,165,250,.12);color:#1d4ed8;border-color:rgba(96,165,250,.5)}
 .role-bowl-select button.sel-bal{background:rgba(42,157,143,.12);color:#1a6b60;border-color:rgba(42,157,143,.5)}
 .role-constraints{font-size:10px;color:rgba(122,56,0,.5);text-align:center;margin-top:8px;width:100%;max-width:420px;padding:6px 10px;background:rgba(255,250,240,.6);border:1.5px solid var(--card-border);border-radius:10px;margin-top:12px}
 .role-assign-btns{display:flex;gap:8px;margin-top:12px;width:100%;max-width:420px}
-.role-assign-btns button{flex:1;padding:10px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.role-assign-btns button{flex:1;padding:10px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .role-assign-btns .ra-primary{background:linear-gradient(135deg,var(--teal),#125c52);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.15)}
 .role-assign-btns .ra-secondary{background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.12)}
 .role-assign-btns .ra-accent{background:rgba(168,85,247,.12);color:#7c3aed;border:1px solid rgba(168,85,247,.25)}
@@ -453,13 +454,13 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 
 /* Language Selector */
 .lang-select{display:flex;gap:10px;margin:10px 0}
-.lang-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:800;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
+.lang-btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:800;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer;transition:all .2s;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto;position:relative;z-index:1}
 .lang-btn.active{border-color:var(--accent);background:rgba(245,158,11,.1);color:var(--accent)}
 .lang-btn:active{transform:scale(.97)}
 
 /* Story Team Builder */
 .story-team-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;max-height:clamp(150px,30vh,250px);overflow-y:auto;width:100%;max-width:400px;margin:8px 0;padding:4px}
-.story-player-card{background:rgba(255,255,255,.06);border:2px solid transparent;border-radius:10px;padding:8px 10px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+.story-player-card{background:rgba(255,255,255,.06);border:2px solid transparent;border-radius:10px;padding:8px 10px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center;pointer-events:auto}
 .story-player-card:active{transform:scale(.97)}
 .story-player-card.picked{background:rgba(245,158,11,.1);border-color:var(--accent)}
 .story-player-card .sp-name{font-size:12px;font-weight:700}
@@ -468,7 +469,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 /* Player Selection Overlay */
 .ps-timer{font-size:28px;font-weight:900;color:var(--accent);animation:psPulse 1s ease-in-out infinite}
 @keyframes psPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-#playerSelectOverlay .pool-item{cursor:pointer;padding:8px 10px}
+#playerSelectOverlay .pool-item{cursor:pointer;padding:8px 10px;pointer-events:auto}
 #playerSelectOverlay .pool-item:hover{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
 #playerSelectOverlay .pool-item.picked{background:rgba(245,158,11,.15);border-color:var(--accent)}
 
@@ -509,7 +510,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 
 /* ====== EMOJI QUICK CHAT ====== */
 .emoji-bar{display:flex;gap:6px;justify-content:center;padding:4px 8px;flex-shrink:0}
-.emoji-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(122,56,0,.12);background:rgba(255,255,255,.85);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(122,56,0,.1);-webkit-appearance:none;touch-action:manipulation;position:relative}
+.emoji-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(122,56,0,.12);background:rgba(255,255,255,.85);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(122,56,0,.1);-webkit-appearance:none;touch-action:manipulation;position:relative;pointer-events:auto}
 .emoji-btn:active{transform:scale(.85);box-shadow:0 1px 4px rgba(122,56,0,.15)}
 .emoji-btn:hover{border-color:rgba(245,158,11,.4);box-shadow:0 2px 12px rgba(245,158,11,.2)}
 .emoji-btn.sent{animation:emojiPop .4s ease}
@@ -517,7 +518,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 @keyframes emojiPop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
 .quick-msgs{display:none;flex-wrap:wrap;gap:6px;justify-content:center;padding:6px 10px;max-width:400px;margin:0 auto}
 .quick-msgs.show{display:flex}
-.qmsg-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid rgba(122,56,0,.15);background:rgba(255,255,255,.8);color:#3a1e00;cursor:pointer;transition:all .15s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
+.qmsg-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1.5px solid rgba(122,56,0,.15);background:rgba(255,255,255,.8);color:#3a1e00;cursor:pointer;transition:all .15s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .qmsg-btn:active{transform:scale(.95);background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4)}
 .float-emoji{position:fixed;z-index:20;font-size:36px;pointer-events:none;animation:floatUp 2.5s ease-out forwards;text-shadow:0 4px 12px rgba(0,0,0,.5)}
 .float-emoji.left{left:15%;bottom:40%}
@@ -536,7 +537,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .friends-overlay.hidden{display:none!important}
 .friends-overlay h1{font-size:clamp(20px,3vh,26px);font-weight:900;color:var(--accent);margin:0 0 10px}
 .friend-tabs{display:flex;gap:8px;margin-bottom:12px;width:100%;max-width:360px}
-.ftab{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:800;border:1.5px solid var(--card-border);background:rgba(255,250,240,.6);color:rgba(122,56,0,.5);cursor:pointer;transition:all .2s;text-align:center;-webkit-appearance:none;touch-action:manipulation}
+.ftab{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:800;border:1.5px solid var(--card-border);background:rgba(255,250,240,.6);color:rgba(122,56,0,.5);cursor:pointer;transition:all .2s;text-align:center;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto;position:relative;z-index:1}
 .ftab.active{background:rgba(231,111,81,.08);border-color:rgba(231,111,81,.3);color:var(--coral)}
 .ftab .badge{background:var(--red);color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;margin-left:4px}
 .friend-list{width:100%;max-width:360px;display:flex;flex-direction:column;gap:6px;flex:1;overflow-y:auto}
@@ -548,14 +549,14 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .friend-rank{font-size:10px;color:var(--coral);font-weight:600}
 .friend-bot-badge{font-size:9px;background:rgba(168,85,247,.15);color:#7c3aed;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:700}
 .friend-actions{display:flex;gap:4px}
-.friend-actions button{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
+.friend-actions button{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s;pointer-events:auto}
 .friend-actions button:active{transform:scale(.95)}
 .fa-challenge{background:linear-gradient(135deg,var(--teal),#125c52);color:#fff}
 .fa-remove{background:rgba(230,57,70,.12);color:#c1121f;border:1px solid rgba(230,57,70,.25)}
 .fa-accept{background:linear-gradient(135deg,#059669,#047857);color:#fff}
 .fa-reject{background:rgba(230,57,70,.12);color:#c1121f}
 .pending-item{border-color:rgba(231,111,81,.2);background:rgba(231,111,81,.05)}
-.add-friend-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.1);transition:all .15s;margin-top:8px;-webkit-appearance:none;touch-action:manipulation}
+.add-friend-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.1);transition:all .15s;margin-top:8px;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .add-friend-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.1)}
 .add-friend-btn.sent{background:rgba(122,56,0,.15);color:rgba(122,56,0,.4);pointer-events:none}
 .add-friend-btn.already{background:rgba(245,158,11,.15);color:var(--accent);pointer-events:none}
@@ -567,7 +568,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .friend-notif-title{font-size:13px;font-weight:800;color:var(--coral);margin-bottom:4px}
 .friend-notif-text{font-size:11px;color:var(--ink);margin-bottom:8px;line-height:1.4}
 .friend-notif-btns{display:flex;gap:6px}
-.friend-notif-btns button{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;border:none;cursor:pointer;transition:all .15s;-webkit-appearance:none;touch-action:manipulation}
+.friend-notif-btns button{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;border:none;cursor:pointer;transition:all .15s;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .friend-notif-btns button:active{transform:scale(.95)}
 .fnb-accept{background:linear-gradient(135deg,#059669,#047857);color:#fff}
 .fnb-reject{background:rgba(230,57,70,.12);color:#c1121f}
@@ -576,7 +577,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 
 /* ====== BOTTOM TAB BAR ====== */
 .tab-bar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:6px 0 max(env(safe-area-inset-bottom),4px);background:var(--card);border-top:2px solid var(--card-border);box-shadow:0 -4px 16px var(--shadow);z-index:11;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border:none;background:none;cursor:pointer;color:rgba(122,56,0,.45);font-size:9px;font-weight:700;transition:all .2s;-webkit-appearance:none;touch-action:manipulation;border-radius:10px;min-width:56px}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border:none;background:none;cursor:pointer;color:rgba(122,56,0,.45);font-size:9px;font-weight:700;transition:all .2s;-webkit-appearance:none;touch-action:manipulation;border-radius:10px;min-width:56px;pointer-events:auto}
 .tab-btn svg{width:22px;height:22px;transition:all .2s}
 .tab-btn span{transition:all .2s}
 .tab-btn.active{color:var(--teal);background:rgba(42,157,143,.08)}
@@ -610,14 +611,14 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .prof-rank-name{font-size:15px;font-weight:800;font-family:"Luckiest Guy","Rubik",cursive}
 .prof-rank-sub{font-size:10px;opacity:.7}
 .prof-tabs{display:flex;gap:4px;margin-bottom:10px;background:rgba(122,56,0,.08);border-radius:10px;padding:3px}
-.prof-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-size:11px;font-weight:800;color:rgba(122,56,0,.45);cursor:pointer;transition:all .2s;-webkit-appearance:none;touch-action:manipulation}
+.prof-tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-size:11px;font-weight:800;color:rgba(122,56,0,.45);cursor:pointer;transition:all .2s;-webkit-appearance:none;touch-action:manipulation;pointer-events:auto}
 .prof-tab.active{background:var(--card);color:var(--ink);box-shadow:0 2px 8px var(--shadow)}
 .prof-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .prof-stat-card{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:12px;text-align:center}
 .prof-stat-icon{font-size:20px;margin-bottom:4px}
 .prof-stat-val{font-size:22px;font-weight:900;color:var(--ink);font-family:"Luckiest Guy","Rubik",cursive;line-height:1}
 .prof-stat-lbl{font-size:9px;color:rgba(122,56,0,.5);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
-.g-signin{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:rgba(122,56,0,.5);cursor:pointer;transition:all .2s}
+.g-signin{background:var(--card);border:1.5px solid var(--card-border);border-radius:12px;padding:12px;text-align:center;font-size:12px;font-weight:700;color:rgba(122,56,0,.5);cursor:pointer;transition:all .2s;pointer-events:auto}
 .g-signin:hover{border-color:var(--teal);color:var(--teal)}
 </style>
 </head>
@@ -1016,6 +1017,19 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 <script>
 const TEAMS={csk:{name:'CSK',players:[{name:'Gaikwad',role:'batter'},{name:'Conway',role:'batter'},{name:'Rahane',role:'batter'},{name:'Dube',role:'all'},{name:'Jadeja',role:'all'},{name:'Moeen',role:'all'},{name:'Dhoni',role:'batter'},{name:'Chahar',role:'bowler'},{name:'Pathirana',role:'bowler'},{name:'Deshpande',role:'bowler'},{name:'Ravindra',role:'all'}]},mi:{name:'MI',players:[{name:'Rohit',role:'batter'},{name:'Ishan',role:'batter'},{name:'SKY',role:'batter'},{name:'Tilak',role:'batter'},{name:'Hardik',role:'all'},{name:'David',role:'batter'},{name:'Green',role:'all'},{name:'Bumrah',role:'bowler'},{name:'Chawla',role:'bowler'},{name:'Madhwal',role:'bowler'},{name:'Dhir',role:'all'}]},rcb:{name:'RCB',players:[{name:'Kohli',role:'batter'},{name:'Faf',role:'batter'},{name:'Patidar',role:'batter'},{name:'Maxwell',role:'all'},{name:'Karthik',role:'batter'},{name:'Lomror',role:'all'},{name:'Jacks',role:'all'},{name:'Siraj',role:'bowler'},{name:'Harshal',role:'bowler'},{name:'Ferguson',role:'bowler'},{name:'Dayal',role:'bowler'}]},kkr:{name:'KKR',players:[{name:'Iyer',role:'batter'},{name:'Rinku',role:'batter'},{name:'Rana',role:'all'},{name:'Russell',role:'all'},{name:'Narine',role:'all'},{name:'Venkatesh',role:'all'},{name:'Gurbaz',role:'batter'},{name:'Starc',role:'bowler'},{name:'Varun',role:'bowler'},{name:'Harshit',role:'bowler'},{name:'Angkrish',role:'batter'}]},dc:{name:'DC',players:[{name:'Warner',role:'batter'},{name:'Shaw',role:'batter'},{name:'Pant',role:'batter'},{name:'Stubbs',role:'batter'},{name:'Axar',role:'all'},{name:'Marsh',role:'all'},{name:'Porel',role:'batter'},{name:'Kuldeep',role:'bowler'},{name:'Nortje',role:'bowler'},{name:'Mukesh',role:'bowler'},{name:'Rahul',role:'batter'}]},rr:{name:'RR',players:[{name:'Samson',role:'batter'},{name:'Jaiswal',role:'batter'},{name:'Buttler',role:'batter'},{name:'Hetmyer',role:'batter'},{name:'Parag',role:'all'},{name:'Ashwin',role:'all'},{name:'Jurel',role:'batter'},{name:'Chahal',role:'bowler'},{name:'Sandeep',role:'bowler'},{name:'Boult',role:'bowler'},{name:'Bolt',role:'bowler'}]},srh:{name:'SRH',players:[{name:'Head',role:'batter'},{name:'Abhishek',role:'batter'},{name:'Markram',role:'all'},{name:'Klaasen',role:'batter'},{name:'Samad',role:'all'},{name:'Shahbaz',role:'all'},{name:'Viv',role:'batter'},{name:'Bhuvi',role:'bowler'},{name:'Nattu',role:'bowler'},{name:'Umran',role:'bowler'},{name:'Farooqi',role:'bowler'}]},pbks:{name:'PBKS',players:[{name:'Dhawan',role:'batter'},{name:'Bairstow',role:'batter'},{name:'Livingstone',role:'all'},{name:'SamCurran',role:'all'},{name:'Jitesh',role:'batter'},{name:'Shahrukh',role:'batter'},{name:'Ashutosh',role:'all'},{name:'Arshdeep',role:'bowler'},{name:'Rabada',role:'bowler'},{name:'Chahar',role:'bowler'},{name:'Ellis',role:'bowler'}]}};
 const ALL_PLAYERS=Object.values(TEAMS).flatMap(t=>t.players);
+
+const ROLE_LIMITS = {
+  aggressive: { bat: [3,4,5,6], bowl: [3,4,5,6] },
+  defensive:  { bat: [1,2,3,4], bowl: [1,2,3,4] },
+  balanced:   { bat: [1,2,3,4,5,6], bowl: [1,2,3,4,5,6] }
+};
+
+function getAllowedGestures(player, isBatting) {
+  const style = isBatting ? (player.battingStyle || 'balanced') : (player.bowlingStyle || 'balanced');
+  const limits = ROLE_LIMITS[style];
+  if (!limits) return [1,2,3,4,5,6];
+  return isBatting ? limits.bat : limits.bowl;
+}
 
 const BOT_FIRST=['Aarav','Vivaan','Aditya','Arjun','Sai','Reyansh','Krishna','Ishaan','Shaurya','Atharv','Advik','Pranav','Advaith','Arnav','Vihaan','Samar','Rohan','Armaan','Harsh','Kabir','Ansh','Dhruv','Ved','Ayaan','Kiran','Nikhil','Aakash','Tarun','Raj','Vikram','Sanjay','Mohan','Suresh','Ramesh','Dinesh','Mahesh','Rajesh','Ganesh','Mukesh','Prakash','Sunil','Manoj','Nitin','Karan','Ajay','Vijay','Ravi','Ashok','Deepak','Manish','Pawan','Sachin','Rahul','Amit','Yogesh','Pradeep','Gaurav','Naveen','Rohit','Saurabh','Shubham','Tushar','Yash','Kartik','Nishant','Harshit','Vikash','Ajinkya','Chetan','Darshan','Gokul','Hrithik','Jatin','Kishore','Lakshya','Mayank','Naman','Omkar','Pranav','Rishabh','Shreyas','Tanmay','Uday','Varun','Wasim'];
 const BOT_LAST=['Sharma','Verma','Patel','Kumar','Singh','Reddy','Nair','Mishra','Joshi','Gupta','Bose','Das','Banerjee','Chatterjee','Mukherjee','Iyer','Rao','Hegde','Kamath','Pandey','Tiwari','Chauhan','Thakur','Malhotra','Kapoor','Mehta','Shah','Dave','Sinha','Yadav','Goswami','Bhatt','Pillai','Menon','Shetty','Naik','Fernandes','Pereira','Dias','Lobo','Correia','Pawar','Jadhav','Deshmukh','Kulkarni','Ghadge','Sangle','Birajdar','Bangar','Soori'];
@@ -1971,12 +1985,6 @@ function showOppProfile(){
 // Batting restricts YOUR gesture picks. Bowling restricts YOUR picks when bowling.
 // Bowling role is HIDDEN from opponent until wicket or over ends.
 
-const ROLE_LIMITS = {
-  aggressive: { bat: [3,4,5,6], bowl: [3,4,5,6] },
-  defensive:  { bat: [1,2,3,4], bowl: [1,2,3,4] },
-  balanced:   { bat: [1,2,3,4,5,6], bowl: [1,2,3,4,5,6] }
-};
-
 const ROLE_COLORS = { aggressive: 'agg', defensive: 'def', balanced: 'bal' };
 const ROLE_LABELS = { aggressive: 'AGG', defensive: 'DEF', balanced: 'BAL' };
 const ROLE_LABELS_FULL = { aggressive: 'Aggressive', defensive: 'Defensive', balanced: 'Balanced' };
@@ -1986,14 +1994,6 @@ function getRoleBadgeHTML(style, type) {
   const label = ROLE_LABELS[style] || 'BAL';
   const icon = type === 'bat' ? '🏏' : '⚾';
   return '<span class="role-badge-inline ' + cls + '">' + icon + ' ' + label + '</span>';
-}
-
-function getAllowedGestures(player, isBatting) {
-  if (!player) return [1,2,3,4,5,6];
-  const style = isBatting ? (player.battingStyle || 'balanced') : (player.bowlingStyle || 'balanced');
-  const limits = ROLE_LIMITS[style];
-  if (!limits) return [1,2,3,4,5,6];
-  return isBatting ? limits.bat : limits.bowl;
 }
 
 function applyGestureRestrictions() {
