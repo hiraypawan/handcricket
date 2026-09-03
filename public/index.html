@@ -150,6 +150,9 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .gesture-btn[data-val="6"]{border-color:#ffc107}
 .overlay{position:fixed;inset:0;background:rgba(38,70,83,.94);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px;z-index:10;text-align:center;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);overflow-y:auto;animation:oi .4s ease;scroll-behavior:smooth;max-height:100vh;max-height:100dvh}
 .overlay.hidden{display:none!important}
+#menuOverlay{background:transparent;justify-content:center;backdrop-filter:none;-webkit-backdrop-filter:none}
+#menuOverlay::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(38,70,83,.15) 0%,rgba(38,70,83,0) 60%);pointer-events:none;z-index:-1}
+#menuOverlay>*{max-width:340px;width:100%}
 #offlineSetup,#onlineLobby,#matchmakingOverlay,#waitingOverlay,#teamOverlay,#teamBuilderOverlay,#tossOverlay,#mcOverlay,#inningsOverlay,#inningsBreakOverlay,#playerSelectOverlay,#leaveOverlay,#usernameOverlay,#roleAssignOverlay,#tutorialOverlay{background:rgba(38,70,83,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 #offlineSetup h1,#onlineLobby h1,#matchmakingOverlay h1,#waitingOverlay h1,#teamOverlay h1,#teamBuilderOverlay h1,#tossOverlay h1,#mcOverlay h1,#inningsOverlay h1,#inningsBreakOverlay h1,#playerSelectOverlay h1,#leaveOverlay h1,#usernameOverlay h1,#roleAssignOverlay h1,#tutorialOverlay h1{color:#f8fafc}
 #offlineSetup h2,#onlineLobby h2,#matchmakingOverlay h2,#waitingOverlay h2,#teamOverlay h2,#teamBuilderOverlay h2,#tossOverlay h2,#mcOverlay h2,#inningsOverlay h2,#inningsBreakOverlay h2,#playerSelectOverlay h2,#leaveOverlay h2,#usernameOverlay h2,#roleAssignOverlay h2,#tutorialOverlay h2{color:var(--ink)}
@@ -572,7 +575,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:"Rubik",-apple-s
 .fnb-dismiss{background:rgba(122,56,0,.08);color:rgba(122,56,0,.5)}
 
 /* ====== BOTTOM TAB BAR ====== */
-.tab-bar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:6px 0 max(env(safe-area-inset-bottom),4px);background:var(--card);border-top:2px solid var(--card-border);box-shadow:0 -4px 16px var(--shadow);z-index:9;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:6px 0 max(env(safe-area-inset-bottom),4px);background:var(--card);border-top:2px solid var(--card-border);box-shadow:0 -4px 16px var(--shadow);z-index:11;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .tab-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 8px;border:none;background:none;cursor:pointer;color:rgba(122,56,0,.45);font-size:9px;font-weight:700;transition:all .2s;-webkit-appearance:none;touch-action:manipulation;border-radius:10px;min-width:56px}
 .tab-btn svg{width:22px;height:22px;transition:all .2s}
 .tab-btn span{transition:all .2s}
@@ -1325,6 +1328,8 @@ function setHandGesture(imgEl,wrapperEl,v){
 }
 
 /* ====== BOTTOM TAB BAR CONTROLLER ====== */
+function showMenu(){document.querySelectorAll('.overlay,.friends-overlay').forEach(function(o){o.classList.add('hidden')});$('storyHome').classList.add('hidden');$('storyTeamBuilder').classList.add('hidden');$('storyDialogue').classList.add('hidden');$('menuOverlay').classList.remove('hidden');updHomeUsername();updHomeTrophies()}
+function showStoryHome(){document.querySelectorAll('.overlay,.friends-overlay').forEach(function(o){o.classList.add('hidden')});$('menuOverlay').classList.add('hidden');$('storyHome').classList.remove('hidden');$('storyDialogue').classList.add('hidden');if(typeof renderStoryHome==='function')renderStoryHome()}
 const TabBar={
  currentTab:'battle',
  switch(tab){
