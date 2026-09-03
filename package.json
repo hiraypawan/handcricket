@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler pages deploy public --project-name handscricket"
   },
   "devDependencies": {
     "wrangler": "latest"

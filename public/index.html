@@ -416,6 +416,73 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .pre-stats-title{color:var(--accent)}
 .pre-stat-row b{color:var(--accent)}
 .footer-credit a{color:var(--accent);background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15)}
+
+/* ====== EMOJI QUICK CHAT ====== */
+.emoji-bar{display:flex;gap:6px;justify-content:center;padding:4px 8px;flex-shrink:0}
+.emoji-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(148,163,184,.15);background:rgba(30,41,59,.8);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.3);-webkit-appearance:none;touch-action:manipulation;position:relative}
+.emoji-btn:active{transform:scale(.85);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.emoji-btn:hover{border-color:rgba(245,158,11,.4);box-shadow:0 2px 12px rgba(245,158,11,.2)}
+.emoji-btn.sent{animation:emojiPop .4s ease}
+.emoji-expand{font-size:16px;background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:var(--accent)}
+@keyframes emojiPop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+.quick-msgs{display:none;flex-wrap:wrap;gap:6px;justify-content:center;padding:6px 10px;max-width:400px;margin:0 auto}
+.quick-msgs.show{display:flex}
+.qmsg-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid rgba(148,163,184,.2);background:rgba(30,41,59,.8);color:var(--text);cursor:pointer;transition:all .15s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
+.qmsg-btn:active{transform:scale(.95);background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4)}
+.float-emoji{position:fixed;z-index:20;font-size:36px;pointer-events:none;animation:floatUp 2.5s ease-out forwards;text-shadow:0 4px 12px rgba(0,0,0,.5)}
+.float-emoji.left{left:15%;bottom:40%}
+.float-emoji.right{right:15%;bottom:40%}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}50%{opacity:1;transform:translateY(-60px) scale(1.2)}100%{opacity:0;transform:translateY(-120px) scale(.8)}}
+.float-msg{position:fixed;z-index:20;max-width:180px;padding:8px 14px;border-radius:16px;font-size:12px;font-weight:700;pointer-events:none;animation:floatMsg 3s ease-out forwards;box-shadow:0 4px 16px rgba(0,0,0,.4);word-wrap:break-word}
+.float-msg.left{left:10%;bottom:45%;background:rgba(96,165,250,.15);border:1px solid rgba(96,165,250,.3);color:#93c5fd}
+.float-msg.right{right:10%;bottom:45%;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fde68a}
+@keyframes floatMsg{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-40px) scale(1.05)}100%{opacity:0;transform:translateY(-80px) scale(.9)}}
+.bot-chat{position:fixed;z-index:20;max-width:200px;padding:8px 14px;border-radius:16px;font-size:12px;font-weight:700;pointer-events:none;animation:floatMsg 3.5s ease-out forwards;box-shadow:0 4px 16px rgba(0,0,0,.4);word-wrap:break-word;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);color:#d8b4fe}
+.bot-chat.right{right:10%;bottom:38%}
+.bot-chat.left{left:10%;bottom:38%}
+
+/* ====== FRIEND LIST ====== */
+.friends-overlay{position:fixed;inset:0;background:rgba(15,23,42,.95);z-index:15;display:flex;flex-direction:column;align-items:center;padding:20px 16px;overflow-y:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);animation:oi .4s ease}
+.friends-overlay.hidden{display:none!important}
+.friends-overlay h1{font-size:clamp(20px,3vh,26px);font-weight:900;color:var(--accent);margin:0 0 10px}
+.friend-tabs{display:flex;gap:8px;margin-bottom:12px;width:100%;max-width:360px}
+.ftab{flex:1;padding:8px;border-radius:10px;font-size:12px;font-weight:800;border:1.5px solid rgba(148,163,184,.15);background:rgba(30,41,59,.6);color:var(--text);cursor:pointer;transition:all .2s;text-align:center;-webkit-appearance:none;touch-action:manipulation}
+.ftab.active{background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.4);color:var(--accent)}
+.ftab .badge{background:var(--red);color:#fff;font-size:10px;padding:1px 5px;border-radius:8px;margin-left:4px}
+.friend-list{width:100%;max-width:360px;display:flex;flex-direction:column;gap:6px;flex:1;overflow-y:auto}
+.friend-item{display:flex;align-items:center;gap:10px;background:rgba(30,41,59,.7);border:1px solid rgba(148,163,184,.1);border-radius:12px;padding:10px 12px;transition:all .2s}
+.friend-item:hover{border-color:rgba(245,158,11,.3);background:rgba(30,41,59,.9)}
+.friend-avatar{font-size:24px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);border-radius:10px}
+.friend-info{flex:1;min-width:0}
+.friend-name{font-size:13px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.friend-rank{font-size:10px;color:var(--accent);font-weight:600}
+.friend-bot-badge{font-size:9px;background:rgba(168,85,247,.15);color:#d8b4fe;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:700}
+.friend-actions{display:flex;gap:4px}
+.friend-actions button{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:800;border:none;cursor:pointer;-webkit-appearance:none;touch-action:manipulation;transition:all .15s}
+.friend-actions button:active{transform:scale(.95)}
+.fa-challenge{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff}
+.fa-remove{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.fa-accept{background:linear-gradient(180deg,#34d399,#10b981);color:#fff}
+.fa-reject{background:rgba(239,68,68,.15);color:#fca5a5}
+.pending-item{border-color:rgba(245,158,11,.2);background:rgba(245,158,11,.05)}
+.add-friend-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:800;border:none;cursor:pointer;background:linear-gradient(180deg,#34d399,#10b981);color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.3);transition:all .15s;margin-top:8px;-webkit-appearance:none;touch-action:manipulation}
+.add-friend-btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.add-friend-btn.sent{background:rgba(100,116,139,.3);color:#94a3b8;pointer-events:none}
+.add-friend-btn.already{background:rgba(245,158,11,.15);color:var(--accent);pointer-events:none}
+
+/* ====== FRIEND NOTIFICATION ====== */
+.friend-notif{position:fixed;top:12px;right:12px;z-index:22;background:rgba(30,41,59,.95);border:1.5px solid rgba(245,158,11,.3);border-radius:14px;padding:12px 16px;max-width:280px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:slideIn .4s ease;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.friend-notif.hidden{display:none}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
+.friend-notif-title{font-size:13px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.friend-notif-text{font-size:11px;color:var(--text);margin-bottom:8px;line-height:1.4}
+.friend-notif-btns{display:flex;gap:6px}
+.friend-notif-btns button{padding:5px 12px;border-radius:8px;font-size:11px;font-weight:800;border:none;cursor:pointer;transition:all .15s;-webkit-appearance:none;touch-action:manipulation}
+.friend-notif-btns button:active{transform:scale(.95)}
+.fnb-accept{background:linear-gradient(180deg,#34d399,#10b981);color:#fff}
+.fnb-reject{background:rgba(239,68,68,.15);color:#fca5a5}
+.fnb-challenge{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff}
+.fnb-dismiss{background:rgba(100,116,139,.2);color:#94a3b8}
 </style>
 </head>
 <body>
@@ -444,6 +511,21 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <button class="gesture-btn disabled" data-val="5" aria-label="Pick number 5"><span class="big">5</span><span class="small">5</span></button>
 <button class="gesture-btn disabled" data-val="6" aria-label="Pick number 6, a six"><span class="big">6</span><span class="small">SIX</span></button>
 </div></div>
+<div class="emoji-bar" id="emojiBar">
+<button class="emoji-btn" data-emoji="😤" aria-label="Sledge">😤</button>
+<button class="emoji-btn" data-emoji="😂" aria-label="Laugh">😂</button>
+<button class="emoji-btn" data-emoji="🔥" aria-label="Fire">🔥</button>
+<button class="emoji-btn" data-emoji="👏" aria-label="Clap">👏</button>
+<button class="emoji-btn emoji-expand" data-action="msgs" aria-label="Quick messages">💬</button>
+</div>
+<div class="quick-msgs" id="quickMsgs">
+<button class="qmsg-btn" data-msg="Arre bhai!">Arre bhai!</button>
+<button class="qmsg-btn" data-msg="Kya shot hai!">Kya shot hai!</button>
+<button class="qmsg-btn" data-msg="Out ho gaya!">Out ho gaya!</button>
+<button class="qmsg-btn" data-msg="Bahut badhiya!">Bahut badhiya!</button>
+<button class="qmsg-btn" data-msg="Aaram se!">Aaram se!</button>
+<button class="qmsg-btn" data-msg="Chal bhai!">Chal bhai!</button>
+</div>
 
 <div class="particles" id="particles"></div>
 <div class="overlay" id="menuOverlay">
@@ -457,7 +539,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="mode-btn" id="modeOnline"><span class="icon">🌐</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
 <div class="mode-btn" id="modeInstant"><span class="icon">⚡</span><span class="title">Instant Match</span><span class="desc">Find opponent now</span></div>
 </div>
-<div class="home-profile-wrap"><button class="secondary small" id="btnProfile">My Profile</button></div>
+<div class="home-profile-wrap" style="display:flex;gap:8px;justify-content:center"><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button></div>
 <div class="home-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
 <div class="home-version">v2.1</div>
 
@@ -548,6 +630,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="inningsOverlay"><h1 id="innTitle">End of Innings</h1><p id="innMsg"></p><button id="btnNextInn">2nd Innings</button></div>
 <div class="overlay hidden" id="resultOverlay"><h1 id="resTitle">Over</h1><p id="resMsg"></p>
 <div id="matchStatsBox" style="display:none"></div>
+<div id="addFriendBtn" style="display:none;text-align:center"><button id="btnAddFriend" class="add-friend-btn">+ Add Friend</button></div>
 <button id="btnRematch" style="display:none">Rematch</button>
 <button id="btnAgain" style="display:none">New Match</button>
 <button id="btnMenu" class="secondary">Main Menu</button></div>
@@ -557,6 +640,15 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="overlay hidden" id="profileOverlay"><h1 id="profileTitle" style="margin-bottom:4px">My Profile</h1>
 <div class="profile-card" id="profileCard"></div>
 <button id="btnCloseProfile" class="secondary small" style="margin-top:10px;position:sticky;bottom:10px;z-index:2">Close</button></div>
+<div class="friends-overlay hidden" id="friendsOverlay"><h1>Friends</h1>
+<div class="friend-tabs"><button class="ftab active" data-tab="list" id="ftabList">My Friends</button><button class="ftab" data-tab="pending" id="ftabPending">Requests <span class="badge" id="pendingCount" style="display:none">0</span></button></div>
+<div class="friend-list" id="friendList"></div>
+<button id="btnCloseFriends" class="secondary small" style="margin-top:10px;position:sticky;bottom:10px;z-index:2">Close</button></div>
+<div class="friend-notif hidden" id="friendNotif">
+<div class="friend-notif-title" id="fnTitle"></div>
+<div class="friend-notif-text" id="fnText"></div>
+<div class="friend-notif-btns" id="fnBtns"></div>
+</div>
 <div class="overlay hidden" id="usernameOverlay"><h1>Welcome!</h1><p style="font-size:13px;opacity:.8;margin-bottom:12px">What should we call you?</p>
 <input type="text" id="usernameInput" placeholder="Your Name" maxlength="16" autocomplete="off" style="text-align:center;font-size:18px;padding:12px;width:220px"/>
 <button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button></div>
@@ -947,7 +1039,8 @@ function updateStatsAfterMatch(result){
  else{s.ties++}
  s.runs+=result.myRuns;s.ballsFaced+=result.myBalls;s.sixes+=result.mySixes;s.fours+=result.myFours;
  s.highestScore=Math.max(s.highestScore,result.myRuns);
- s.dots+=(result.myBalls-result.mySixes-result.myFours-Math.max(0,result.myRuns-result.mySixes*6-result.myFours*4));
+ const matchDots=result.myHist?result.myHist.filter(h=>h==='DOT'||h===0||h==='W'||h==='NB'||h==='WD').length:Math.max(0,result.myBalls-result.mySixes-result.myFours-result.myRuns);
+ s.dots+=matchDots;
  s.wicketsTaken+=result.oppWickets;s.ballsBowled+=result.oppBalls;s.runsConceded+=result.oppRuns;
  if(result.oppWickets>=3)s.hatricks++;
  s.strikeRate=s.ballsFaced?((s.runs/s.ballsFaced)*100).toFixed(1):'0.0';
@@ -1167,6 +1260,8 @@ function handleNet(d){
  else if(d.type==='innings_sync'){startInnings(2)}
  else if(d.type==='rematch'){doRematch()}
  else if(d.type==='start_match'){showMC(false)}
+ else if(d.type==='emoji'){if(typeof showFloatEmoji==='function')showFloatEmoji(d.emoji,true)}
+ else if(d.type==='quickmsg'){if(typeof showFloatMsg==='function')showFloatMsg(d.msg,true)}
 }
 function normalHello(){
  connLog(G.oppName+' connected!');
@@ -1319,6 +1414,7 @@ function startInnings(n){
  $('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';
  $('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';
  setTimeout(nextBall,700);
+ if(typeof botChat==='function')botChat('onMatchStart');
 }
 function curBat(){return G.iBat?G.me:G.opp}
 function nextBall(){
@@ -1343,7 +1439,7 @@ function onTimeUp(){stopTimer();if(G.state!=='waiting')return;
  if(G.mode==='offline'){if(G.myPick===null){G.myPick=pickAllowedGesture();G.iAuto=true}BotAI.record(G.myPick);triggerReveal()}
  else{if(G.myPick===null){G.myPick=pickAllowedGesture();G.iAuto=true;sendMsg({type:'choice',value:G.myPick,auto:true})}else sendMsg({type:'choice',value:G.myPick,auto:false});checkReveal()}}
 function dotBall(){G.state='processing';setBtns(false);const bat=curBat();bat.balls++;bat.hist.push('DOT');flash('DOT!','dot');sfx('run');haptic(10);$('status').innerHTML='<span class="hl">DOT!</span> Missed pick.';if(G.freeHit){G.freeHit=false;updFH()}updScore();renderBalls();persist();G.state='idle';setTimeout(nextBall,1500)}
-function noBall(){G.state='processing';setBtns(false);const bat=curBat();bat.score+=1;bat.hist.push('NB');flash('NO BALL!','noball');sfx('nb');haptic(25);$('status').innerHTML='<span class="hl">NO BALL!</span> +1 & FREE HIT!';G.freeHit=true;updScore();renderBalls();updFH();persist();G.state='idle';setTimeout(()=>{sfx('fh');nextBall()},1800)}
+function noBall(){G.state='processing';setBtns(false);const bat=curBat();bat.score+=1;bat.hist.push('NB');flash('NO BALL!','noball');sfx('nb');haptic(25);$('status').innerHTML='<span class="hl">NO BALL!</span> +1 & FREE HIT!';G.freeHit=true;updScore();renderBalls();updFH();persist();G.state='idle';if(typeof botChat==='function')botChat('onFreeHit');setTimeout(()=>{sfx('fh');nextBall()},1800)}
 function checkReveal(){if(G.state!=='waiting')return;if(G.myPick!==null&&G.oppPick!==null){triggerReveal()}else if(G.myPick!==null){$('labelPlayer').textContent='Locked';$('labelPlayer').classList.add('show');$('status').innerHTML='Waiting...'}}
 function triggerReveal(){if(G.state!=='waiting')return;G.state='revealing';stopTimer();setBtns(false);if(G.mode==='offline'){BotAI.record(G.myPick);updBotLvl()}setTimeout(revealBall,G.mode==='offline'?400:50)}
 $('gestureGrid').addEventListener('click',e=>{const btn=e.target.closest('.gesture-btn');if(!btn||btn.classList.contains('disabled')||btn.classList.contains('restricted')||G.state!=='waiting')return;ensureAudio();const val=parseInt(btn.dataset.val,10);G.myPick=val;sfx('tap');haptic(10);$('gestureGrid').querySelectorAll('.gesture-btn').forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');if(G.mode==='online'){sendMsg({type:'choice',value:val,auto:false});checkReveal()}else{triggerReveal()}});
@@ -1371,10 +1467,17 @@ if(bVal===bowlVal){
  $('status').innerHTML=bn+' +<span class="hl">'+runs+'</span>';popScore(G.iBat?'A':'B');
 }
 updScore();renderBalls();persist();
+if(typeof botChat==='function'){
+ if(bVal===bowlVal&&!G.freeHit){botChat(G.iBat?'onPlayerOut':'onBotOut')}
+ else if(bVal===6){botChat(G.iBat?'onBotSix':'onPlayerSix')}
+ else if(bVal>=4){botChat(G.iBat?'onBotFour':'onPlayerFour')}
+ else if(bVal===0){botChat('onDot')}
+}
 if(G.innings===2&&G.target!=null){const ch=curBat();if(ch.score>G.target){setTimeout(endInnings,1200);G.state='idle';return}}
 const bat2=curBat();
 const wicketJustFell=bVal===bowlVal&&!G.freeHit;
 const overEnded=bat2.balls%6===0&&bat2.balls>0;
+if(typeof botChat==='function'&&overEnded)botChat('onOverEnd');
 if(G.teamSize>1&&(wicketJustFell||overEnded)){
  if(wicketJustFell){
   if(G.iBat)showPlayerSelect('bat');
@@ -1396,7 +1499,7 @@ function finishMatch(){
  else if(!won&&!tied){t='LOSE';m=mn+' '+my+'/'+G.me.wkts+' vs '+on+' '+op+'/'+G.opp.wkts;sfx('lose')}
  else{t='TIED';m='Both: '+my+'/'+G.me.wkts}
  $('resTitle').textContent=t;$('resMsg').innerHTML=m;
-  const matchResult={won:!won&&!tied?false:won,lost:!won&&!tied,tied,myRuns:G.me.score,myBalls:G.me.balls,mySixes:G.me.hist.filter(h=>h===6).length,myFours:G.me.hist.filter(h=>h===4).length,myWickets:G.me.wkts,oppRuns:G.opp.score,oppBalls:G.opp.balls,oppWickets:G.opp.wkts};
+   const matchResult={won:!won&&!tied?false:won,lost:!won&&!tied,tied,myRuns:G.me.score,myBalls:G.me.balls,mySixes:G.me.hist.filter(h=>h===6).length,myFours:G.me.hist.filter(h=>h===4).length,myWickets:G.me.wkts,oppRuns:G.opp.score,oppBalls:G.opp.balls,oppWickets:G.opp.wkts,myHist:G.me.hist};
  G.recentResult=matchResult;
  updateStatsAfterMatch(matchResult);
  const statsBox=$('matchStatsBox');statsBox.style.display='block';
@@ -1406,7 +1509,10 @@ function finishMatch(){
   $('btnAgain').style.display='none';
   $('btnMenu').style.display='inline-block';
   $('resultOverlay').classList.remove('hidden');showLeave(false);
-}
+  if(typeof showAddFriendBtn==='function')showAddFriendBtn();
+  if(typeof maybeBotFriendRequest==='function')maybeBotFriendRequest();
+  if(typeof maybeBotChallenge==='function')maybeBotChallenge();
+ }
 $('btnNextInn').onclick=()=>{sfx('tap');$('inningsOverlay').classList.add('hidden');startInnings(2)};
 $('btnInnBreakNext').onclick=()=>{sfx('tap');if(G.selectTimer){clearInterval(G.selectTimer);G.selectTimer=null}$('inningsBreakOverlay').classList.add('hidden');startInnings(2)};
 $('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');clearSnap();if(G.mode==='online'&&G.isHost){doRematch();sendMsg({type:'rematch'})}else if(G.mode==='offline'){G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.target=null;G.innings=1;G.freeHit=false;BotAI.reset(G.storyDifficulty||0);startInnings(1)}};
@@ -2369,6 +2475,321 @@ try{
   $('hostFormat').style.display='none';$('joinerNote').style.display='block';
   if(sess&&sess.role==='join'&&sess.room===rid){$('nameInput').value=sess.name;G.wantRejoin=true}
  }
+})();
+if(typeof checkBotChallenges==='function')setTimeout(checkBotChallenges,5000);
+</script>
+<script>
+/* ====== EMOJI QUICK CHAT SYSTEM ====== */
+(function(){
+ const API='/api';
+ const emojiBar=$('emojiBar');
+ const quickMsgs=$('quickMsgs');
+ if(emojiBar){
+  emojiBar.addEventListener('click',e=>{
+   const btn=e.target.closest('.emoji-btn');
+   if(!btn)return;
+   sfx('tap');haptic(10);
+   if(btn.dataset.action==='msgs'){
+    quickMsgs.classList.toggle('show');
+    return;
+   }
+   const emoji=btn.dataset.emoji;
+   if(!emoji)return;
+   btn.classList.add('sent');setTimeout(()=>btn.classList.remove('sent'),400);
+   quickMsgs.classList.remove('show');
+   if(G.mode==='online'&&conn&&conn.open){
+    sendMsg({type:'emoji',emoji,name:G.myName});
+   }
+   showFloatEmoji(emoji,false);
+  });
+ }
+ if(quickMsgs){
+  quickMsgs.addEventListener('click',e=>{
+   const btn=e.target.closest('.qmsg-btn');
+   if(!btn)return;
+   sfx('tap');haptic(10);
+   const msg=btn.dataset.msg;
+   quickMsgs.classList.remove('show');
+   if(G.mode==='online'&&conn&&conn.open){
+    sendMsg({type:'quickmsg',msg,name:G.myName});
+   }
+   showFloatMsg(msg,false);
+  });
+ }
+ function showFloatEmoji(emoji,isOpponent){
+  const el=document.createElement('div');
+  el.className='float-emoji '+(isOpponent?'left':'right');
+  el.textContent=emoji;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2600);
+ }
+ function showFloatMsg(msg,isOpponent){
+  const el=document.createElement('div');
+  el.className='float-msg '+(isOpponent?'left':'right');
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),3100);
+ }
+ window.showFloatEmoji=showFloatEmoji;
+ window.showFloatMsg=showFloatMsg;
+
+ /* Extend handleNet for emoji/quickmsg */
+ const origHandleNet=window._origHandleNet||handleNet;
+ if(!window._origHandleNet)window._origHandleNet=origHandleNet;
+
+ /* ====== BOT CHAT DURING MATCHES ====== */
+ const BOT_CHAT={
+  onPlayerSix:[{t:'Arre waah! Badhiya shot!',e:'🔥'},{t:'Wah bhai wah!',e:'😮'},{t:'Kya maar diya!',e:'💪'}],
+  onPlayerFour:[{t:'Chalo, acha shot tha',e:'👏'},{t:'Boundary nice!',e:'👍'},{t:'Thik hai thik hai',e:'😏'}],
+  onPlayerOut:[{t:'Out! Ha ha, maza aaya!',e:'😤'},{t:'Bye bye! Out ho gaya!',e:'🤣'},{t:'Game over bhai!',e:'😂'}],
+  onBotSix:[{t:'Dekho bhai, aise hota hai!',e:'😎'},{t:'Six! Power game!',e:'🔥'},{t:'Mast shot tha!',e:'💪'}],
+  onBotFour:[{t:'Boundary! Simple game hai',e:'💪'},{t:'Four runs easy!',e:'😎'},{t:'Chalo score badh raha hai',e:'👍'}],
+  onBotOut:[{t:'Arre yaar, kismat kharab',e:'😩'},{t:'Out ho gaya main bhi...',e:'😢'},{t:'Naya batter aayega',e:'🤷'}],
+  onPlayerWinning:[{t:'Abhi kuch nahi hua, wait karo',e:'😏'},{t:'Jeetna abhi baaki hai',e:'🤔'},{t:'Dekhte hain...',e:'👀'}],
+  onBotWinning:[{t:'Haar mat mano bhai!',e:'🤣'},{t:'Jeetne wala hun main!',e:'😎'},{t:'Score dekho mera!',e:'💪'}],
+  onDot:[{t:'Koi nahi, agla ball dekho',e:'🤷'},{t:'Dot ball, focus bhai!',e:'👀'},{t:'Chalo agla aayega',e:'👍'}],
+  onOverEnd:[{t:'End of over, dhyan se!',e:'👀'},{t:'Over khatam! Ready?',e:'🏏'},{t:'Naya over, naya plan!',e:'🤔'}],
+  onFreeHit:[{t:'Free hit hai, maar de!',e:'⚡'},{t:'Free hit! Full power!',e:'🔥'},{t:'Ab toh maar de!',e:'💪'}],
+  onOneToWin:[{t:'Bas ek run! Pressure!',e:'😰'},{t:'Last ball jaisa hai!',e:'😱'},{t:'Ek run door!',e:'👀'}],
+  onBotLastBall:[{t:'Last ball, dekho kya hota hai!',e:'🍿'},{t:'Nervous ho raha hun!',e:'😰'},{t:'Ye ball decide karega!',e:'⚡'}],
+  onMatchStart:[{t:'Chalo shuru karte hain!',e:'🏏'},{t:'Game on bhai!',e:'🔥'},{t:'Ready ho jao!',e:'💪'}],
+  onBigChase:[{t:'Bahut target hai, mushkil hoga',e:'😅'},{t:'Bada chase hai ye toh!',e:'🤯'},{t:'Mehnat lagegi bhai!',e:'💪'}]
+ };
+ function botChat(eventType){
+  if(!G.isBot||G.storyDifficulty!==undefined&&G.storyDifficulty!==0)return;
+  const msgs=BOT_CHAT[eventType];
+  if(!msgs||msgs.length===0)return;
+  if(Math.random()>0.5)return;
+  const pick=msgs[Math.floor(Math.random()*msgs.length)];
+  setTimeout(()=>{
+   showFloatMsg(pick.t,true);
+   showFloatEmoji(pick.e,true);
+  },800+Math.random()*1200);
+ }
+ window.botChat=botChat;
+})();
+</script>
+<script>
+/* ====== FRIEND SYSTEM ====== */
+(function(){
+ const API='/api';
+ let myFriends={friends:[],pending:[]};
+ let currentTab='list';
+
+ async function apiCall(endpoint,params){
+  try{
+   const resp=await fetch(API+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(params)});
+   return await resp.json();
+  }catch(e){return{error:e.message}}
+ }
+
+ async function loadFriends(){
+  const user=getUsername();
+  if(!user)return;
+  try{
+   const resp=await fetch(API+'/friends?user='+encodeURIComponent(user));
+   const data=await resp.json();
+   myFriends=data||{friends:[],pending:[]};
+  }catch(e){myFriends={friends:[],pending:[]}}
+ }
+
+ function renderFriendList(){
+  const list=$('friendList');
+  if(!list)return;
+  if(currentTab==='list'){
+   if(!myFriends.friends||myFriends.friends.length===0){
+    list.innerHTML='<div style="text-align:center;opacity:.5;padding:20px;font-size:13px">No friends yet. Play a match and add your opponent!</div>';
+    return;
+   }
+   list.innerHTML=myFriends.friends.map(f=>'<div class="friend-item">'
+    +'<div class="friend-avatar">'+(f.isBot?'🤖':(f.avatar||'👤'))+'</div>'
+    +'<div class="friend-info"><div class="friend-name">'+escHtml(f.name)+(f.isBot?'<span class="friend-bot-badge">BOT</span>':'')+'</div>'
+    +'<div class="friend-rank">'+(f.stats?getRank(f.stats):'')+'</div></div>'
+    +'<div class="friend-actions">'
+    +'<button class="fa-challenge" onclick="challengeFriend(\''+escAttr(f.name)+'\')">Play</button>'
+    +'<button class="fa-remove" onclick="removeFriend(\''+escAttr(f.name)+'\')">✕</button>'
+    +'</div></div>').join('');
+  }else{
+   if(!myFriends.pending||myFriends.pending.length===0){
+    list.innerHTML='<div style="text-align:center;opacity:.5;padding:20px;font-size:13px">No pending requests</div>';
+    return;
+   }
+   list.innerHTML=myFriends.pending.map(f=>'<div class="friend-item pending-item">'
+    +'<div class="friend-avatar">'+(f.isBot?'🤖':'👤')+'</div>'
+    +'<div class="friend-info"><div class="friend-name">'+escHtml(f.name)+'</div>'
+    +'<div class="friend-rank">'+(f.stats?getRank(f.stats):'New player')+'</div></div>'
+    +'<div class="friend-actions">'
+    +'<button class="fa-accept" onclick="acceptFriend(\''+escAttr(f.name)+'\')">✓</button>'
+    +'<button class="fa-reject" onclick="rejectFriend(\''+escAttr(f.name)+'\')">✕</button>'
+    +'</div></div>').join('');
+  }
+  updatePendingCount();
+ }
+
+ function updatePendingCount(){
+  const el=$('pendingCount');
+  const count=(myFriends.pending||[]).length;
+  if(el){el.textContent=count;el.style.display=count>0?'inline':'none'}
+ }
+
+ window.acceptFriend=async function(name){
+  const user=getUsername();
+  await apiCall('/friends',{action:'accept',user,target:name});
+  await loadFriends();renderFriendList();
+ };
+ window.rejectFriend=async function(name){
+  const user=getUsername();
+  await apiCall('/friends',{action:'reject',user,target:name});
+  await loadFriends();renderFriendList();
+ };
+ window.removeFriend=async function(name){
+  if(!confirm('Remove '+name+' from friends?'))return;
+  const user=getUsername();
+  await apiCall('/friends',{action:'remove',user,target:name});
+  await loadFriends();renderFriendList();
+ };
+  window.challengeFriend=function(name){
+   $('friendsOverlay').classList.add('hidden');
+   $('menuOverlay').classList.remove('hidden');
+   G.oppName=name;
+   G.isBot=false;
+  };
+
+ window.showFriends=async function(){
+  await loadFriends();
+  currentTab='list';
+  renderFriendList();
+  $('friendsOverlay').classList.remove('hidden');
+  const tabs=document.querySelectorAll('.ftab');
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab==='list'));
+ };
+
+ function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+ function escAttr(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;')}
+
+ /* Tab switching */
+ document.addEventListener('click',e=>{
+  const tab=e.target.closest('.ftab');
+  if(!tab)return;
+  currentTab=tab.dataset.tab;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.toggle('active',t.dataset.tab===currentTab));
+  renderFriendList();
+ });
+
+ /* Add Friend button on result screen */
+ window.showAddFriendBtn=function(){
+  const user=getUsername();
+  if(!user||!G.oppName||G.oppName===user||G.oppName==='Opp')return;
+  const isAlready=(myFriends.friends||[]).some(f=>f.name.toLowerCase()===G.oppName.toLowerCase());
+  const btn=$('addFriendBtn');
+  const btnInner=$('btnAddFriend');
+  if(isAlready){
+   btn.style.display='block';btnInner.textContent='✓ Friends';btnInner.className='add-friend-btn already';
+  }else{
+   btn.style.display='block';btnInner.textContent='+ Add Friend';btnInner.className='add-friend-btn';
+  }
+ };
+
+ $('btnAddFriend').onclick=async()=>{
+  const user=getUsername();
+  const target=G.oppName;
+  if(!user||!target)return;
+  const isBot=G.isBot;
+  const stats=G.oppStats||null;
+  const result=await apiCall('/friends',{action:'add',user,target,targetStats:stats,isBot});
+  if(result.autoAccepted){
+   $('btnAddFriend').textContent='✓ Friends (Bot accepted!)';$('btnAddFriend').className='add-friend-btn already';
+   setTimeout(()=>{showFloatEmoji('🎉',true);showFloatMsg('We are friends now! 🤝',true)},500);
+  }else if(result.sent){
+   $('btnAddFriend').textContent='✓ Request Sent';$('btnAddFriend').className='add-friend-btn already';
+  }
+  await loadFriends();
+ };
+
+ /* Button bindings */
+ $('btnFriends').onclick=()=>{sfx('tap');showFriends()};
+ $('btnCloseFriends').onclick=()=>{$('friendsOverlay').classList.add('hidden')};
+
+ /* Load friends on page load */
+ setTimeout(()=>loadFriends(),2000);
+
+ /* Check for bot challenges on page load */
+ window.checkBotChallenges=async function(){
+  const user=getUsername();
+  if(!user)return;
+  try{
+   const resp=await fetch(API+'/challenges?user='+encodeURIComponent(user));
+   const data=await resp.json();
+   const pending=(data.challenges||[]).filter(c=>!c.resolved);
+   if(pending.length>0){
+    const c=pending[0];
+    showFriendNotif(c.botName+' challenges you! 🏏','Want to play against '+c.botName+'?',[
+     {label:'Accept',cls:'fnb-challenge',action:()=>{resolveChallenge(c.botName);startBotChallenge(c)}},
+     {label:'Later',cls:'fnb-dismiss',action:()=>{resolveChallenge(c.botName);hideFriendNotif()}}
+    ]);
+   }
+  }catch(e){}
+ };
+
+ async function resolveChallenge(botName){
+  const user=getUsername();
+  await apiCall('/challenges',{user,action:'resolve',botName});
+ }
+
+  function startBotChallenge(c){
+   hideFriendNotif();
+   $('menuOverlay').classList.add('hidden');
+   G.mode='offline';G.isBot=true;G.oppName=c.botName;
+   G.botProfile=c.botStats||genBotProfile();
+   G.oppStats=G.botProfile;
+   $('offlineSetup').classList.remove('hidden');
+  }
+
+ window.showFriendNotif=function(title,text,buttons){
+  const n=$('friendNotif');
+  $('fnTitle').textContent=title;
+  $('fnText').textContent=text;
+  const btns=$('fnBtns');btns.innerHTML='';
+  buttons.forEach(b=>{
+   const btn=document.createElement('button');
+   btn.className=b.cls;btn.textContent=b.label;
+   btn.onclick=b.action;btns.appendChild(btn);
+  });
+  n.classList.remove('hidden');
+  setTimeout(()=>n.classList.add('hidden'),12000);
+ };
+ window.hideFriendNotif=function(){$('friendNotif').classList.add('hidden')};
+
+ /* Bot friend request after match */
+ window.maybeBotFriendRequest=async function(){
+  if(!G.isBot)return;
+  if(Math.random()>0.4)return;
+  const user=getUsername();
+  if(!user)return;
+  const botName=G.oppName;
+  const botStats=G.oppStats;
+  setTimeout(()=>{
+   showFriendNotif(botName+' wants to be your friend! 🤖','Accept friend request from this bot?',[
+    {label:'Accept',cls:'fnb-accept',action:async()=>{
+     await apiCall('/friends',{action:'add',user,target:botName,targetStats:botStats,isBot:true});
+     hideFriendNotif();
+     showFloatEmoji('🎉',true);showFloatMsg('We are friends! 🤝',true);
+    }},
+    {label:'Reject',cls:'fnb-reject',action:()=>{hideFriendNotif()}}
+   ]);
+  },3000);
+ };
+
+ /* Bot sends challenge after some time */
+ window.maybeBotChallenge=async function(){
+  if(!G.isBot)return;
+  if(Math.random()>0.25)return;
+  const user=getUsername();
+  if(!user)return;
+  const botName=G.oppName;
+  const botStats=G.oppStats;
+  await apiCall('/challenges',{user,action:'send',botName,botStats});
+ };
 })();
 </script>
 </body>

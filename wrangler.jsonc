@@ -1,15 +1,12 @@
 {
-  // Cloudflare Pages + Workers KV config
-  // Step 1: run `npx wrangler kv:namespace create HC_KV` and paste the id below
-  // Step 2: also create a preview namespace with `npx wrangler kv:namespace create HC_KV --preview`
-  // Step 3: deploy with `npx wrangler pages deploy ./public`
   "name": "handcricket",
   "compatibility_date": "2025-09-01",
   "pages_build_output_dir": "./public",
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "REPLACE_WITH_REAL_KV_ID"
+      "id": "7872bcfef01247f881c7c48d9dba79dc",
+      "preview_id": "e18830349fcf44e78e1bdf7b6ebed0ea"
     }
   ]
 }
