@@ -175,7 +175,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .team-size-btn.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:rgba(245,158,11,.5)}
 .inning-info{font-size:10px;color:#34d399;margin:4px 0;font-weight:600}
 @media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(80px,22vh,120px);height:clamp(100px,28vh,150px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}.coin-container{width:70px;height:70px;margin:8px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:20px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:7px}.arena{border-radius:10px;margin:0 2px}}
-@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}.role-row{grid-template-columns:24px 1fr auto auto;gap:4px;padding:6px 8px}.role-select button{padding:3px 6px;font-size:9px}.role-bowl-select button{padding:3px 5px;font-size:8px}.story-dialogue-box{padding:10px 12px}.gesture-grid{gap:3px}.gesture-btn{padding:clamp(4px,.6vh,6px) 1px;font-size:11px}.coin-container{width:80px;height:80px;margin:12px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:22px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:8px}}
+@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}.role-row{grid-template-columns:24px 1fr auto auto;gap:4px;padding:6px 8px}.role-select button{padding:3px 6px;font-size:9px}.role-bowl-select button{padding:3px 5px;font-size:8px}.story-dialogue-box{padding:10px 12px}.gesture-grid{gap:3px}.gesture-btn{padding:clamp(4px,.6vh,6px) 1px;font-size:11px}.coin-container{width:80px;height:80px;margin:12px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:22px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:8px}.tutorial{max-width:280px;padding:16px 14px 12px}.tutorial .tut-title{font-size:13px;padding-right:40px}.tutorial .tut-body{font-size:11px}.tutorial .tut-next{max-width:170px;padding:8px 16px;font-size:12px}}
 @media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
 @media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(120px,16vw,180px);height:clamp(150px,20vw,230px)}.coin-container{width:150px;height:150px;margin:24px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:48px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:14px}.arena{border-radius:20px}}
 .home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f59e0b 0%,#fff 50%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
@@ -248,16 +248,19 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .home-version{font-size:9px;opacity:.4;margin-top:12px;animation:fadeUp .6s 1s both}
 .home-credit{font-size:10px;opacity:.6;margin-top:6px;animation:fadeUp .6s 1.1s both;padding:4px 12px;border-radius:8px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.1)}
 .home-credit a{color:#f59e0b;text-decoration:none;font-weight:700}
-.tutorial{position:relative;width:100%;max-width:320px;margin:10px auto;padding:18px 18px 14px;background:#1e293b;border:1px solid rgba(245,158,11,.25);border-radius:16px;text-align:left}
-.tutorial .tut-num{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;background:#f59e0b;color:#0f172a;border-radius:50%;font-weight:900;font-size:13px;margin-right:8px}
-.tutorial .tut-title{font-size:14px;font-weight:800;color:#fde68a;margin:4px 0}
-.tutorial .tut-body{font-size:12px;color:#cbd5e1;line-height:1.5;margin:6px 0}
-.tutorial .tut-dots{display:flex;justify-content:center;gap:6px;margin:8px 0 4px}
-.tutorial .tut-dots .d{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18)}
+.tutorial{position:relative;width:100%;max-width:320px;margin:10px auto;padding:20px 20px 16px;background:#1e293b;border:1px solid rgba(245,158,11,.25);border-radius:16px;text-align:left;overflow:visible}
+.tutorial .tut-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:#f59e0b;color:#0f172a;border-radius:50%;font-weight:900;font-size:13px;margin-right:8px;flex-shrink:0}
+.tutorial .tut-title{font-size:15px;font-weight:800;color:#fde68a;margin:4px 0 8px;display:flex;align-items:center;padding-right:50px}
+.tutorial .tut-body{font-size:12px;color:#cbd5e1;line-height:1.6;margin:0 0 12px}
+.tutorial .tut-dots{display:flex;justify-content:center;gap:8px;margin:0 0 12px}
+.tutorial .tut-dots .d{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);transition:background .2s}
 .tutorial .tut-dots .d.on{background:#f59e0b}
-.tutorial .tut-skip{position:absolute;top:8px;right:10px;background:none;border:none;color:#94a3b8;font-size:11px;cursor:pointer;font-weight:700}
-.tutorial .tut-next{display:block;margin:8px auto 0;padding:8px 20px;background:linear-gradient(180deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:800;cursor:pointer;width:100%;max-width:200px;-webkit-appearance:none}
-.tutorial .tut-dont{font-size:10px;color:#64748b;margin-top:6px;text-align:center;display:flex;justify-content:center;align-items:center;gap:4px}
+.tutorial .tut-skip{position:absolute;top:12px;right:14px;background:none;border:none;color:#94a3b8;font-size:11px;cursor:pointer;font-weight:700;padding:4px 8px;border-radius:6px;transition:color .2s}
+.tutorial .tut-skip:hover{color:#f59e0b}
+.tutorial .tut-next{display:block;margin:0 auto;padding:10px 24px;background:linear-gradient(180deg,#f59e0b,#d97706);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;width:100%;max-width:200px;-webkit-appearance:none;touch-action:manipulation;box-shadow:0 4px 12px rgba(245,158,11,.3)}
+.tutorial .tut-next:active{transform:translateY(2px)}
+.tutorial .tut-dont{font-size:11px;color:#64748b;margin-top:10px;text-align:center;display:flex;justify-content:center;align-items:center;gap:6px;cursor:pointer}
+.tutorial .tut-dont input{accent-color:#f59e0b;width:14px;height:14px;cursor:pointer}
 .pre-stats-box{background:rgba(30,41,59,.6);border:1px solid rgba(148,163,184,.1);border-radius:14px;padding:12px;margin:10px auto;max-width:280px;text-align:left;max-height:40vh;overflow-y:auto}
 .pre-stats-title{font-size:14px;font-weight:800;color:#f59e0b;margin-bottom:8px;text-align:center}
 .pre-rank{font-size:10px;font-weight:600;color:#34d399}
@@ -773,7 +776,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 </div>
 
 <div class="overlay hidden" id="tutorialOverlay" style="background:#0f172a">
-<h1>How to Play</h1>
+<h1 style="margin:0 0 6px">How to Play</h1>
 <div class="tutorial" id="tutorialCard">
 <button class="tut-skip" id="tutSkip">Skip</button>
 <div id="tutSlide"></div>
