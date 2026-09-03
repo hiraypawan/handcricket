@@ -328,6 +328,29 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .story-player-card .sp-name{font-size:12px;font-weight:700}
 .story-player-card .sp-info{font-size:9px;opacity:.6}
 
+/* Player Selection Overlay */
+.ps-timer{font-size:28px;font-weight:900;color:var(--accent);animation:psPulse 1s ease-in-out infinite}
+@keyframes psPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+#playerSelectOverlay .pool-item{cursor:pointer;padding:8px 10px}
+#playerSelectOverlay .pool-item:hover{border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.08)}
+#playerSelectOverlay .pool-item.picked{background:rgba(245,158,11,.15);border-color:var(--accent)}
+
+/* Innings Break Stats */
+.inn-break-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.inn-break-side{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;text-align:left}
+.inn-break-side h4{font-size:12px;font-weight:800;color:var(--accent);margin:0 0 6px;text-align:center}
+.inn-break-player{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,.05)}
+.inn-break-player:last-child{border-bottom:none}
+.inn-break-player .ib-name{font-weight:700;color:var(--text);flex:1}
+.inn-break-player .ib-role{font-size:8px;padding:1px 4px;border-radius:4px;font-weight:700;margin-left:4px}
+.inn-break-player .ib-role.agg{background:rgba(239,68,68,.15);color:#fca5a5}
+.inn-break-player .ib-role.def{background:rgba(96,165,250,.15);color:#93c5fd}
+.inn-break-player .ib-role.bal{background:rgba(74,222,128,.15);color:#86efac}
+.inn-break-player .ib-stat{font-weight:800;color:var(--accent);min-width:32px;text-align:right}
+.inn-break-summary{text-align:center;padding:8px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;margin-top:8px}
+.inn-break-summary .big{font-size:20px;font-weight:900;color:var(--accent)}
+.inn-break-summary .small{font-size:10px;color:#94a3b8}
+
 /* Home Brightness Fix */
 .home-title{background:linear-gradient(135deg,var(--accent) 0%,#fff 50%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .mode-btn{border:1px solid rgba(255,255,255,.1);transition:all .2s cubic-bezier(.34,1.56,.64,1)}
@@ -560,6 +583,23 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="roast-emoji">😤</div>
 <div class="roast-text" id="roastText"></div>
 </div>
+
+<div class="overlay hidden" id="playerSelectOverlay">
+<h1 id="psTitle">Select Next Batter</h1>
+<p id="psSubtitle" style="font-size:12px;opacity:.7;margin-bottom:8px"></p>
+<div class="ps-timer" id="psTimer" style="font-size:28px;font-weight:900;color:#f59e0b;margin:8px 0"></div>
+<div id="psCurrent" style="font-size:11px;color:#94a3b8;margin-bottom:8px"></div>
+<div class="pool-grid" id="psGrid" style="max-height:clamp(180px,35vh,300px)"></div>
+<p id="psHint" style="font-size:10px;opacity:.5;margin-top:6px">Auto-selects in <span id="psCountdown">10</span>s</p>
+</div>
+
+<div class="overlay hidden" id="inningsBreakOverlay">
+<h1 id="innBreakTitle">End of 1st Innings</h1>
+<div id="innBreakStats" style="width:100%;max-width:400px;margin:10px 0"></div>
+<p id="innBreakMsg" style="font-size:13px;color:#94a3b8;margin:8px 0"></p>
+<p id="innBreakTimer" style="font-size:18px;font-weight:900;color:#f59e0b"></p>
+<button id="btnInnBreakNext">Start 2nd Innings</button>
+</div>
 </div>
 
 <script src="src/story-data.js"></script>
@@ -728,7 +768,7 @@ const BotAI={
  level(){if(this.ballCount<4)return'Easy';if(this.ballCount<10)return'Medium';if(this.matchPhase==='end')return'Expert';return'Hard'}};
 
 const TIMER=5,CIRC=2*Math.PI*44,WATCHDOG=12000;
-const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null,oppStats:null};
+const G={mode:null,teamSize:1,innings:1,iBat:true,target:null,me:{score:0,wkts:0,balls:0,hist:[]},opp:{score:0,wkts:0,balls:0,hist:[]},myPick:null,oppPick:null,state:'idle',timerId:null,tStart:0,watchdog:null,totalBalls:6,totalWkts:1,isHost:false,myName:'Player',oppName:'Opp',myTeam:null,oppTeam:null,myPlayers:[],oppPlayers:[],batIdx:0,bowlIdx:0,freeHit:false,iAuto:false,oppAuto:false,roomId:null,stage:'lobby',wantRejoin:false,isBot:false,botProfile:null,matchStartTime:0,recentResult:null,oppStats:null,myBatStats:[],myBowlStats:[],oppBatStats:[],oppBowlStats:[],storyDifficulty:0,selectingPlayer:null,selectTimer:null};
 const $=id=>document.getElementById(id);
 let audioCtx=null,peer=null,conn=null,pollTimer=null,connGen=0,joinAttempts=0,readyGen=-1,rejoinTimer=null,matchTimer=null;
 
@@ -817,11 +857,16 @@ function curBatter(){const bat=G.iBat?G.me:G.opp;return G.myPlayers.length>G.bat
 function updatePlayerDisplay(){
  const bat=G.iBat?G.me:G.opp;
  if(G.teamSize>1){
-  const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');
-  const cp=G.iBat?curBatter():curBowler();
-  if(cp)$('playerA').textContent=G.iBat?'Batting: '+cp.name:(G.teamSize>1?'Bowling: '+cp.name:'');
-  if(!G.iBat&&curBowler())$('playerB').textContent='Bowling: '+curBowler().name;
-  else if(G.iBat)$('playerB').textContent='';
+  const batter=curBatter();
+  const bowler=curBowler();
+  if(G.iBat){
+   if(batter)$('playerA').innerHTML='🏏 Batting: <b>'+batter.name+'</b>'+(batter.battingStyle&&batter.battingStyle!=='balanced'?' <span class="role-badge-inline '+(ROLE_COLORS[batter.battingStyle]||'bal')+'">'+ROLE_LABELS[batter.battingStyle]+'</span>':'');
+   if(wowler)$('playerB').innerHTML='⚾ Bowling: <b>'+bowler.name+'</b>';
+   else $('playerB').textContent='';
+  }else{
+   if(wowler)$('playerA').innerHTML='⚾ Bowling: <b>'+bowler.name+'</b>'+(bowler.bowlingStyle&&bowler.bowlingStyle!=='balanced'?' <span class="role-badge-inline '+(ROLE_COLORS[bowler.bowlingStyle]||'bal')+'">'+ROLE_LABELS[bowler.bowlingStyle]+'</span>':'');
+   if(batter)$('playerB').innerHTML='🏏 Batting: <b>'+batter.name+'</b>';
+  }
  }else{$('playerA').textContent='';$('playerB').textContent=''}
 }
 
@@ -1182,6 +1227,7 @@ function startInnings(n){
  const bat=G.iBat?G.me:G.opp;
  bat.score=0;bat.wkts=0;bat.balls=0;bat.hist=[];
  G.state='idle';G.freeHit=false;
+ if(G.teamSize>1)initPlayerStats();
  updScore();renderBalls();updFH();
  const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');
  const ov=G.totalBalls/6;const ft=G.totalWkts+' wk, '+ov+' ov';
@@ -1205,9 +1251,15 @@ function nextBall(){
  $('status').innerHTML=G.iBat?'BAT!'+fh:'BOWL!'+fh;
  updFH();startTimer();armWD();
 }
+function pickAllowedGesture(){
+  const isBatting=G.iBat;
+  const myPlayer=isBatting?curBatter():curBowler();
+  const allowed=getAllowedGestures(myPlayer,isBatting);
+  return allowed[Math.floor(Math.random()*allowed.length)];
+}
 function onTimeUp(){stopTimer();if(G.state!=='waiting')return;
- if(G.mode==='offline'){if(G.myPick===null){G.myPick=Math.floor(Math.random()*6)+1;G.iAuto=true}BotAI.record(G.myPick);triggerReveal()}
- else{if(G.myPick===null){G.myPick=Math.floor(Math.random()*6)+1;G.iAuto=true;sendMsg({type:'choice',value:G.myPick,auto:true})}else sendMsg({type:'choice',value:G.myPick,auto:false});checkReveal()}}
+ if(G.mode==='offline'){if(G.myPick===null){G.myPick=pickAllowedGesture();G.iAuto=true}BotAI.record(G.myPick);triggerReveal()}
+ else{if(G.myPick===null){G.myPick=pickAllowedGesture();G.iAuto=true;sendMsg({type:'choice',value:G.myPick,auto:true})}else sendMsg({type:'choice',value:G.myPick,auto:false});checkReveal()}}
 function dotBall(){G.state='processing';setBtns(false);const bat=curBat();bat.balls++;bat.hist.push('DOT');flash('DOT!','dot');sfx('run');haptic(10);$('status').innerHTML='<span class="hl">DOT!</span> Missed pick.';if(G.freeHit){G.freeHit=false;updFH()}updScore();renderBalls();persist();G.state='idle';setTimeout(nextBall,1500)}
 function noBall(){G.state='processing';setBtns(false);const bat=curBat();bat.score+=1;bat.hist.push('NB');flash('NO BALL!','noball');sfx('nb');haptic(25);$('status').innerHTML='<span class="hl">NO BALL!</span> +1 & FREE HIT!';G.freeHit=true;updScore();renderBalls();updFH();persist();G.state='idle';setTimeout(()=>{sfx('fh');nextBall()},1800)}
 function checkReveal(){if(G.state!=='waiting')return;if(G.myPick!==null&&G.oppPick!==null){triggerReveal()}else if(G.myPick!==null){$('labelPlayer').textContent='Locked';$('labelPlayer').classList.add('show');$('status').innerHTML='Waiting...'}}
@@ -1238,10 +1290,23 @@ if(bVal===bowlVal){
 }
 updScore();renderBalls();persist();
 if(G.innings===2&&G.target!=null){const ch=curBat();if(ch.score>G.target){setTimeout(endInnings,1200);G.state='idle';return}}
-G.state='idle';setTimeout(nextBall,1500);
+const bat2=curBat();
+const wicketJustFell=bVal===bowlVal&&!G.freeHit;
+const overEnded=bat2.balls%6===0&&bat2.balls>0;
+if(G.teamSize>1&&(wicketJustFell||overEnded)){
+ if(wicketJustFell){
+  if(G.iBat)showPlayerSelect('bat');
+  else showPlayerSelect('bat');
+ }else if(overEnded){
+  if(!G.iBat)showPlayerSelect('bowl');
+  else showPlayerSelect('bowl');
+ }
+}else{
+ G.state='idle';setTimeout(nextBall,1500);
+}
 }catch(e){G.state='idle';nextBall()}},750)}catch(e){G.state='idle';nextBall()}}
 
-function endInnings(){clearWD();stopTimer();setBtns(false);G.state='idle';G.freeHit=false;updFH();const bat=curBat();const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');if(G.innings===1){G.target=bat.score;setStage('break');$('innTitle').textContent='End of 1st Innings';$('innMsg').innerHTML='<b>'+bn+'</b>: <span class="hl">'+bat.score+'/'+bat.wkts+'</span> ('+oversStr(bat.balls)+')<br/>Target: <b>'+(G.target+1)+'</b>';if(G.mode==='offline'){$('inningsOverlay').classList.remove('hidden')}else{if(G.isHost){$('inningsOverlay').classList.remove('hidden');sendMsg({type:'innings_sync'})}else{$('status').innerHTML='<span class="hl">Waiting for host...</span>'}}}else{setStage('over');finishMatch()}}
+function endInnings(){clearWD();stopTimer();setBtns(false);G.state='idle';G.freeHit=false;updFH();const bat=curBat();const bn=G.iBat?(G.mode==='online'?G.myName:'YOU'):(G.mode==='online'?G.oppName:'BOT');if(G.innings===1){G.target=bat.score;setStage('break');if(G.mode==='offline'){$('inningsOverlay').classList.add('hidden');showInningsBreak()}else{if(G.isHost){showInningsBreak();sendMsg({type:'innings_sync'})}else{$('status').innerHTML='<span class="hl">Waiting for host...</span>'}}}else{setStage('over');finishMatch()}}
 function finishMatch(){
  const my=G.me.score,op=G.opp.score;let t,m;const won=my>op,tied=my===op;
  const mn=G.mode==='online'?G.myName:'YOU',on=G.mode==='online'?G.oppName:'BOT';
@@ -1261,11 +1326,12 @@ function finishMatch(){
   $('resultOverlay').classList.remove('hidden');showLeave(false);
 }
 $('btnNextInn').onclick=()=>{sfx('tap');$('inningsOverlay').classList.add('hidden');startInnings(2)};
+$('btnInnBreakNext').onclick=()=>{sfx('tap');if(G.selectTimer){clearInterval(G.selectTimer);G.selectTimer=null}$('inningsBreakOverlay').classList.add('hidden');startInnings(2)};
 $('btnRematch').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');clearSnap();if(G.mode==='online'&&G.isHost){doRematch();sendMsg({type:'rematch'})}else if(G.mode==='offline'){G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.target=null;G.innings=1;G.freeHit=false;BotAI.reset(G.storyDifficulty||0);startInnings(1)}};
 function doRematch(){G.innings=1;G.target=null;G.iBat=!G.iBat;G.batIdx=0;G.bowlIdx=0;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.freeHit=false;$('resultOverlay').classList.add('hidden');startInnings(1)}
 $('btnAgain').onclick=()=>{sfx('tap');$('resultOverlay').classList.add('hidden');if(G.mode==='offline'){G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.target=null;G.innings=1;G.freeHit=false;BotAI.reset(G.storyDifficulty||0);startInnings(1)}else if(G.mode==='online'){if(G.isHost){doRematch();sendMsg({type:'rematch'})}else{$('status').innerHTML='<span class="hl">Waiting for host rematch...</span>'}}};
 $('btnMenu').onclick=()=>{sfx('tap');destroyPeer();clearSnap();$('resultOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden');resetGame();updHomeTrophies();history.replaceState({},'',location.pathname)};
-function resetGame(){clearWD();stopTimer();G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;G.oppStats=null;BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
+function resetGame(){clearWD();stopTimer();if(G.selectTimer){clearInterval(G.selectTimer);G.selectTimer=null}G.innings=1;G.target=null;G.me={score:0,wkts:0,balls:0,hist:[]};G.opp={score:0,wkts:0,balls:0,hist:[]};G.myPick=null;G.oppPick=null;G.state='idle';G.stage='lobby';G.batIdx=0;G.bowlIdx=0;G.myTeam=null;G.oppTeam=null;G.myPlayers=[];G.oppPlayers=[];G.freeHit=false;G.iAuto=false;G.oppAuto=false;G.isBot=false;G.botProfile=null;G.oppStats=null;G.myBatStats=[];G.myBowlStats=[];G.oppBatStats=[];G.oppBowlStats=[];BotAI.reset();setHandGesture($('handImgPlayer'),$('handPlayer'),null);setHandGesture($('handImgOpponent'),$('handOpponent'),null);$('labelPlayer').classList.remove('show');$('labelPlayer').textContent='-';$('labelOpponent').classList.remove('show');$('labelOpponent').textContent='-';$('targetBanner').classList.remove('show');$('fhBanner').classList.remove('show');$('playerSelectOverlay').classList.add('hidden');$('inningsBreakOverlay').classList.add('hidden');showLeave(false);updScore();renderBalls();updBotLvl();$('status').innerHTML='Choose mode'}
 
 function showProfile(name,stats){
  const s=stats||loadStats();
@@ -1369,15 +1435,18 @@ function getAllowedGestures(player, isBatting) {
 }
 
 function applyGestureRestrictions() {
-  const isBatting = G.iBat;
-  const myPlayer = isBatting ? curBatter() : curBowler();
-  const allowed = getAllowedGestures(myPlayer, isBatting);
-  const btns = $('gestureGrid').querySelectorAll('.gesture-btn');
-  btns.forEach(b => {
-    const val = parseInt(b.dataset.val);
-    const isAllowed = allowed.includes(val);
-    b.classList.toggle('restricted', !isAllowed && G.state === 'waiting');
-  });
+  try {
+    const isBatting = G.iBat;
+    const myPlayer = isBatting ? curBatter() : curBowler();
+    if (!myPlayer) { removeGestureRestrictions(); return; }
+    const allowed = getAllowedGestures(myPlayer, isBatting);
+    const btns = $('gestureGrid').querySelectorAll('.gesture-btn');
+    btns.forEach(b => {
+      const val = parseInt(b.dataset.val);
+      const isAllowed = allowed.includes(val);
+      b.classList.toggle('restricted', !isAllowed && G.state === 'waiting');
+    });
+  } catch(e) { removeGestureRestrictions(); }
 }
 
 function removeGestureRestrictions() {
@@ -1897,18 +1966,25 @@ document.querySelectorAll('#storyLang .lang-btn').forEach(b => {
 
 (function(){
   const _nb = nextBall;
-  nextBall = function(){ _nb.apply(this, arguments); setTimeout(applyGestureRestrictions, 80); };
+  nextBall = function(){
+    _nb.apply(this, arguments);
+    try{ applyGestureRestrictions(); }catch(e){}
+  };
 })();
 
 (function(){
   const _rb = revealBall;
   revealBall = function(){
-    const wkBefore = curBat().wkts;
+    try{
+      var wkBefore = curBat().wkts;
+    }catch(e){var wkBefore=0}
     _rb.apply(this, arguments);
     setTimeout(()=>{
-      if(curBat().wkts > wkBefore) revealBowlerRole(true);
-      else if(curBat().balls % 6 === 0 && curBat().balls > 0) revealBowlerRole(false);
-      applyGestureRestrictions();
+      try{
+        if(curBat().wkts > wkBefore) revealBowlerRole(true);
+        else if(curBat().balls % 6 === 0 && curBat().balls > 0) revealBowlerRole(false);
+        applyGestureRestrictions();
+      }catch(e){}
     }, 900);
   };
 })();
@@ -1980,7 +2056,131 @@ document.querySelectorAll('#storyLang .lang-btn').forEach(b => {
     mg.appendChild(sb);
   }
 })();
-G.storyDifficulty=0;let mmSearching=false;
+// ================================================================
+// PLAYER SELECTION + INNINGS BREAK SYSTEM
+// ================================================================
+
+function initPlayerStats(){
+ G.myBatStats=G.myPlayers.map((p,i)=>({name:p.name,role:p.role,battingStyle:p.battingStyle||'balanced',bowlingStyle:p.bowlingStyle||'balanced',runs:0,balls:0,fours:0,sixes:0,out:false,outReason:''}));
+ G.myBowlStats=G.myPlayers.map((p,i)=>({name:p.name,role:p.role,battingStyle:p.battingStyle||'balanced',bowlingStyle:p.bowlingStyle||'balanced',overs:0,balls:0,wickets:0,runs:0,dots:0}));
+ G.oppBatStats=G.oppPlayers.map((p,i)=>({name:p.name,role:p.role,battingStyle:p.battingStyle||'balanced',bowlingStyle:p.bowlingStyle||'balanced',runs:0,balls:0,fours:0,sixes:0,out:false,outReason:''}));
+ G.oppBowlStats=G.oppPlayers.map((p,i)=>({name:p.name,role:p.role,battingStyle:p.battingStyle||'balanced',bowlingStyle:p.bowlingStyle||'balanced',overs:0,balls:0,wickets:0,runs:0,dots:0}));
+}
+
+function curBatStats(){
+ const isBatting=G.iBat;
+ const statsArr=isBatting?G.myBatStats:G.oppBatStats;
+ const idx=isBatting?G.batIdx:G.bowlIdx;
+ return statsArr[idx]||null;
+}
+function curBowlStats(){
+ const isBowling=!G.iBat;
+ const statsArr=isBowling?G.myBowlStats:G.oppBowlStats;
+ const idx=isBowling?G.bowlIdx:G.batIdx;
+ return statsArr[idx]||null;
+}
+
+function showPlayerSelect(type){
+ if(G.teamSize<=1)return;
+ G.state='selecting';
+ const players=type==='bat'?(G.iBat?G.myPlayers:G.oppPlayers):(G.iBat?G.oppPlayers:G.myPlayers);
+ const usedIdx=type==='bat'?(G.iBat?G.batIdx:G.bowlIdx):(G.iBat?G.bowlIdx:G.batIdx);
+ const statsArr=type==='bat'?(G.iBat?G.myBatStats:G.oppBatStats):(G.iBat?G.myBowlStats:G.oppBowlStats);
+ const avail=players.map((p,i)=>({player:p,idx:i,used:i===usedIdx,stat:statsArr[i]})).filter(x=>!x.used&&!x.stat.out);
+
+ if(avail.length===0){G.state='idle';nextBall();return}
+
+ const title=type==='bat'?'Select Next Batter':'Select Next Bowler';
+ const sub=type==='bat'?'Choose who bats next':'Choose who bowls next';
+ $('psTitle').textContent=title;
+ $('psSubtitle').textContent=sub;
+ $('psCurrent').textContent='Current: '+(type==='bat'?(G.iBat?curBatter():curBowler()):(G.iBat?curBowler():curBatter())).name;
+
+ const grid=$('psGrid');grid.innerHTML='';
+ avail.forEach(a=>{
+  const d=document.createElement('div');d.className='pool-item';
+  const roleCls=a.player.battingStyle==='aggressive'?'agg':a.player.battingStyle==='defensive'?'def':'bal';
+  d.innerHTML='<span>'+a.player.name+'</span><span class="role-badge-inline '+roleCls+'">'+ROLE_LABELS[a.player.battingStyle||'balanced']+'</span>';
+  d.onclick=()=>{sfx('tap');selectPlayer(type,a.idx)};
+  grid.appendChild(d);
+ });
+
+ $('playerSelectOverlay').classList.remove('hidden');
+ let countdown=10;$('psCountdown').textContent=countdown;
+ if(G.selectTimer)clearInterval(G.selectTimer);
+ G.selectTimer=setInterval(()=>{
+  countdown--;
+  $('psCountdown').textContent=countdown;
+  if(countdown<=0){clearInterval(G.selectTimer);G.selectTimer=null;
+   const autoIdx=avail[0].idx;
+   selectPlayer(type,autoIdx);
+  }
+ },1000);
+}
+
+function selectPlayer(type,idx){
+ if(G.selectTimer){clearInterval(G.selectTimer);G.selectTimer=null}
+ $('playerSelectOverlay').classList.add('hidden');
+ if(type==='bat'){
+  if(G.iBat){G.batIdx=idx;G.myPlayers[idx].battingStyle=G.myPlayers[idx].battingStyle||'balanced'}
+  else{G.bowlIdx=idx;G.oppPlayers[idx].battingStyle=G.oppPlayers[idx].battingStyle||'balanced'}
+ }else{
+  if(G.iBat){G.bowlIdx=idx;G.oppPlayers[idx].bowlingStyle=G.oppPlayers[idx].bowlingStyle||'balanced'}
+  else{G.batIdx=idx;G.myPlayers[idx].bowlingStyle=G.myPlayers[idx].bowlingStyle||'balanced'}
+ }
+ updatePlayerDisplay();
+ G.state='idle';
+ setTimeout(nextBall,500);
+}
+
+function showInningsBreak(){
+ const inn1Bat=G.iBat?G.me:G.opp;
+ const inn1Bowl=G.iBat?G.opp:G.me;
+ const inn1BatPlayers=G.iBat?G.myPlayers:G.oppPlayers;
+ const inn1BowlPlayers=G.iBat?G.oppPlayers:G.myPlayers;
+ const inn1BatStats=G.iBat?G.myBatStats:G.oppBatStats;
+ const inn1BowlStats=G.iBat?G.oppBowlStats:G.myBowlStats;
+
+ $('innBreakTitle').textContent='End of 1st Innings';
+ $('innBreakMsg').innerHTML='Target: <span class="hl">'+(G.target+1)+'</span> runs';
+
+ let html='<div class="inn-break-grid">';
+
+ html+='<div class="inn-break-side"><h4>🏏 Batting</h4>';
+ inn1BatStats.forEach((s,i)=>{
+  if(s.balls>0||s.runs>0){
+   const roleCls=s.battingStyle==='aggressive'?'agg':s.battingStyle==='defensive'?'def':'bal';
+   html+='<div class="inn-break-player"><span class="ib-name">'+s.name+'<span class="ib-role '+roleCls+'">'+ROLE_LABELS[s.battingStyle||'balanced']+'</span></span><span class="ib-stat">'+s.runs+'('+s.balls+')</span></div>';
+  }
+ });
+ html+='<div class="inn-break-summary"><div class="big">'+inn1Bat.score+'/'+inn1Bat.wkts+'</div><div class="small">'+oversStr(inn1Bat.balls)+'</div></div>';
+ html+='</div>';
+
+ html+='<div class="inn-break-side"><h4>⚾ Bowling</h4>';
+ inn1BowlStats.forEach((s,i)=>{
+  if(s.balls>0){
+   const roleCls=s.bowlingStyle==='aggressive'?'agg':s.bowlingStyle==='defensive'?'def':'bal';
+   html+='<div class="inn-break-player"><span class="ib-name">'+s.name+'<span class="ib-role '+roleCls+'">'+ROLE_LABELS[s.bowlingStyle||'balanced']+'</span></span><span class="ib-stat">'+s.wickets+'w '+s.runs+'r</span></div>';
+  }
+ });
+ html+='<div class="inn-break-summary"><div class="big">'+inn1Bowl.score+'/'+inn1Bowl.wkts+'</div><div class="small">'+oversStr(inn1Bowl.balls)+'</div></div>';
+ html+='</div>';
+
+ html+='</div>';
+ $('innBreakStats').innerHTML=html;
+
+ $('inningsBreakOverlay').classList.remove('hidden');
+ let countdown=10;
+ $('innBreakTimer').textContent='Next innings in '+countdown+'s';
+ if(G.selectTimer)clearInterval(G.selectTimer);
+ G.selectTimer=setInterval(()=>{
+  countdown--;
+  $('innBreakTimer').textContent='Next innings in '+countdown+'s';
+  if(countdown<=0){clearInterval(G.selectTimer);G.selectTimer=null;startInnings(2)}
+ },1000);
+}
+
+// ================================================================
 $('btnMMCancel').onclick=()=>{mmSearching=false;destroyPeer();clearInterval(matchTimer);$('matchmakingOverlay').classList.add('hidden');$('menuOverlay').classList.remove('hidden')};
 function startMatchmaking(){
  G.teamSize=getTeamSize();
@@ -1993,7 +2193,7 @@ function startMatchmaking(){
  matchTimer=setInterval(()=>{
   if(!mmSearching)return;
   elapsed++;$('matchTimer').textContent=elapsed+'s';
-  if(elapsed===4){$('matchStatus').textContent='Still searching... bot opponent likely'}
+   if(elapsed===4){$('matchStatus').textContent='Still searching...'}
   if(elapsed>=8){
    mmSearching=false;clearInterval(matchTimer);
    $('searchSpinner').style.display='none';
