@@ -100,12 +100,27 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .share-box{background:rgba(30,41,59,.6);border:1px dashed rgba(148,163,184,.25);padding:10px;border-radius:12px;margin:10px 0;word-break:break-all;font-size:12px;color:#f59e0b;font-weight:600;max-width:280px}
 .player-list{max-height:clamp(120px,22vh,200px);overflow-y:auto;width:100%;max-width:280px;background:rgba(30,41,59,.5);border-radius:12px;padding:8px;margin:8px 0}
 .player-item{padding:6px 8px;background:rgba(30,41,59,.8);margin:3px 0;border-radius:8px;font-size:11px;display:flex;justify-content:space-between;color:#e2e8f0}
-.coin-container{width:clamp(90px,14vh,115px);height:clamp(90px,14vh,115px);margin:14px auto;position:relative;perspective:1000px}
-.coin{width:100%;height:100%;position:relative;transform-style:preserve-3d}
-.coin.flipping{animation:cf 2.5s ease-out forwards}
-@keyframes cf{0%{transform:rotateY(0)}100%{transform:rotateY(1800deg)}}
-.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:linear-gradient(135deg,#f59e0b,#d97706);border:4px solid #b45309;color:#fff}
-.coin-tails{transform:rotateY(180deg);background:linear-gradient(135deg,#e2e8f0,#94a3b8);border-color:#64748b}
+.coin-container{width:clamp(100px,16vh,140px);height:clamp(100px,16vh,140px);margin:20px auto;position:relative;perspective:800px}
+.coin-container::after{content:'';position:absolute;bottom:-8px;left:15%;right:15%;height:12px;background:radial-gradient(ellipse,rgba(0,0,0,.4) 0%,transparent 70%);border-radius:50%;filter:blur(3px);z-index:0}
+.coin{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .1s;z-index:1}
+.coin.flipping{animation:coinFlip 2.8s cubic-bezier(.25,.1,.25,1) forwards}
+.coin.landing{animation:coinLand .4s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes coinLand{0%{transform:var(--coin-final) translateY(-8px) scale(1.05)}50%{transform:var(--coin-final) translateY(2px) scale(.98)}100%{transform:var(--coin-final) translateY(0) scale(1)}}
+@keyframes coinFlip{0%{transform:rotateY(0) translateY(0) scale(1)}10%{transform:rotateY(90deg) translateY(-60px) scale(1.1)}30%{transform:rotateY(540deg) translateY(-30px) scale(1.05)}50%{transform:rotateY(900deg) translateY(-15px) scale(1.02)}70%{transform:rotateY(1260deg) translateY(-5px) scale(1.01)}85%{transform:rotateY(1620deg) translateY(-2px) scale(1)}100%{transform:rotateY(1800deg) translateY(0) scale(1)}}
+.coin-face{position:absolute;width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:clamp(12px,2vh,16px);font-weight:900;letter-spacing:1px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;z-index:2}
+.coin-face::before{content:'';position:absolute;top:8%;left:15%;width:35%;height:20%;background:linear-gradient(180deg,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 100%);border-radius:50%;transform:rotate(-20deg);pointer-events:none;z-index:3}
+.coin-face::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 -6px 12px rgba(0,0,0,.3),inset 0 2px 4px rgba(255,255,255,.2);pointer-events:none;z-index:4}
+.coin-edge{position:absolute;width:100%;height:100%;border-radius:50%;background:linear-gradient(180deg,#b45309 0%,#92400e 50%,#78350f 100%);transform:translateZ(-3px);z-index:1;border:2px solid #78350f}
+.coin-heads{background:linear-gradient(145deg,#fbbf24 0%,#f59e0b 25%,#d97706 60%,#b45309 100%);border:3px solid #92400e;color:#78350f;text-shadow:0 1px 1px rgba(255,255,255,.3)}
+.coin-heads .coin-label{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:2px}
+.coin-heads .coin-icon{font-size:clamp(24px,5vh,40px);filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.coin-heads .coin-text{font-size:clamp(9px,1.5vh,12px);font-weight:900;color:#78350f;text-transform:uppercase;letter-spacing:2px}
+.coin-tails{transform:rotateY(180deg);background:linear-gradient(145deg,#e2e8f0 0%,#cbd5e1 25%,#94a3b8 60%,#64748b 100%);border:3px solid #475569;color:#334155;text-shadow:0 1px 1px rgba(255,255,255,.4)}
+.coin-tails .coin-label{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:2px}
+.coin-tails .coin-icon{font-size:clamp(24px,5vh,40px);filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.coin-tails .coin-text{font-size:clamp(9px,1.5vh,12px);font-weight:900;color:#334155;text-transform:uppercase;letter-spacing:2px}
+.coin-shine{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:50%;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.15) 45%,rgba(255,255,255,.3) 50%,rgba(255,255,255,.15) 55%,transparent 60%);z-index:6;pointer-events:none;animation:coinShine 3s ease-in-out infinite}
+@keyframes coinShine{0%,100%{opacity:.3}50%{opacity:.8}}
 .flash{position:absolute;top:42%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:clamp(38px,7vh,56px);font-weight:900;opacity:0;pointer-events:none;z-index:5;white-space:nowrap}
 .flash.show{animation:fi 1.1s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes fi{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}35%{transform:translate(-50%,-50%) scale(1.25);opacity:1}100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}
@@ -146,10 +161,10 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 .team-size-btn{background:rgba(30,41,59,.7);border:1.5px solid rgba(148,163,184,.15);color:#e2e8f0;padding:8px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.3;transition:all .15s}
 .team-size-btn.active{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border-color:rgba(245,158,11,.5)}
 .inning-info{font-size:10px;color:#34d399;margin:4px 0;font-weight:600}
-@media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}}
-@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}.role-row{grid-template-columns:24px 1fr auto auto;gap:4px;padding:6px 8px}.role-select button{padding:3px 6px;font-size:9px}.role-bowl-select button{padding:3px 5px;font-size:8px}.story-dialogue-box{padding:10px 12px}.gesture-grid{gap:3px}.gesture-btn{padding:clamp(4px,.6vh,6px) 1px;font-size:11px}}
+@media(orientation:landscape) and (max-height:500px){.hand-wrap{width:clamp(70px,20vh,110px);height:clamp(90px,26vh,140px)}.scoreboard{margin:4px 8px 2px}.controls{padding:2px 8px 2px}.stat-grid{grid-template-columns:repeat(4,1fr);gap:4px}.profile-card{max-width:340px}.home-hands{height:clamp(60px,12vh,80px);margin:6px 0 8px}.coin-container{width:70px;height:70px;margin:8px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:20px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:7px}}
+@media(max-width:360px){.stat-grid{grid-template-columns:repeat(2,1fr);gap:4px}.stat-item{padding:8px 4px}.stat-item .val{font-size:16px}.mode-btn{padding:10px 6px}.mode-btn .icon{font-size:22px}.mode-btn .title{font-size:12px}.team-size-btn{font-size:10px;padding:6px 2px}.role-row{grid-template-columns:24px 1fr auto auto;gap:4px;padding:6px 8px}.role-select button{padding:3px 6px;font-size:9px}.role-bowl-select button{padding:3px 5px;font-size:8px}.story-dialogue-box{padding:10px 12px}.gesture-grid{gap:3px}.gesture-btn{padding:clamp(4px,.6vh,6px) 1px;font-size:11px}.coin-container{width:80px;height:80px;margin:12px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:22px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:8px}}
 @media(min-width:768px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:8px}.stat-item{padding:14px 8px}.stat-item .val{font-size:26px}.profile-card{max-width:400px;padding:20px}}
-@media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}}
+@media(min-width:1024px){.stat-grid{grid-template-columns:repeat(4,1fr);gap:10px}.stat-item .val{font-size:28px}.hand-wrap{width:clamp(100px,14vw,160px);height:clamp(130px,18vw,210px)}.coin-container{width:150px;height:150px;margin:24px auto}.coin-heads .coin-icon,.coin-tails .coin-icon{font-size:48px}.coin-heads .coin-text,.coin-tails .coin-text{font-size:14px}}
 .home-title{font-size:clamp(28px,5vh,42px);font-weight:900;margin:0;letter-spacing:-1px;background:linear-gradient(135deg,#f59e0b 0%,#fff 50%,#34d399 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleIn .8s cubic-bezier(.34,1.56,.64,1) both;filter:drop-shadow(0 2px 8px rgba(0,0,0,.4))}
 @keyframes titleIn{from{opacity:0;transform:translateY(-30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
 .home-subtitle{font-size:clamp(11px,1.8vh,15px);opacity:.7;margin:4px 0 6px;font-weight:600;letter-spacing:3px;text-transform:uppercase;animation:fadeUp .6s .2s both}
@@ -557,7 +572,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 </div>
 <h2>Toss</h2>
 <div style="display:flex;gap:10px;margin:8px 0;justify-content:center"><button id="btnHeads" class="small">Heads</button><button id="btnTails" class="small secondary">Tails</button></div>
-<div class="coin-container" id="coinBox" style="display:none"><div class="coin" id="coin"><div class="coin-face">HEADS</div><div class="coin-face coin-tails">TAILS</div></div></div>
+<div class="coin-container" id="coinBox" style="display:none"><div class="coin" id="coin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><span class="coin-icon">🏏</span><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><span class="coin-icon">⚡</span><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
 <div id="tossResult" style="font-size:13px;margin:8px 0;min-height:40px"></div>
 <div id="tossDecision" style="display:none"><p><b>You won!</b></p><div style="display:flex;gap:10px;justify-content:center"><button id="btnBatFirst" class="small">Bat</button><button id="btnBowlFirst" class="small secondary">Bowl</button></div></div>
 <button id="btnBack1" class="secondary small" style="margin-top:16px">Back</button></div>
@@ -618,7 +633,7 @@ html,body{margin:0;padding:0;height:100%;width:100%;font-family:-apple-system,Bl
 <div class="connected-badge"><span class="dot"></span><span id="tossVs">vs</span></div>
 <p id="tossText">...</p>
 <div id="tossPreStats" style="display:none"></div>
-<div class="coin-container"><div class="coin" id="onlineCoin"><div class="coin-face">HEADS</div><div class="coin-face coin-tails">TAILS</div></div></div>
+<div class="coin-container"><div class="coin" id="onlineCoin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><span class="coin-icon">🏏</span><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><span class="coin-icon">⚡</span><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
 <div id="onlineTossBtns" style="display:none"><div style="display:flex;gap:10px;justify-content:center"><button id="btnOHeads" class="small">Heads</button><button id="btnOTails" class="small secondary">Tails</button></div></div>
 <div id="onlineTossDec" style="display:none"><p><b>You won!</b></p><div style="display:flex;gap:10px;justify-content:center"><button id="btnOBat" class="small">Bat</button><button id="btnOBowl" class="small secondary">Bowl</button></div></div></div>
 
@@ -982,7 +997,7 @@ function setHandGesture(imgEl,wrapperEl,v){
 
 function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume()}
 function beep(f,d,t,v){if(!audioCtx)return;try{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+(d||.12));o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+(d||.12))}catch(e){}}
-function sfx(n){ensureAudio();const B=beep;if(n==='tap')B(600,.05,'square',.08);else if(n==='tick')B(900,.04);else if(n==='go')B(1200,.18,'triangle',.18);else if(n==='run')B(700,.1);else if(n==='six'){B(800,.1);setTimeout(()=>B(1000,.1),90);setTimeout(()=>B(1300,.15),180)}else if(n==='out'){B(300,.15,'sawtooth',.2);setTimeout(()=>B(200,.25,'sawtooth',.2),120)}else if(n==='win')[523,659,784,1047].forEach((f,i)=>setTimeout(()=>B(f,.18,'triangle',.18),i*110));else if(n==='lose')[400,300,220].forEach((f,i)=>setTimeout(()=>B(f,.2,'sawtooth',.15),i*130));else if(n==='coin'){B(1500,.08);setTimeout(()=>B(1800,.1),100)}else if(n==='cd')B(800,.15);else if(n==='start'){B(1200,.2,'triangle',.2);setTimeout(()=>B(1500,.3,'triangle',.2),200)}else if(n==='nb'){B(400,.2,'sawtooth',.15);setTimeout(()=>B(350,.15,'sawtooth',.15),150)}else if(n==='fh'){B(1000,.1,'triangle',.18);setTimeout(()=>B(1200,.1,'triangle',.18),100)}}
+function sfx(n){ensureAudio();const B=beep;if(n==='tap')B(600,.05,'square',.08);else if(n==='tick')B(900,.04);else if(n==='go')B(1200,.18,'triangle',.18);else if(n==='run')B(700,.1);else if(n==='six'){B(800,.1);setTimeout(()=>B(1000,.1),90);setTimeout(()=>B(1300,.15),180)}else if(n==='out'){B(300,.15,'sawtooth',.2);setTimeout(()=>B(200,.25,'sawtooth',.2),120)}else if(n==='win')[523,659,784,1047].forEach((f,i)=>setTimeout(()=>B(f,.18,'triangle',.18),i*110));else if(n==='lose')[400,300,220].forEach((f,i)=>setTimeout(()=>B(f,.2,'sawtooth',.15),i*130));else if(n==='coin'){B(2400,.06,'sine',.15);setTimeout(()=>B(2800,.08,'sine',.12),80);setTimeout(()=>B(3200,.04,'sine',.08),160)}else if(n==='cd')B(800,.15);else if(n==='start'){B(1200,.2,'triangle',.2);setTimeout(()=>B(1500,.3,'triangle',.2),200)}else if(n==='nb'){B(400,.2,'sawtooth',.15);setTimeout(()=>B(350,.15,'sawtooth',.15),150)}else if(n==='fh'){B(1000,.1,'triangle',.18);setTimeout(()=>B(1200,.1,'triangle',.18),100)}}
 function haptic(ms){if(navigator.vibrate)try{navigator.vibrate(ms||15)}catch(e){}}
 
 function gLabel(v){return v==null?'-':v===6?'SIX!':v+(v===1?' run':' runs')}
@@ -1138,10 +1153,10 @@ document.querySelectorAll('#offlineSize .team-size-btn').forEach(b=>{b.onclick=(
 document.querySelectorAll('#onlineSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#onlineSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
 document.querySelectorAll('#mmSize .team-size-btn').forEach(b=>{b.onclick=()=>{document.querySelectorAll('#mmSize .team-size-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');G.teamSize=parseInt(b.dataset.size);sfx('tap')}});
 
-function resetOffline(){$('coinBox').style.display='none';$('tossResult').textContent='';$('tossDecision').style.display='none';$('btnHeads').disabled=false;$('btnTails').disabled=false}
+function resetOffline(){$('coinBox').style.display='none';$('tossResult').textContent='';$('tossDecision').style.display='none';$('btnHeads').disabled=false;$('btnTails').disabled=false;const c=$('coin');if(c){c.classList.remove('flipping','landing');c.style.transform='';c.style.removeProperty('--coin-final')}}
 $('btnHeads').onclick=()=>offlineToss('heads');
 $('btnTails').onclick=()=>offlineToss('tails');
-function offlineToss(call){sfx('coin');haptic(20);$('btnHeads').disabled=true;$('btnTails').disabled=true;$('coinBox').style.display='block';$('tossResult').textContent='Flipping...';const c=$('coin');c.classList.remove('flipping');c.style.transform='';void c.offsetWidth;c.classList.add('flipping');const res=Math.random()<.5?'heads':'tails';setTimeout(()=>{c.classList.remove('flipping');c.style.transform=res==='heads'?'rotateY(0)':'rotateY(180deg)';if(res===call){$('tossResult').innerHTML=res.toUpperCase()+'! You won!';$('tossDecision').style.display='block'}else{$('tossResult').innerHTML=res.toUpperCase()+'! Bot won.';setTimeout(()=>{const bc=Math.random()<.5?'bat':'bowl';G.iBat=bc==='bowl';$('tossResult').innerHTML+='<br>Bot chose <b>'+bc+'</b>.';setTimeout(startOffline,1500)},1200)}},2500)}
+function offlineToss(call){sfx('coin');haptic(20);$('btnHeads').disabled=true;$('btnTails').disabled=true;$('coinBox').style.display='block';$('tossResult').textContent='Flipping...';const c=$('coin');c.classList.remove('flipping','landing');c.style.transform='';void c.offsetWidth;c.classList.add('flipping');const res=Math.random()<.5?'heads':'tails';setTimeout(()=>{c.classList.remove('flipping');const finalT=res==='heads'?'rotateY(0)':'rotateY(180deg)';c.style.setProperty('--coin-final',finalT);c.style.transform=finalT;c.classList.add('landing');if(res===call){$('tossResult').innerHTML=res.toUpperCase()+'! You won!';$('tossDecision').style.display='block'}else{$('tossResult').innerHTML=res.toUpperCase()+'! Bot won.';setTimeout(()=>{const bc=Math.random()<.5?'bat':'bowl';G.iBat=bc==='bowl';$('tossResult').innerHTML+='<br>Bot chose <b>'+bc+'</b>.';setTimeout(startOffline,1500)},1200)}},2800)}
 $('btnBatFirst').onclick=()=>{sfx('tap');G.iBat=true;showRoleForOffline()};
 $('btnBowlFirst').onclick=()=>{sfx('tap');G.iBat=false;showRoleForOffline()};
 function showRoleForOffline(){
@@ -1363,8 +1378,8 @@ $('btnOTails').onclick=()=>callToss('tails');
 function callToss(c){sfx('coin');haptic(20);$('btnOHeads').disabled=true;$('btnOTails').disabled=true;const res=Math.random()<.5?'heads':'tails';const hostWon=(res===c);sendMsg({type:'toss_start',call:c,result:res,hostWon:hostWon});runTossAnim(res,hostWon)}
 function runTossAnim(res,winnerIsMe){
  $('tossText').textContent='Flipping...';
- const c=$('onlineCoin');c.classList.remove('flipping');c.style.transform='';void c.offsetWidth;c.classList.add('flipping');
- setTimeout(()=>{c.classList.remove('flipping');c.style.transform=res==='heads'?'rotateY(0)':'rotateY(180deg)';const w=winnerIsMe?G.myName:G.oppName;$('tossText').innerHTML=res.toUpperCase()+'!<br>'+w+' won!';if(winnerIsMe)$('onlineTossDec').style.display='block';else $('tossText').innerHTML+='<br>Waiting...';},2500);
+ const c=$('onlineCoin');c.classList.remove('flipping','landing');c.style.transform='';void c.offsetWidth;c.classList.add('flipping');
+ setTimeout(()=>{c.classList.remove('flipping');const finalT=res==='heads'?'rotateY(0)':'rotateY(180deg)';c.style.setProperty('--coin-final',finalT);c.style.transform=finalT;c.classList.add('landing');const w=winnerIsMe?G.myName:G.oppName;$('tossText').innerHTML=res.toUpperCase()+'!<br>'+w+' won!';if(winnerIsMe)$('onlineTossDec').style.display='block';else $('tossText').innerHTML+='<br>Waiting...';},2800);
 }
 $('btnOBat').onclick=()=>decToss('bat');
 $('btnOBowl').onclick=()=>decToss('bowl');
