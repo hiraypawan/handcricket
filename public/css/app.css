@@ -1137,3 +1137,129 @@ input,select,textarea{font-size:16px}
   box-shadow:0 10px 30px rgba(0,0,0,.45)}
 #profileOverlay{padding-bottom:max(calc(20px + env(safe-area-inset-bottom,0px)),110px)}
 #friendsOverlay{padding-bottom:max(calc(20px + env(safe-area-inset-bottom,0px)),110px)}
+
+/* ==========================================================================
+   v2.7.1 — UI BALANCE PACK (readability, no-scroll, pinned actions, overflow)
+   Users reported: glass too see-through to parse, close buttons drifting
+   while scrolling, content forcing page scroll on phones/desktop, and
+   elements escaping the viewport. This block rebalances all of it. Later
+   rules win over the base sheet at equal specificity.
+   ========================================================================== */
+
+/* 1) Glass rebalance — surfaces & borders up, muted text up. Keeps the
+      night-stadium look but every panel now parses at a glance. */
+:root{
+  --card:rgba(255,255,255,.13);
+  --card-border:rgba(255,255,255,.26);
+  --ink-soft:rgba(248,250,252,.82);
+  --ink-faint:rgba(248,250,252,.58);
+}
+.profile-card,.opp-profile-card{background:rgba(13,20,34,.82);border:1px solid rgba(255,255,255,.30)}
+.prof-stat-card,.stat-item{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.20);border-radius:14px}
+.pre-stats-box{background:rgba(13,20,34,.78);border-color:rgba(255,255,255,.26)}
+.player-item,.pool-item{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.24)}
+.story-tier-card,.story-player-card{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22)}
+.friend-row,.friend-list > *{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22)}
+.gesture-btn{background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,.10));
+  border:1px solid rgba(255,255,255,.28)}
+.overlay input[type=text],.overlay input:not([type]){background:rgba(10,16,28,.72);border-color:rgba(255,255,255,.30)}
+.overlay button.secondary{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.32)}
+.share-box{background:rgba(10,16,28,.6);border-color:rgba(255,255,255,.35)}
+.conn-log{background:rgba(6,10,18,.66);border-radius:12px;padding:8px 10px}
+.g-signin{display:none}
+
+/* 2) Pinned action bars — position:fixed so they can NEVER drift with
+      scroll (sticky inside a backdrop-filtered scroller was unreliable).
+      .overlay has backdrop-filter, which makes it the containing block,
+      and .overlay is inset:0 — so "fixed" here == pinned to the viewport. */
+#btnCloseProfile,#btnCloseFriends{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;margin:0;
+  width:min(calc(100vw - 40px),360px)}
+#resultActions{position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;margin:0;
+  width:min(calc(100vw - 40px),420px)}
+#profileOverlay,#friendsOverlay{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+#resultOverlay{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+
+/* 3) One-page game: tighten vertical rhythm so toss / profile / stats fit
+      a 640px-tall phone without scrolling; lists keep their own scroll. */
+.overlay{padding-top:calc(12px + env(safe-area-inset-top,0px));
+  padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));gap:2px}
+.overlay h1{margin:0 0 4px}
+.overlay h2{margin:8px 0 2px}
+.overlay p{margin:2px 0}
+.overlay button{margin-top:8px;padding:12px 24px}
+.prof-stats-grid{gap:7px;width:min(100%,420px)}
+.prof-stat-card{padding:8px 4px;gap:1px}
+.prof-stat-card .ic-stat{width:19px;height:19px}
+.prof-stat-val{font-size:clamp(14px,2vh,17px)}
+.prof-stat-lbl{font-size:8.5px;letter-spacing:.4px}
+.prof-rank{padding:8px 12px}
+.prof-tabs{margin:6px 0 8px}
+@media (min-width:560px){
+  .prof-stats-grid{grid-template-columns:repeat(4,1fr);width:min(100%,560px)}
+}
+.coin-wrap,.coin-box{max-height:30vh}
+.toss-lines{min-height:44px;gap:5px;margin:4px 0 0}
+
+/* 4) Overflow guards — nothing escapes the viewport at any width. */
+.overlay{overflow-x:hidden}
+.overlay > *{max-width:100%}
+.scoreboard,.arena,.gesture-grid,#tabBar,.dock{max-width:100%}
+.gesture-grid{width:100%}
+.gesture-btn{min-width:0}
+.team{min-width:0}
+#tabBar > *{min-width:0;flex:1}
+.friend-list,.friend-tabs{width:min(100%,380px)}
+
+/* 5) Short-screen compaction (landscape phones, small laptops). */
+@media (max-height:700px){
+  .overlay{padding-top:calc(8px + env(safe-area-inset-top,0px))}
+  .overlay h1{font-size:clamp(17px,3vh,22px)}
+  .arena{min-height:0}
+  .hand-wrap{width:clamp(96px,24vh,160px);height:clamp(120px,30vh,200px)}
+  .gesture-btn{padding:8px 2px}
+  .gesture-btn .big{font-size:clamp(17px,3vh,24px)}
+  .prof-stat-card{padding:6px 3px}
+  .coin-wrap,.coin-box{max-height:26vh}
+}
+@media (max-height:560px){
+  .hand-wrap{width:clamp(80px,20vh,120px);height:clamp(100px,25vh,150px)}
+  .overlay h1{font-size:16px}
+  .prof-stats-grid{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ==========================================================================
+   v2.7.2 — ARTICULATED HANDS MOTION (renderer in 04-hands.js)
+   Desynced wrist-led shake, gesture-weighted reveals (six = big throw + gold
+   ring, dot = muted settle), wicket fist-pump + red ring, mini hand previews
+   in the gesture buttons, reduced-motion guard.
+   ========================================================================== */
+.hand-wrap{--d:0s;--amp:1}
+#handOpponent{--d:-.19s;--amp:.82}
+.hand-wrap.shake{animation:hn27 .46s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes hn27{0%,100%{transform:translateY(0) rotate(0)}
+  30%{transform:translateY(calc(-11px * var(--amp))) rotate(calc(-6deg * var(--amp)))}
+  70%{transform:translateY(calc(-7px * var(--amp))) rotate(calc(5deg * var(--amp)))}}
+.hand-wrap.reveal{animation:th27 .42s cubic-bezier(.22,1.4,.36,1)}
+@keyframes th27{0%{transform:translateY(6px) scale(.96)}45%{transform:translateY(-14px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
+.hand-wrap.reveal-six{animation:th27x .6s cubic-bezier(.2,1.5,.35,1)}
+@keyframes th27x{0%{transform:translateY(10px) scale(.9)}40%{transform:translateY(-26px) scale(1.16)}70%{transform:translateY(-6px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
+.hand-wrap.reveal-dot{animation:th27d .34s ease-out}
+@keyframes th27d{0%{transform:translateY(2px) scale(.98)}60%{transform:translateY(-5px) scale(1.01)}100%{transform:translateY(0) scale(1)}}
+.hand-wrap.reveal-six::after,.hand-wrap.wicket::after{content:'';position:absolute;inset:0;margin:auto;
+  width:66%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+  border:3px solid rgba(251,191,36,.85);animation:ring27 .7s ease-out forwards}
+.hand-wrap.wicket::after{border-color:rgba(251,113,133,.9)}
+@keyframes ring27{0%{transform:scale(.4);opacity:1}100%{transform:scale(1.5);opacity:0}}
+.hand-wrap.wicket{animation:pump27 .8s cubic-bezier(.3,1.4,.4,1)}
+@keyframes pump27{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-10px) rotate(-7deg)}
+  55%{transform:translateY(2px) rotate(4deg)}75%{transform:translateY(-5px) rotate(-3deg)}100%{transform:translateY(0) rotate(0)}}
+/* mini hand previews inside the six gesture buttons */
+.gesture-btn .mini-hand{display:block;height:clamp(20px,3.2vh,30px);margin:0 auto 1px;pointer-events:none}
+.gesture-btn .mini-hand svg{height:100%;width:auto;display:block;margin:0 auto}
+.gesture-btn .big{font-size:clamp(14px,2.4vh,20px)}
+.gesture-btn .small{font-size:clamp(6px,.85vh,8px)}
+@media (prefers-reduced-motion:reduce){
+  .hand-wrap.shake,.hand-wrap.reveal,.hand-wrap.reveal-six,.hand-wrap.reveal-dot,.hand-wrap.wicket{animation:none!important}
+}

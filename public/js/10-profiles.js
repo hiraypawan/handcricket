@@ -26,13 +26,26 @@ function loadStats() {
     const s = JSON.parse(localStorage.getItem("hc_stats")) || defaultStats();
     if (s.wins > s.matches) s.wins = s.matches;
     if (s.losses > s.matches) s.losses = s.matches;
-    s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) + "%" : "0%";
+    s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) : "0";
     s.strikeRate = s.ballsFaced
       ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
       : "0.0";
     s.bowlingAvg = s.wicketsTaken
       ? (s.runsConceded / s.wicketsTaken).toFixed(1)
       : "-";
+    // v2.7.1: richer career numbers players compare with each other
+    s.economy = s.ballsBowled
+      ? (s.runsConceded / (s.ballsBowled / 6)).toFixed(2)
+      : "-";
+    s.dotPct = s.ballsFaced
+      ? Math.round((s.dots / s.ballsFaced) * 100)
+      : 0;
+    s.boundaryPct = s.ballsFaced
+      ? Math.round(((s.fours + s.sixes) / s.ballsFaced) * 100)
+      : 0;
+    s.batAvg = s.outs ? (s.runs / s.outs).toFixed(1) : s.runs ? s.runs.toFixed(1) : "0.0";
+    s.oversBowled = Math.floor(s.ballsBowled / 6) + "." + (s.ballsBowled % 6);
+    s.oversFaced = Math.floor(s.ballsFaced / 6) + "." + (s.ballsFaced % 6);
     return s;
   } catch (e) {
     return defaultStats();
@@ -58,6 +71,8 @@ function defaultStats() {
     winStreak: 0,
     bestWinStreak: 0,
     streak: 0,
+    outs: 0,
+    bestBowlWkts: 0,
   };
 }
 function saveStats(s) {
@@ -90,6 +105,8 @@ function updateStatsAfterMatch(result) {
   s.wicketsTaken += result.oppWickets;
   s.ballsBowled += result.oppBalls;
   s.runsConceded += result.oppRuns;
+  s.outs = (s.outs || 0) + result.oppWickets;
+  s.bestBowlWkts = Math.max(s.bestBowlWkts || 0, result.oppWickets);
   if (result.myHatTrick) s.hatricks++;
   s.strikeRate = s.ballsFaced
     ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
@@ -142,6 +159,12 @@ function showProfile(name, stats) {
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
     s.highestScore +
     '</div><div class="prof-stat-lbl">Best Score</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l4-6 4 3 5-8 4 5"/></svg></div><div class="prof-stat-val">' +
+    (s.bestWinStreak || 0) +
+    '</div><div class="prof-stat-lbl">Best Win Streak</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="16" r="2.3"/><circle cx="12" cy="11" r="2.3"/><circle cx="18" cy="6.5" r="2.3"/></svg></div><div class="prof-stat-val">' +
+    (s.hatricks || 0) +
+    '</div><div class="prof-stat-lbl">Hat-tricks</div></div>' +
     "</div>" +
     // Batting stats (hidden)
     '<div class="prof-stats-grid" id="profStatsBatting" style="display:none">' +
@@ -157,6 +180,18 @@ function showProfile(name, stats) {
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.8c4 0 7.2-3 7.2-7 0-3.9-3.4-5.8-3.4-9.6-4.4 1-6.8 4.4-6.8 7.4 0 1.1.3 2.2.8 3.1-1.4-.7-2.6-1.8-2.6-3.7-2.2 1.4-2.7 4.3-2.7 6 0 2.2 1.9 3.8 4 3.8z"/></svg></div><div class="prof-stat-val">' +
     s.fours +
     '</div><div class="prof-stat-lbl">Fours</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9.5h12M6 14.5h12"/></svg></div><div class="prof-stat-val">' +
+    s.batAvg +
+    '</div><div class="prof-stat-lbl">Batting Avg</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 2.2"/></svg></div><div class="prof-stat-val">' +
+    s.oversFaced +
+    '</div><div class="prof-stat-lbl">Overs Faced</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg></div><div class="prof-stat-val">' +
+    s.dotPct + "%" +
+    '</div><div class="prof-stat-lbl">Dot Ball %</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="8.5" width="16" height="7" rx="2"/></svg></div><div class="prof-stat-val">' +
+    s.boundaryPct + "%" +
+    '</div><div class="prof-stat-lbl">Boundary %</div></div>' +
     "</div>" +
     // Bowling stats (hidden)
     '<div class="prof-stats-grid" id="profStatsBowling" style="display:none">' +
@@ -172,8 +207,19 @@ function showProfile(name, stats) {
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
     s.ballsBowled +
     '</div><div class="prof-stat-lbl">Balls Bowled</div></div>' +
-    "</div>" +
-    (name ? "" : '<div class="g-signin">Sign in to save progress</div>');
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18h16M7.5 15V9M12 15V5M16.5 15v-7"/></svg></div><div class="prof-stat-val">' +
+    s.economy +
+    '</div><div class="prof-stat-lbl">Economy</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 2.2"/></svg></div><div class="prof-stat-val">' +
+    s.oversBowled +
+    '</div><div class="prof-stat-lbl">Overs Bowled</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 5v11M12 5v11M15.5 5v11M7 5h10"/></svg></div><div class="prof-stat-val">' +
+    (s.bestBowlWkts || 0) + "W" +
+    '</div><div class="prof-stat-lbl">Best Bowling</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v9M8.5 10L12 13.5 15.5 10M5 19h14"/></svg></div><div class="prof-stat-val">' +
+    s.runsConceded +
+    '</div><div class="prof-stat-lbl">Runs Conceded</div></div>' +
+    "</div>";
   $("profileOverlay").classList.remove("hidden");
 }
 const ProfileTabs = {

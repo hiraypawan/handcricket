@@ -168,6 +168,12 @@ function startInnings(n) {
       : "BOT";
   const ov = G.totalBalls / 6;
   const ft = G.totalWkts + " wk, " + ov + " ov";
+  if (typeof botChat === "function") {
+    botChat("onMatchStart");
+    if (n === 2 && G.target != null && G.target > G.totalBalls) {
+      botChat(G.iBat ? "onBigChaseBotBowling" : "onBigChaseBotBatting");
+    }
+  }
   if (n === 1) {
     $("status").innerHTML =
       '<span class="hl">1st Innings</span> - ' + bn + " (" + ft + ")";
@@ -216,11 +222,7 @@ function nextBall() {
     BotAI.updateContext(G.target, G.me.score, G.me.wkts, G.totalBalls);
     BotAI.difficulty =
       G.storyDifficulty || Math.min(0.1 * (G.teamSize || 1), 0.5);
-    if (G.iBat) {
-      G.oppPick = BotAI.bowl();
-    } else {
-      G.oppPick = BotAI.bat();
-    }
+    G.oppPick = botPickWithRole();
     updBotLvl();
   }
   const fh = G.freeHit ? " FREE HIT" : "";
@@ -232,6 +234,20 @@ function nextBall() {
   try {
     applyGestureRestrictions();
   } catch (e) {}
+}
+// v2.7.1: the bot obeys its assigned role too — clamp BotAI's pick into the
+// role's allowed gestures (AGG 4-6 / DEF 1-3 / BAL all), bat or bowl.
+function botPickWithRole() {
+  const botBats = !G.iBat;
+  const p = botBats ? curBatter() : curBowler();
+  let allowed;
+  try {
+    allowed = getAllowedGestures(p, botBats);
+  } catch (e) {
+    allowed = [1, 2, 3, 4, 5, 6];
+  }
+  const raw = botBats ? BotAI.bat() : BotAI.bowl();
+  return allowed.includes(raw) ? raw : allowed[(Math.random() * allowed.length) | 0];
 }
 function pickAllowedGesture() {
   const isBatting = G.iBat;
@@ -310,7 +326,8 @@ function noBall() {
   updFH();
   persist();
   G.state = "idle";
-  if (typeof botChat === "function") botChat("onFreeHit");
+  if (typeof botChat === "function")
+      botChat(G.iBat ? "onFreeHitBowling" : "onFreeHitBatting");
   setTimeout(() => {
     sfx("fh");
     nextBall();
@@ -421,6 +438,9 @@ function revealBall() {
             flash("OUT!", "out");
             shake();
             sfx("out");
+            try {
+              handPump(G.iBat); // v2.7: dismissed side's hand fist-pumps
+            } catch (e) {}
             const who = G.iBat
               ? G.mode === "online"
                 ? G.myName
@@ -489,15 +509,20 @@ function revealBall() {
           if (bVal === bowlVal && !G.freeHit) {
             botChat(G.iBat ? "onPlayerOut" : "onBotOut");
           } else if (bVal === 6) {
-            botChat(G.iBat ? "onBotSix" : "onPlayerSix");
+            // v2.7.1: was inverted. onPlayer* = bot reacting to MY shot;
+            // onBot* = bot scoring, now roasting MY bowling (never self-praise).
+            botChat(G.iBat ? "onPlayerSix" : "onBotSix");
           } else if (bVal >= 4) {
-            botChat(G.iBat ? "onBotFour" : "onPlayerFour");
+            botChat(G.iBat ? "onPlayerFour" : "onBotFour");
           } else if (bVal === 0) {
-            botChat("onDot");
+            botChat(G.iBat ? "onDotBowling" : "onDotBatting");
           }
         }
         if (G.innings === 2 && G.target != null) {
           const ch = curBat();
+          if (typeof botChat === "function" && G.target - ch.score === 1) {
+            botChat(G.iBat ? "onOneToWinBotBowling" : "onOneToWinBotBatting");
+          }
           if (ch.score > G.target) {
             setTimeout(endInnings, 1200);
             G.state = "idle";
@@ -507,7 +532,8 @@ function revealBall() {
         const bat2 = curBat();
         const wicketJustFell = bVal === bowlVal && !G.freeHit;
         const overEnded = bat2.balls % 6 === 0 && bat2.balls > 0;
-        if (typeof botChat === "function" && overEnded) botChat("onOverEnd");
+        if (typeof botChat === "function" && overEnded)
+          botChat(G.iBat ? "onOverEndBowling" : "onOverEndBatting");
         // Bowler role reveal banner (hidden bowling style) after wicket/over.
         if (wicketJustFell || overEnded) {
           setTimeout(() => {

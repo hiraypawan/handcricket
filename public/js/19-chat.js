@@ -130,11 +130,17 @@ function escTxt(s) {
   window.showFloatEmoji = showFloatEmoji;
 
   /* ====== BOT CHAT DURING MATCHES ====== */
+  /* v2.7.1 BANTER DIRECTION RULE: every line the bot speaks is ABOUT THE
+     OTHER SIDE. When the bot is BATTING it roasts the (player) bowler; when
+     the bot is BOWLING it reacts to the (player) batter. Never self-praise,
+     never self-pity. Pools named onPlayer* fire for the player's action,
+     onBot* for the bot's action (lines aimed at the player either way). */
   const BOT_CHAT = {
+    // player is BATTING (bot bowls): react to the player's shot / wicket
     onPlayerSix: [
       { t: "Arre waah! Badhiya shot!", f: "wow" },
-      { t: "Wah bhai wah!", f: "wow" },
-      { t: "Kya maar diya!", f: "panic" },
+      { t: "Kya maar diya yaar!", f: "panic" },
+      { t: "Ok ok, maan gaya — acha shot!", f: "sweat" },
     ],
     onPlayerFour: [
       { t: "Chalo, acha shot tha", f: "clap" },
@@ -144,22 +150,58 @@ function escTxt(s) {
     onPlayerOut: [
       { t: "Out! Ha ha, maza aaya!", f: "laugh" },
       { t: "Bye bye! Out ho gaya!", f: "laugh" },
-      { t: "Game over bhai!", f: "joy" },
+      { t: "Meri ball, tera out!", f: "joy" },
     ],
+    // bot is BATTING: roast the player's bowling (never "aise hota hai")
     onBotSix: [
-      { t: "Dekho bhai, aise hota hai!", f: "cool" },
-      { t: "Six! Power game!", f: "flex" },
-      { t: "Mast shot tha!", f: "cool" },
+      { t: "Aisi bowling se kaise rokoge?", f: "cool" },
+      { t: "Teri ball toh makkhan hai!", f: "flex" },
+      { t: "Bowler bhai, thoda dum laao!", f: "grin" },
     ],
     onBotFour: [
-      { t: "Boundary! Simple game hai", f: "grin" },
-      { t: "Four runs easy!", f: "cool" },
-      { t: "Chalo score badh raha hai", f: "cheer" },
+      { t: "Four easy — teri line hi galat hai!", f: "grin" },
+      { t: "Boundary! Bowling mein mehnat kar!", f: "cool" },
+      { t: "Aise hi chalta rahega tera over?", f: "peek" },
     ],
     onBotOut: [
-      { t: "Arre yaar, kismat kharab", f: "sad" },
-      { t: "Out ho gaya main bhi...", f: "sad" },
-      { t: "Naya batter aayega", f: "shrug" },
+      { t: "Ok ok, achhi ball thi teri", f: "shrug" },
+      { t: "Waah bowling! Hairaan hun", f: "wow" },
+      { t: "Tujhe bowling aati hai bhai!", f: "clap" },
+    ],
+    // dot balls: side-aware
+    onDotBowling: [
+      { t: "Bat lagta hi nahi tujhe!", f: "grin" },
+      { t: "Dekha? Miss! Agla ball!", f: "peek" },
+      { t: "Aise hi dot chahiye mujhe!", f: "cool" },
+    ],
+    onDotBatting: [
+      { t: "Achhi ball thi teri", f: "shrug" },
+      { t: "Ok ok, tight bowling", f: "think" },
+      { t: "Teri ball maarna mushkil hai", f: "sweat" },
+    ],
+    // over breaks: side-aware
+    onOverEndBowling: [
+      { t: "Over khatam! Itne hi run?", f: "grin" },
+      { t: "Mera over kaisa laga, batter sahab?", f: "cool" },
+    ],
+    onOverEndBatting: [
+      { t: "Over mein kuch nahi mila tujhe!", f: "peek" },
+      { t: "Ek over gaya, bowler thak gaya?", f: "grin" },
+    ],
+    // free hit: side-aware
+    onFreeHitBowling: [
+      { t: "Free hit? Maar ke dikha!", f: "grin" },
+      { t: "Dekhta hun kaise maarta hai!", f: "peek" },
+    ],
+    onFreeHitBatting: [
+      { t: "Ab bachke bowler, free hit!", f: "flex" },
+      { t: "Teri kismat isi ball se!", f: "cool" },
+    ],
+    // match flow
+    onMatchStart: [
+      { t: "Chalo shuru karte hain!", f: "cheer" },
+      { t: "Game on bhai!", f: "flex" },
+      { t: "Ready ho jao!", f: "grin" },
     ],
     onPlayerWinning: [
       { t: "Abhi kuch nahi hua, wait karo", f: "grin" },
@@ -167,56 +209,45 @@ function escTxt(s) {
       { t: "Dekhte hain...", f: "peek" },
     ],
     onBotWinning: [
-      { t: "Haar mat mano bhai!", f: "laugh" },
-      { t: "Jeetne wala hun main!", f: "cool" },
-      { t: "Score dekho mera!", f: "flex" },
+      { t: "Tera plan kya hai ab?", f: "grin" },
+      { t: "Itna peeche hai tu? Catch up kar!", f: "cool" },
+      { t: "Pressure mein hai tu!", f: "flex" },
     ],
-    onDot: [
-      { t: "Koi nahi, agla ball dekho", f: "shrug" },
-      { t: "Dot ball, focus bhai!", f: "peek" },
-      { t: "Chalo agla aayega", f: "clap" },
+    onOneToWinBotBowling: [
+      { t: "Ek run chahiye tujhe? Rokunga!", f: "peek" },
+      { t: "Last ball pressure, batter sahab!", f: "grin" },
     ],
-    onOverEnd: [
-      { t: "End of over, dhyan se!", f: "peek" },
-      { t: "Over khatam! Ready?", f: "think" },
-      { t: "Naya over, naya plan!", f: "think" },
+    onOneToWinBotBatting: [
+      { t: "Ek run chahiye — teri ball, mera shot!", f: "cool" },
+      { t: "Ab dekh bowler, finish!", f: "flex" },
     ],
-    onFreeHit: [
-      { t: "Free hit hai, maar de!", f: "wow" },
-      { t: "Free hit! Full power!", f: "flex" },
-      { t: "Ab toh maar de!", f: "panic" },
+    onBigChaseBotBowling: [
+      { t: "Bada target hai tere liye, good luck!", f: "grin" },
+      { t: "Itna chase karna aasan nahi!", f: "cool" },
     ],
-    onOneToWin: [
-      { t: "Bas ek run! Pressure!", f: "sweat" },
-      { t: "Last ball jaisa hai!", f: "panic" },
-      { t: "Ek run door!", f: "peek" },
-    ],
-    onBotLastBall: [
-      { t: "Last ball, dekho kya hota hai!", f: "peek" },
-      { t: "Nervous ho raha hun!", f: "sweat" },
-      { t: "Ye ball decide karega!", f: "panic" },
-    ],
-    onMatchStart: [
-      { t: "Chalo shuru karte hain!", f: "cheer" },
-      { t: "Game on bhai!", f: "flex" },
-      { t: "Ready ho jao!", f: "grin" },
-    ],
-    onBigChase: [
-      { t: "Bahut target hai, mushkil hoga", f: "sweat" },
-      { t: "Bada chase hai ye toh!", f: "wow" },
-      { t: "Mehnat lagegi bhai!", f: "sweat" },
+    onBigChaseBotBatting: [
+      { t: "Itna bada score? Dekh tujhe defend karna!", f: "flex" },
+      { t: "Bada target — dekh tujhe defend karna!", f: "cool" },
     ],
   };
+  // exposed for the smoke suite: banter must never be self-directed
+  window.BOT_CHAT_POOLS = BOT_CHAT;
+
+  function pickBanter(eventType) {
+    const msgs = BOT_CHAT[eventType];
+    if (!msgs || msgs.length === 0) return null;
+    return msgs[Math.floor(Math.random() * msgs.length)];
+  }
+  window.botChatPick = pickBanter;
   function botChat(eventType) {
     if (
       !G.isBot ||
       (G.storyDifficulty !== undefined && G.storyDifficulty !== 0)
     )
       return;
-    const msgs = BOT_CHAT[eventType];
-    if (!msgs || msgs.length === 0) return;
+    const pick = pickBanter(eventType);
+    if (!pick) return;
     if (Math.random() > 0.5) return;
-    const pick = msgs[Math.floor(Math.random() * msgs.length)];
     setTimeout(
       () => {
         showFloatMsg(pick.t, true, pick.f);
