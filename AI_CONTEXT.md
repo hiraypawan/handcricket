@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — Hand Cricket Pro v2.2
+# AI_CONTEXT.md — Hand Cricket Pro v2.6
 
 > Read this first. It maps the whole codebase so an AI or vibe coder can make
 > changes without guessing. Companion docs (audit history & known bugs):
@@ -13,7 +13,9 @@
 handcricket/
 ├── public/                  ← THE WEBSITE (deployed 1:1, zero build)
 │   ├── index.html           Slim shell: markup + <link> + 22 ordered <script>s
-│   ├── css/app.css          All styles (extracted from the old monolith)
+│   ├── css/app.css          THE single v2.5 design system: "Night Stadium" dark
+│   │                       theme, responsive framing + every screen (edit visuals HERE).
+│   │                       NOTE: old css/theme.css layer was deleted in v2.5.
 │   ├── js/                  Game logic — see the numbered load order below
 │   └── functions/           Cloudflare Pages Functions (KV-backed REST)
 ├── tools/smoke.mjs          jsdom regression suite — RUN BEFORE/AFTER changes
@@ -37,22 +39,22 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | 2 | `01-config.js` | IPL `TEAMS`, `ALL_PLAYERS`, role/gesture rules, bot name pools |
 | 3 | `02-bot-ai.js` | `BotAI` — Markov+context bot predictor (`bowl()/bat()`) |
 | 4 | `03-state.js` | `TIMER`/`CIRC`, **`G` (the single game-state object)**, `$`, session/snapshot/persist helpers, net vars |
-| 5 | `04-hands.js` | `HandRenderer` / `getHandSVG` / arena hands |
+| 5 | `04-hands.js` | `HandRenderer` / `getHandSVG` / arena hands — v2.5 flat vector hands (gold cuff = player/right, violet = opponent/left, mirrored) |
 | 6 | `05-navigation.js` | Home/menu show-hide, bottom `TabBar` |
 | 7 | `06-sfx.js` | `ensureAudio`, `sfx()`, haptics |
-| 8 | `07-display.js` | Scoreboard/HUD, flash, confetti, countdowns, leave dialog |
+| 8 | `07-display.js` | Scoreboard/HUD, flash, confetti, countdowns, leave dialog, shared toss-coin animation (`tossSpin`/`tossLand`/`tossSettle`) |
 | 9 | `08-network.js` | `sendMsg`, `destroyPeer`, connection log |
 | 10 | `09-engine.js` | **Match engine**: innings, ball resolution, scoring, roles rotation, per-player stats, result |
 | 11 | `10-profiles.js` | Username, career stats (`hc_stats`), profile-card UI |
 | 12 | `11-modes.js` | Home mode buttons (Offline/Online/Quick/Story entry), career strip |
-| 13 | `12-tutorial.js` | Tutorial slides + team-size pickers (single active format) |
+| 13 | `12-tutorial.js` | How-to-play slides + team-size pickers. v2.5: NEVER auto-opens; only the home "How to Play" button opens it (`btnHowTo`) |
 | 14 | `13-offline.js` | Offline vs bot: rosters, toss, role screen, `startOffline()` |
 | 15 | `14-online.js` | PeerJS P2P: host/join, protocol `handleNet`, team builder, toss |
 | 16 | `15-roles.js` | Role styles (AGG/DEF/BAL), gesture restrictions, role overlay |
 | 17 | `16-story.js` | Story career: tiers, dialogue, team builder, cloud save, **story→engine hooks** |
 | 18 | `17-selection.js` | Batter/bowler rotation pickers + innings-break scorecard |
 | 19 | `18-instant.js` | **Quick Match** (honest instant bot game) + boot-time init (loads last) |
-| 20 | `19-chat.js` | Emoji quick-chat + bot banter |
+| 20 | `19-chat.js` | Quick-chat + bot banter — float bubbles are TEXT + inline-SVG face chips (`faceSVG`, mood tokens). Legacy emoji tokens map via `LEGACY_EMOJI_TO_MOOD` (never rendered as emoji) |
 | 21 | `20-friends.js` | Friend lists/sync, friend requests, challenge invite |
 
 > ⚠️ Rule: **never create load-time dependencies on later files.** If a file
@@ -101,6 +103,15 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
 ## 6. Rules for safe edits
 
 1. **No bundler, no import map, no build step.** Plain scripts only.
+1b. **Sound policy:** `sfx()` only plays gameplay moments (whitelist in
+    `06-sfx.js`) — UI taps/tick/run sounds are silent. Don't add sfx to menus.
+1c. **No emoji glyphs as UI (v2.5).** Buttons, icons, chrome, avatars and
+    floating taunts must be inline SVG or typography. New visuals belong in
+    `app.css` + inline `<svg>`; mood art lives in `19-chat.js` `faceSVG()`.
+    The only emoji left in code is the `LEGACY_EMOJI_TO_MOOD` mapping table
+    (parses old peers' messages into SVG faces — never renders emoji).
+1d. **How-to-play never auto-opens** (v2.5). It is reachable only via the
+    home "How to Play" button (`btnHowTo` -> `openTutorial()` in 12-tutorial).
 2. Prefer editing inside the module that owns the feature (map above).
 3. Keep all user-supplied strings HTML-escaped (`escHtml`/`escAttr`) —
    friend names are untrusted input (M16).
@@ -111,6 +122,39 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
 6. **Test** with `node tools/smoke.mjs` (jsdom boots the real page, plays
    offline + quick + 5v5 role-screen matches, checks story isolation).
    Add a check for every new fix. Keep `tools/` out of `public/`.
+6b. **Bottom dock = root-screen only (v2.6.1).** `#tabBar` is absolute at the
+    bottom of `#app` (z14) — if it stays visible during a live match it
+    covers the gesture controls. `showMenu()` / `showStoryHome()` call
+    `showDock()`; `startInnings()` and the online mid-match restore path call
+    `hideDock()`. Never show the dock inside gameplay, and never add bottom
+    padding to `#app` instead.
+6c. **Arena band invariants (v2.6.1).** `.arena` is `flex-end`/`space-between`;
+    `.player-side` is `height:100%; justify-content:flex-end`. Hands live in a
+    bottom band capped at `max-height:46%` and may never rise above it, or
+    they collide with the upper band: `.timer-wrap`/`.countdown` 36%,
+    `.flash` 32% (all absolute, centered). Hand SVG canvas is 240x300 with
+    the art zoomed `translate(120,0) scale(1.32,1)`; the mirror wrapper must
+    stay the outermost group so opponent hands flip correctly. On
+    <=420px-wide screens `.player-card` is hidden (scoreboard carries it).
+6d. **Mid-match centre brand card removed (v2.6.2).** `#centerCard` stays in
+    the DOM (code keeps writing it) but `display:none` — do not re-show it
+    during matches; the top scoreboard, overs `x.y`, target banner and
+    status line carry all that info. The home tagline
+    "Street Cricket Reimagined" was deleted on request — the brand is just
+    "Hand Cricket Pro".
+6e. **Glass contrast policy (v2.6.2).** Theme is dark glass, but panels must
+    stay readable: neutral surfaces use >= ~.11 white alpha with borders
+    >= ~.22 (see the v2.6.2 block at the end of app.css). If a new panel
+    looks washed out over the stadium glow, raise its alpha/border there —
+    never drop the scrim behind `#menuOverlay`.
+6f. **Overlay content must never shrink (v2.6.3).** `.overlay` and the
+    role/story/friends/trophy overlays are flex columns; their direct
+    children carry `flex-shrink:0` because a shrinking stat card
+    (`profile-card`, `overflow:hidden`) used to get squeezed and silently
+    clipped at half height with no scrollbar. If content is taller than the
+    screen the overlay itself scrolls. Keep result actions inside
+    `#resultActions` (sticky glass pill) and close buttons sticky — they
+    must stay reachable while stats scroll underneath.
 
 ## 7. Known limitations (do not "fix" blindly)
 

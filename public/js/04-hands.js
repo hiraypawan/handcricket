@@ -1,9 +1,11 @@
 /* ============================================================================
  FILE: public/js/04-hands.js
- ROLE: HAND RENDERER — HandRenderer (pure-CSS/SVG cartoon hands, STATES/PAL), getHandSVG(), buildArenaHand(), setHandGesture(). Depends on: nothing.
+ ROLE: HAND RENDERER — HandRenderer (flat modern vector hands), getHandSVG(),
+       buildArenaHand(), setHandGesture(). Depends on: nothing.
+ STYLE (v2.5): natural skin tones, soft shading, articulated capsule fingers
+       that fan outward when raised, subtle outline, coloured cuff per side.
 ============================================================================ */
 
-/* ====== HAND RENDERER — illustrated cartoon hands ====== */
 const HandRenderer = {
   // Finger state map: [thumb, index, middle, ring, pinky] — 1=up 0=down
   STATES: {
@@ -15,272 +17,182 @@ const HandRenderer = {
     5: [1, 1, 1, 1, 1],
     6: [1, 0, 0, 0, 0],
   },
-  // Skin palettes
+  // Poses for fingers: [knuckleX, width, upLength] — drawn from the knuckle
+  // line (y=138) upward; knuckles fan slightly for a natural spread.
+  FINGERS: [
+    { x: 88, w: 23, len: 104, rot: -7 }, // index
+    { x: 113, w: 24, len: 114, rot: -2 }, // middle
+    { x: 137, w: 23, len: 103, rot: 4 }, // ring
+    { x: 158, w: 20, len: 88, rot: 12 }, // pinky
+  ],
+  KNUCKLE_Y: 138,
+
+  // Skin + cuff palettes (right/player = gold cuff, left/opponent = violet)
   PAL: {
-    teal: {
-      m: "#2a9d8f",
-      l: "#3ec4b4",
-      d: "#1a6b60",
-      a: "#d4a574",
-      wb: "#1a5c52",
+    skin: {
+      m: "#e2a375",
+      mid: "#cf8b5b",
+      d: "#b57045",
+      outline: "rgba(122,63,28,.38)",
+      gloss: "rgba(255,240,222,.6)",
+      nail: "rgba(255,228,205,.95)",
     },
-    orange: {
-      m: "#c87850",
-      l: "#da9470",
-      d: "#8a5030",
-      a: "#d4a574",
-      wb: "#6a3818",
-    },
+    cuff: { player: "#f2b02e", opp: "#8b7cf6" },
   },
-  draw(num, isLeft) {
-    const pal = isLeft ? this.PAL.teal : this.PAL.orange;
+
+  draw(num, isPlayer) {
     const s = this.STATES[num] || this.STATES[0];
-    const sw = 5;
-    const flip = isLeft ? -1 : 1;
-    const ox = isLeft ? 200 : 0;
+    const skin = this.PAL.skin;
+    const cuff = isPlayer ? this.PAL.cuff.player : this.PAL.cuff.opp;
+    const tag = isPlayer ? "p" : "o"; // unique gradient ids per side
+    // Per-shape vertical shading: objectBoundingBox maps light->deep on each
+    // finger/palm/forearm, so the whole hand reads rounded under one light.
+    const SF = "url(#sk" + tag + ")";
+    const CF = "url(#cf" + tag + ")";
+    const defs =
+      '<defs><linearGradient id="sk' + tag + '" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0" stop-color="#f6c08e"/><stop offset="0.45" stop-color="#e6a676"/>' +
+      '<stop offset="1" stop-color="#b9774a"/>' +
+      "</linearGradient>" +
+      '<linearGradient id="cf' + tag + '" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="0" y2="1">' +
+      (isPlayer
+        ? '<stop offset="0" stop-color="#ffd675"/><stop offset="1" stop-color="#dc9b18"/>'
+        : '<stop offset="0" stop-color="#a699fa"/><stop offset="1" stop-color="#6856dd"/>') +
+      "</linearGradient></defs>";
+    const up = (x, y, w, h, r, extra) =>
+      ['<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + r + '"',
+        ' fill="' + SF + '" stroke="' + skin.outline + '" stroke-width="1.4"',
+        extra ? ' ' + extra : '',
+        "/>",]
+        .join("");
+    const g = (inner, tx, flip) =>
+      '<g transform="translate(' + (tx || 0) + ',0) scale(' + (flip ? -1 : 1) + ',1)">' + inner + "</g>";
+    const mirror = !isPlayer;
+    const tx = mirror ? 240 : 0;
+    const fl = mirror ? -1 : 1;
+
     let svg =
-      '<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">';
-    svg += '<g transform="translate(' + ox + ",0) scale(" + flip + ',1)">';
-    // Shadow under hand
-    svg += '<ellipse cx="100" cy="248" rx="45" ry="8" fill="rgba(0,0,0,.12)"/>';
-    // ARM — skin tone forearm
+      '<svg viewBox="0 0 240 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">';
+    svg += defs;
     svg +=
-      '<path d="M-8 110 Q-4 100 10 96 L90 96 Q100 96 104 104 L108 110 Q112 118 112 128 L112 160 Q112 170 104 174 L10 174 Q-2 174 -8 166 Z" fill="' +
-      pal.a +
-      '" stroke="#fff" stroke-width="' +
-      sw +
-      '" stroke-linejoin="round"/>';
-    // WRISTBAND — team color
+      '<g transform="translate(' + tx + ',0) scale(' + fl + ',1)">'; // mirror wrapper
+    // Zoom the art ~32% horizontally about its centre so the hand fills the
+    // 240x300 canvas side-to-side (was using only ~47% of the width).
+    svg += '<g transform="translate(120,0) scale(1.32,1) translate(-120,0)">';
+    svg += '<g>';
+
+    // soft ground shadow
     svg +=
-      '<rect x="76" y="104" width="34" height="56" rx="14" fill="' +
-      pal.wb +
-      '" stroke="#fff" stroke-width="' +
-      sw +
-      '" stroke-linejoin="round"/>';
-    // Wristband stripes
+      '<ellipse cx="120" cy="288" rx="62" ry="7" fill="rgba(0,0,0,.18)"/>';
+
+    // ---- wrist / forearm (drawn from bottom up, hidden behind cuff) ----
     svg +=
-      '<rect x="80" y="112" width="26" height="4" rx="2" fill="' +
-      pal.m +
-      '" opacity=".4"/>';
+      '<path d="M74 300 Q72 270 76 250 L164 250 Q168 270 166 300 Z" fill="' +
+      SF + '" stroke="' + skin.outline + '" stroke-width="1.2"/>';
+    // forearm side shading for volume
     svg +=
-      '<rect x="80" y="122" width="26" height="4" rx="2" fill="' +
-      pal.m +
-      '" opacity=".4"/>';
+      '<path d="M82 300 Q80 278 84 262" stroke="rgba(0,0,0,.14)" stroke-width="3" fill="none" stroke-linecap="round"/>';
+
+    // ---- cuff (coloured band with accent stripe) ----
     svg +=
-      '<rect x="80" y="132" width="26" height="4" rx="2" fill="' +
-      pal.m +
-      '" opacity=".4"/>';
+      '<path d="M76 248 Q74 232 80 224 L160 224 Q166 232 164 248 Z" fill="' +
+      CF + '" stroke="' + skin.outline + '" stroke-width="1.4"/>';
     svg +=
-      '<rect x="80" y="142" width="26" height="4" rx="2" fill="' +
-      pal.m +
-      '" opacity=".4"/>';
-    // PALM — organic curved shape
+      '<path d="M80 230 Q120 226 160 230" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-linecap="round"/>';
     svg +=
-      '<path d="M76 170 Q72 120 82 108 Q90 100 100 96 Q118 90 132 96 Q148 104 152 120 Q156 136 154 152 Q152 164 146 170 Q134 180 118 184 Q100 186 86 180 Z" fill="' +
-      pal.m +
-      '" stroke="#fff" stroke-width="' +
-      sw +
-      '" stroke-linejoin="round"/>';
-    // PALM HIGHLIGHT
+      '<path d="M82 240 Q120 237 158 240" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2" stroke-linecap="round"/>';
+
+    // ---- palm (soft rounded, wider at knuckles, narrower at wrist) ----
     svg +=
-      '<path d="M90 118 Q98 112 112 114 Q130 116 138 122" fill="none" stroke="' +
-      pal.l +
-      '" stroke-width="3" opacity=".3" stroke-linecap="round"/>';
-    // PALM CREASES — knuckle lines
+      '<path d="M66 232 Q62 176 74 144 Q92 126 120 126 Q148 126 166 144 Q178 176 174 232 Q150 240 120 240 Q90 240 66 232 Z"' +
+      ' fill="' + SF + '" stroke="' + skin.outline + '" stroke-width="1.4"/>';
+    // palm gloss (upper-left light)
     svg +=
-      '<path d="M84 128 Q96 122 110 126" fill="none" stroke="#fff" stroke-width="1.5" opacity=".2" stroke-linecap="round"/>';
+      '<path d="M84 152 Q104 138 124 138 Q142 140 154 152" fill="none" stroke="' +
+      skin.gloss + '" stroke-width="8" opacity=".55" stroke-linecap="round"/>';
+    // palm creases
     svg +=
-      '<path d="M82 140 Q98 134 116 138" fill="none" stroke="#fff" stroke-width="1.5" opacity=".18" stroke-linecap="round"/>';
+      '<path d="M84 168 Q108 160 128 162" fill="none" stroke="rgba(122,63,28,.16)" stroke-width="2" stroke-linecap="round"/>';
     svg +=
-      '<path d="M86 152 Q100 148 120 150" fill="none" stroke="#fff" stroke-width="1.2" opacity=".15" stroke-linecap="round"/>';
-    // FINGERS — each is a detailed cartoon shape
-    // Finger data: [baseX, upTipY, downTipY, width, upHeight, downHeight, rotation, xSplay]
-    const fingers = [
-      { x: 84, tyu: 22, tyd: 52, w: 18, hu: 80, hd: 38, rot: -5 }, // index
-      { x: 102, tyu: 14, tyd: 44, w: 19, hu: 88, hd: 42, rot: 0 }, // middle
-      { x: 120, tyu: 24, tyd: 54, w: 17, hu: 74, hd: 36, rot: 4 }, // ring
-      { x: 136, tyu: 40, tyd: 66, w: 14, hu: 56, hd: 28, rot: 8 }, // pinky
-    ];
-    for (let i = 0; i < 4; i++) {
-      const f = fingers[i];
+      '<path d="M88 186 Q108 180 126 182" fill="none" stroke="rgba(122,63,28,.13)" stroke-width="2" stroke-linecap="round"/>';
+    svg +=
+      '<path d="M96 202 Q112 198 126 200" fill="none" stroke="rgba(122,63,28,.1)" stroke-width="2" stroke-linecap="round"/>';
+
+    // ---- fingers ----
+    const K = this.KNUCKLE_Y;
+    for (let i = 0; i < this.FINGERS.length; i++) {
+      const f = this.FINGERS[i];
+      const cx = f.x;
       if (s[i + 1]) {
-        // FINGER UP — full length, team color
-        const tipX = f.x + f.w / 2;
-        // Main finger body (2 phalanges)
+        // RAISED finger — full-length capsule with rounded tip + nail
+        const tipY = K - f.len;
         svg +=
-          '<path d="M' +
-          f.x +
-          " " +
-          (f.tyu + f.hu) +
-          " Q" +
-          (f.x - 2) +
-          " " +
-          (f.tyu + f.hu * 0.5) +
-          " " +
-          tipX +
-          " " +
-          f.tyu +
-          " Q" +
-          (f.x + f.w + 2) +
-          " " +
-          (f.tyu + f.hu * 0.5) +
-          " " +
-          (f.x + f.w) +
-          " " +
-          (f.tyu + f.hu) +
-          ' Z" fill="' +
-          pal.m +
-          '" stroke="#fff" stroke-width="' +
-          sw +
-          '" stroke-linejoin="round" transform="rotate(' +
-          f.rot +
-          " " +
-          tipX +
-          " " +
-          (f.tyu + f.hu) +
-          ')"/>';
-        // Fingertip highlight
+          '<g transform="rotate(' + f.rot + " " + cx + " " + K + ')">';
+        svg += up(cx - f.w / 2, tipY + 6, f.w, f.len - 6, f.w / 2);
+        // tip gloss
         svg +=
-          '<ellipse cx="' +
-          tipX +
-          '" cy="' +
-          (f.tyu + 8) +
-          '" rx="' +
-          f.w * 0.3 +
-          '" ry="4" fill="' +
-          pal.l +
-          '" opacity=".25" transform="rotate(' +
-          f.rot +
-          " " +
-          tipX +
-          " " +
-          (f.tyu + f.hu) +
-          ')"/>';
-        // Knuckle crease line
+          '<ellipse cx="' + cx + '" cy="' + (tipY + 14) + '" rx="' + f.w * 0.3 +
+          '" ry="' + f.w * 0.16 + '" fill="' + skin.gloss + '" opacity=".65"/>';
+        // nail
         svg +=
-          '<line x1="' +
-          (f.x + 3) +
-          '" y1="' +
-          (f.tyu + f.hu * 0.55) +
-          '" x2="' +
-          (f.x + f.w - 3) +
-          '" y2="' +
-          (f.tyu + f.hu * 0.55) +
-          '" stroke="#fff" stroke-width="1.2" opacity=".18" stroke-linecap="round" transform="rotate(' +
-          f.rot +
-          " " +
-          tipX +
-          " " +
-          (f.tyu + f.hu) +
-          ')"/>';
-        // Second knuckle crease
+          '<ellipse cx="' + cx + '" cy="' + (tipY + 8) + '" rx="' + f.w * 0.26 +
+          '" ry="' + f.w * 0.3 + '" fill="' + skin.nail + '" opacity=".9"/>';
+        // knuckle crease
         svg +=
-          '<line x1="' +
-          (f.x + 4) +
-          '" y1="' +
-          (f.tyu + f.hu * 0.28) +
-          '" x2="' +
-          (f.x + f.w - 4) +
-          '" y2="' +
-          (f.tyu + f.hu * 0.28) +
-          '" stroke="#fff" stroke-width="1" opacity=".12" stroke-linecap="round" transform="rotate(' +
-          f.rot +
-          " " +
-          tipX +
-          " " +
-          (f.tyu + f.hu) +
-          ')"/>';
+          '<path d="M' + (cx - f.w * 0.34) + " " + (K - 10) + " L" + (cx + f.w * 0.34) +
+          " " + (K - 10) + '" stroke="rgba(122,63,28,.18)" stroke-width="1.4" stroke-linecap="round"/>';
+        svg += "</g>";
       } else {
-        // FINGER DOWN — curled, darker, shorter
-        const cx = f.x;
-        const cy = f.tyd;
-        const cw = f.w;
-        const ch = f.hd;
+        // CURLED finger — compact knuckle bump
         svg +=
-          '<path d="M' +
-          cx +
-          " " +
-          (cy + ch) +
-          " Q" +
-          (cx + 2) +
-          " " +
-          (cy + ch * 0.3) +
-          " " +
-          (cx + cw / 2) +
-          " " +
-          cy +
-          " Q" +
-          (cx + cw - 2) +
-          " " +
-          (cy + ch * 0.3) +
-          " " +
-          (cx + cw) +
-          " " +
-          (cy + ch) +
-          ' Z" fill="' +
-          pal.d +
-          '" stroke="#fff" stroke-width="' +
-          sw +
-          '" stroke-linejoin="round" opacity=".5" transform="rotate(' +
-          f.rot * 0.3 +
-          " " +
-          (cx + cw / 2) +
-          " " +
-          (cy + ch) +
-          ')"/>';
-        // Curled knuckle bump
+          '<g transform="rotate(' + f.rot * 0.4 + " " + cx + " " + K + ')">';
         svg +=
-          '<ellipse cx="' +
-          (cx + cw / 2) +
-          '" cy="' +
-          cy +
-          '" rx="' +
-          cw * 0.35 +
-          '" ry="3" fill="' +
-          pal.m +
-          '" opacity=".3" transform="rotate(' +
-          f.rot * 0.3 +
-          " " +
-          (cx + cw / 2) +
-          " " +
-          (cy + ch) +
-          ')"/>';
+          '<rect x="' + (cx - f.w / 2) + '" y="' + (K - 24) + '" width="' + f.w +
+          '" height="26" rx="' + f.w / 2 + '" fill="' + SF +
+          '" stroke="' + skin.outline + '" stroke-width="1.3"/>';
+        svg +=
+          '<ellipse cx="' + cx + '" cy="' + (K - 20) + '" rx="' + f.w * 0.24 +
+          '" ry="4" fill="' + skin.gloss + '" opacity=".4"/>';
+        svg += "</g>";
       }
     }
-    // THUMB
+
+    // ---- thumb (raised only for states 5 & 6; curled otherwise) ----
+    const tx2 = 70;
+    const ty2 = 150;
     if (s[0]) {
-      // Thumb UP — extended from palm side
+      // raised thumb — capsule angled up-left
       svg +=
-        '<path d="M78 148 Q68 128 64 108 Q62 92 68 84 Q76 78 82 86 Q88 96 86 112 Q84 128 80 142 Z" fill="' +
-        pal.m +
-        '" stroke="#fff" stroke-width="' +
-        sw +
-        '" stroke-linejoin="round"/>';
-      // Thumb knuckle crease
+        '<g transform="rotate(-38 ' + tx2 + " " + ty2 + ')">';
+      svg += up(tx2 - 10, ty2 - 66, 20, 70, 10);
       svg +=
-        '<line x1="72" y1="100" x2="78" y2="106" stroke="#fff" stroke-width="1.2" opacity=".2" stroke-linecap="round"/>';
-      // Thumbnail
+        '<ellipse cx="' + tx2 + '" cy="' + (ty2 - 62) + '" rx="4.5" ry="6" fill="' +
+        skin.nail + '" opacity=".9"/>';
+      svg += "</g>";
+      // thumb base shading
       svg +=
-        '<ellipse cx="70" cy="88" rx="5" ry="4" fill="' +
-        pal.l +
-        '" opacity=".2"/>';
+        '<ellipse cx="72" cy="158" rx="12" ry="10" fill="' + skin.d + '" opacity=".25"/>';
     } else {
-      // Thumb DOWN — curled against palm
+      // curled thumb across the palm base
       svg +=
-        '<path d="M78 156 Q72 146 70 136 Q68 126 72 120 Q78 116 82 124 Q84 132 82 144 Z" fill="' +
-        pal.d +
-        '" stroke="#fff" stroke-width="' +
-        sw +
-        '" stroke-linejoin="round" opacity=".5"/>';
+        '<g transform="rotate(18 74 178)">';
+      svg += up(64, 150, 19, 52, 9.5);
+      svg +=
+        '<ellipse cx="73" cy="156" rx="4" ry="5" fill="' + skin.nail + '" opacity=".8"/>';
+      svg += "</g>";
     }
-    svg += "</g></svg>";
+
+    svg += "</g>";
+    svg += "</g>"; // close zoom
+    svg += "</g>"; // close mirror
+    svg += "</svg>";
     return svg;
   },
 };
 
-// Backward compat
+// Backward-compatible aliases (used across modules & the smoke suite)
 function getHandSVG(num, isPlayer) {
-  return HandRenderer.draw(num === null ? null : num, isPlayer);
+  return HandRenderer.draw(num === null || num === undefined ? null : num, !!isPlayer);
 }
 
 function buildArenaHand(host) {
@@ -304,4 +216,3 @@ function setHandGesture(imgEl, wrapperEl, v) {
   wrapperEl.classList.add("reveal");
   setTimeout(() => wrapperEl.classList.remove("reveal"), 650);
 }
-

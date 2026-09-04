@@ -6,14 +6,14 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="theme-color" content="#e8a020"/>
+<meta name="theme-color" content="#060d1a"/>
 <title>Hand Cricket Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M484S7S0KG"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-M484S7S0KG');</script>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="css/app.css"/>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="css/app.css?v=2.6.3"/>
 </head>
 <div id="app">
 <div class="scoreboard">
@@ -26,75 +26,63 @@
 <div class="balls-row" id="ballsRow"></div>
 <div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
-<div class="arena-stadium"><svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-<!-- Sky -->
-<rect width="800" height="500" fill="#c8d4a8"/>
-<!-- Clouds -->
-<ellipse cx="150" cy="60" rx="80" ry="28" fill="#d8dfc4" opacity=".8"/>
-<ellipse cx="120" cy="50" rx="50" ry="22" fill="#dce3c8"/>
-<ellipse cx="190" cy="55" rx="45" ry="20" fill="#dce3c8"/>
-<ellipse cx="550" cy="45" rx="70" ry="25" fill="#d8dfc4" opacity=".7"/>
-<ellipse cx="520" cy="38" rx="45" ry="20" fill="#dce3c8"/>
-<ellipse cx="590" cy="42" rx="40" ry="18" fill="#dce3c8"/>
-<ellipse cx="700" cy="70" rx="55" ry="20" fill="#d8dfc4" opacity=".6"/>
-<!-- Far stands (brown/orange curved) -->
-<path d="M0 180 Q200 120 400 140 Q600 120 800 180 L800 280 Q600 240 400 250 Q200 240 0 280 Z" fill="#c47a3a"/>
-<path d="M0 190 Q200 130 400 150 Q600 130 800 190 L800 270 Q600 230 400 240 Q200 230 0 270 Z" fill="#c98a4a"/>
-<!-- Stand details - arches -->
-<rect x="60" y="200" width="18" height="50" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="120" y="195" width="18" height="55" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="180" y="192" width="18" height="55" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="240" y="190" width="18" height="56" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="300" y="188" width="18" height="56" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="360" y="187" width="18" height="56" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="420" y="188" width="18" height="56" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="480" y="190" width="18" height="56" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="540" y="192" width="18" height="55" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="600" y="195" width="18" height="55" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="660" y="198" width="18" height="52" rx="9" fill="#b06828" opacity=".6"/>
-<rect x="720" y="200" width="18" height="50" rx="9" fill="#b06828" opacity=".6"/>
-<!-- Stand top edge -->
-<path d="M0 180 Q200 120 400 140 Q600 120 800 180" fill="none" stroke="#a05820" stroke-width="4"/>
-<!-- Field -->
-<path d="M0 280 Q200 240 400 250 Q600 240 800 280 L800 500 L0 500 Z" fill="#2d8a3e"/>
-<path d="M0 290 Q200 250 400 260 Q600 250 800 290 L800 500 L0 500 Z" fill="#35a045"/>
-<!-- Pitch area -->
-<rect x="330" y="300" width="140" height="80" rx="4" fill="#c4a85a"/>
-<rect x="340" y="310" width="120" height="60" rx="2" fill="#b89840"/>
-<!-- Pitch strips -->
-<line x1="355" y1="310" x2="355" y2="370" stroke="#c4a85a" stroke-width="1" opacity=".5"/>
-<line x1="385" y1="310" x2="385" y2="370" stroke="#c4a85a" stroke-width="1" opacity=".5"/>
-<line x1="415" y1="310" x2="415" y2="370" stroke="#c4a85a" stroke-width="1" opacity=".5"/>
-<line x1="445" y1="310" x2="445" y2="370" stroke="#c4a85a" stroke-width="1" opacity=".5"/>
-<!-- Crease lines -->
-<line x1="340" y1="325" x2="460" y2="325" stroke="#fff" stroke-width="1.5" opacity=".7"/>
-<line x1="340" y1="355" x2="460" y2="355" stroke="#fff" stroke-width="1.5" opacity=".7"/>
-<!-- Trees left -->
-<circle cx="30" cy="240" r="18" fill="#1a6b2a"/>
-<circle cx="55" cy="235" r="22" fill="#228b37"/>
-<circle cx="20" cy="230" r="15" fill="#2d8a3e"/>
-<rect x="28" y="240" width="4" height="15" fill="#6b4420"/>
-<rect x="53" y="235" width="4" height="18" fill="#6b4420"/>
-<!-- Trees right -->
-<circle cx="750" cy="240" r="18" fill="#1a6b2a"/>
-<circle cx="775" cy="235" r="22" fill="#228b37"/>
-<circle cx="735" cy="230" r="15" fill="#2d8a3e"/>
-<rect x="748" y="240" width="4" height="15" fill="#6b4420"/>
-<rect x="773" y="235" width="4" height="18" fill="#6b4420"/>
-<!-- Floodlight left -->
-<rect x="85" y="100" width="6" height="140" fill="#666"/>
-<rect x="75" y="90" width="26" height="20" rx="3" fill="#555"/>
-<rect x="77" y="92" width="22" height="16" rx="2" fill="#e8e8d0"/>
-<!-- Floodlight right -->
-<rect x="709" y="100" width="6" height="140" fill="#666"/>
-<rect x="699" y="90" width="26" height="20" rx="3" fill="#555"/>
-<rect x="701" y="92" width="22" height="16" rx="2" fill="#e8e8d0"/>
-<!-- Ground shadow -->
-<ellipse cx="400" cy="480" rx="350" ry="20" fill="#1a5c2a" opacity=".3"/>
+<div class="arena-stadium"><svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="presentation">
+<defs>
+<linearGradient id="skyN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#02040d"/><stop offset=".5" stop-color="#081426"/><stop offset="1" stop-color="#0e2440"/></linearGradient>
+<radialGradient id="moonHalo"><stop offset="0" stop-color="#dbe7ff" stop-opacity=".5"/><stop offset="1" stop-color="#dbe7ff" stop-opacity="0"/></radialGradient>
+<radialGradient id="fieldLit" cx=".5" cy=".3" r=".85"><stop offset="0" stop-color="#2f7f3d"/><stop offset=".55" stop-color="#1d5c2c"/><stop offset="1" stop-color="#0a2c17"/></radialGradient>
+<linearGradient id="standG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2c44"/><stop offset=".6" stop-color="#0c1626"/><stop offset="1" stop-color="#060b15"/></linearGradient>
+<linearGradient id="pitchG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d3bd7a"/><stop offset="1" stop-color="#a18c52"/></linearGradient>
+<radialGradient id="poolL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff3c4" stop-opacity=".16"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="800" height="500" fill="url(#skyN)"/>
+<circle class="st" cx="10" cy="146" r="0.9" fill="#cdd9f2" opacity="0.40"/><circle class="st" cx="426" cy="57" r="0.9" fill="#cdd9f2" opacity="0.78"/><circle class="st" cx="544" cy="103" r="0.9" fill="#cdd9f2" opacity="0.42"/><circle class="st" cx="562" cy="113" r="1.5" fill="#cdd9f2" opacity="0.73"/><circle class="st" cx="729" cy="129" r="1.5" fill="#cdd9f2" opacity="0.61"/><circle class="st" cx="547" cy="105" r="0.9" fill="#cdd9f2" opacity="0.89"/><circle class="st tw" cx="300" cy="58" r="0.9" fill="#cdd9f2" opacity="0.48"/><circle class="st" cx="242" cy="72" r="0.9" fill="#cdd9f2" opacity="0.91"/><circle class="st" cx="579" cy="140" r="1.5" fill="#cdd9f2" opacity="0.44"/><circle class="st tw" cx="407" cy="71" r="1.5" fill="#cdd9f2" opacity="0.89"/><circle class="st" cx="295" cy="60" r="0.9" fill="#cdd9f2" opacity="0.90"/><circle class="st" cx="139" cy="69" r="0.9" fill="#cdd9f2" opacity="0.51"/><circle class="st" cx="269" cy="88" r="0.9" fill="#cdd9f2" opacity="0.41"/><circle class="st" cx="367" cy="137" r="0.9" fill="#cdd9f2" opacity="0.69"/><circle class="st" cx="404" cy="111" r="0.9" fill="#cdd9f2" opacity="0.53"/><circle class="st" cx="206" cy="96" r="0.9" fill="#cdd9f2" opacity="0.48"/><circle class="st tw" cx="630" cy="140" r="1.5" fill="#cdd9f2" opacity="0.82"/><circle class="st" cx="327" cy="31" r="1.5" fill="#cdd9f2" opacity="0.95"/><circle class="st tw" cx="503" cy="30" r="0.9" fill="#cdd9f2" opacity="0.67"/><circle class="st" cx="729" cy="141" r="0.9" fill="#cdd9f2" opacity="0.87"/><circle class="st tw" cx="604" cy="49" r="1.5" fill="#cdd9f2" opacity="0.42"/><circle class="st" cx="11" cy="101" r="0.9" fill="#cdd9f2" opacity="0.77"/><circle class="st" cx="546" cy="44" r="0.9" fill="#cdd9f2" opacity="0.41"/><circle class="st" cx="708" cy="26" r="0.9" fill="#cdd9f2" opacity="0.25"/><circle class="st" cx="507" cy="146" r="1.5" fill="#cdd9f2" opacity="0.88"/><circle class="st" cx="766" cy="93" r="0.9" fill="#cdd9f2" opacity="0.44"/><circle class="st" cx="173" cy="93" r="1.5" fill="#cdd9f2" opacity="0.79"/><circle class="st" cx="567" cy="83" r="1.5" fill="#cdd9f2" opacity="0.33"/><circle class="st" cx="112" cy="111" r="0.9" fill="#cdd9f2" opacity="0.28"/><circle class="st" cx="682" cy="157" r="0.9" fill="#cdd9f2" opacity="0.79"/><circle class="st" cx="204" cy="117" r="0.9" fill="#cdd9f2" opacity="0.53"/><circle class="st" cx="326" cy="141" r="0.9" fill="#cdd9f2" opacity="0.50"/><circle class="st" cx="583" cy="58" r="0.9" fill="#cdd9f2" opacity="0.55"/><circle class="st" cx="253" cy="156" r="0.9" fill="#cdd9f2" opacity="0.69"/><circle class="st" cx="726" cy="38" r="0.9" fill="#cdd9f2" opacity="0.34"/><circle class="st" cx="445" cy="124" r="0.9" fill="#cdd9f2" opacity="0.59"/><circle class="st" cx="358" cy="33" r="0.9" fill="#cdd9f2" opacity="0.62"/><circle class="st tw" cx="405" cy="122" r="0.9" fill="#cdd9f2" opacity="0.78"/><circle class="st" cx="243" cy="89" r="1.5" fill="#cdd9f2" opacity="0.76"/><circle class="st" cx="194" cy="107" r="0.9" fill="#cdd9f2" opacity="0.30"/><circle class="st" cx="652" cy="145" r="0.9" fill="#cdd9f2" opacity="0.73"/><circle class="st" cx="30" cy="122" r="0.9" fill="#cdd9f2" opacity="0.76"/><circle class="st tw" cx="39" cy="28" r="1.5" fill="#cdd9f2" opacity="0.33"/><circle class="st tw" cx="17" cy="99" r="0.9" fill="#cdd9f2" opacity="0.38"/><circle class="st" cx="168" cy="109" r="0.9" fill="#cdd9f2" opacity="0.57"/><circle class="st" cx="340" cy="109" r="0.9" fill="#cdd9f2" opacity="0.53"/>
+<circle cx="656" cy="62" r="95" fill="url(#moonHalo)"/>
+<circle cx="656" cy="62" r="24" fill="#eef3fb" opacity=".92"/>
+<circle cx="648" cy="56" r="4.6" fill="#d3dcea" opacity=".8"/><circle cx="663" cy="68" r="3.2" fill="#d3dcea" opacity=".7"/><circle cx="652" cy="71" r="2.1" fill="#d3dcea" opacity=".7"/>
+<g><rect x="84" y="36" width="52" height="11" rx="3" fill="#f6efd8" opacity=".85"/><rect x="84" y="50" width="52" height="11" rx="3" fill="#f6efd8" opacity=".55"/><rect x="84" y="36" width="52" height="11" rx="3" fill="#f6efd8" opacity=".85"/><rect x="84" y="50" width="52" height="11" rx="3" fill="#f6efd8" opacity=".55"/><rect x="107" y="92" width="6" height="120" fill="#0d1520"/><rect x="84" y="26" width="52" height="52" rx="6" fill="#101b2b" stroke="#243a57" stroke-width="2"/></g>
+<g><rect x="664" y="36" width="52" height="11" rx="3" fill="#f6efd8" opacity=".85"/><rect x="664" y="50" width="52" height="11" rx="3" fill="#f6efd8" opacity=".55"/><rect x="664" y="36" width="52" height="11" rx="3" fill="#f6efd8" opacity=".85"/><rect x="664" y="50" width="52" height="11" rx="3" fill="#f6efd8" opacity=".55"/><rect x="687" y="92" width="6" height="120" fill="#0d1520"/><rect x="664" y="26" width="52" height="52" rx="6" fill="#101b2b" stroke="#243a57" stroke-width="2"/></g>
+<path d="M84 40 L60 330 L460 330 L136 40 Z" fill="#fff3c4" opacity=".05"/>
+<path d="M664 40 L340 330 L740 330 L716 40 Z" fill="#fff3c4" opacity=".05"/>
+<path d="M0 132 Q200 86 400 106 Q600 86 800 132 L800 252 Q600 210 400 226 Q200 210 0 252 Z" fill="url(#standG)"/>
+<path d="M0 132 Q200 86 400 106 Q600 86 800 132" fill="none" stroke="#2c4a70" stroke-width="4"/>
+<path d="M0 138 Q200 92 400 112 Q600 92 800 138" fill="none" stroke="#0a1220" stroke-width="10" opacity=".6"/>
+<path d="M8 148 Q200 106 400 126 Q600 106 792 148" fill="none" stroke="#101c30" stroke-width="7" stroke-dasharray="5 8"/>
+<path d="M8 168 Q200 126 400 146 Q600 126 792 168" fill="none" stroke="#18273d" stroke-width="7" stroke-dasharray="5 8"/>
+<path d="M8 188 Q200 146 400 166 Q600 146 792 188" fill="none" stroke="#101c30" stroke-width="7" stroke-dasharray="5 8"/>
+<path d="M8 208 Q200 166 400 186 Q600 166 792 208" fill="none" stroke="#18273d" stroke-width="7" stroke-dasharray="5 8"/>
+<path d="M8 228 Q200 186 400 206 Q600 186 792 228" fill="none" stroke="#101c30" stroke-width="7" stroke-dasharray="5 8"/>
+<path d="M8 156 Q200 114 400 134 Q600 114 792 156" fill="none" stroke="#ffe9a8" stroke-width="2.4" stroke-dasharray="1.5 47" opacity=".55"/>
+<path d="M8 176 Q200 134 400 154 Q600 134 792 176" fill="none" stroke="#ffe9a8" stroke-width="2.4" stroke-dasharray="1.5 47" opacity=".55"/>
+<path d="M8 196 Q200 154 400 174 Q600 154 792 196" fill="none" stroke="#ffe9a8" stroke-width="2.4" stroke-dasharray="1.5 47" opacity=".55"/>
+<path d="M8 250 Q200 208 400 224 Q600 208 792 250" fill="none" stroke="#060b15" stroke-width="16"/>
+<path d="M0 250 Q200 208 400 224 Q600 208 800 250 L800 268 Q600 226 400 242 Q200 226 0 268 Z" fill="#04090f"/>
+<path d="M8 250 Q200 208 400 224 Q600 208 792 250" fill="none" stroke="#14222f" stroke-width="9" stroke-dasharray="46 14"/>
+<path d="M8 250 Q200 208 400 224 Q600 208 792 250" fill="none" stroke="#0f5c57" stroke-width="9" stroke-dasharray="10 50" opacity=".9"/>
+<path d="M8 250 Q200 208 400 224 Q600 208 792 250" fill="none" stroke="#fbbf24" stroke-width="9" stroke-dasharray="8 52" opacity=".75"/>
+<path d="M0 268 Q200 226 400 242 Q600 226 800 268 L800 500 L0 500 Z" fill="url(#fieldLit)"/>
+<ellipse cx="250" cy="430" rx="210" ry="90" fill="url(#poolL)"/>
+<ellipse cx="560" cy="430" rx="210" ry="90" fill="url(#poolL)"/>
+<path d="M-20 322 Q200 282 400 298 Q600 282 820 322" fill="none" stroke="#123d21" stroke-width="20" opacity="0.55"/>
+<path d="M-20 366 Q200 326 400 342 Q600 326 820 366" fill="none" stroke="#2e7a3d" stroke-width="26" opacity="0.16"/>
+<path d="M-20 410 Q200 370 400 386 Q600 370 820 410" fill="none" stroke="#123d21" stroke-width="24" opacity="0.5"/>
+<path d="M-20 456 Q200 416 400 432 Q600 416 820 456" fill="none" stroke="#2e7a3d" stroke-width="30" opacity="0.14"/>
+<path d="M30 296 Q200 264 400 278 Q600 264 770 296" fill="none" stroke="#efe7cf" stroke-width="2.4" stroke-dasharray="12 9" opacity=".85"/>
+<ellipse cx="400" cy="352" rx="150" ry="52" fill="url(#poolL)"/>
+<rect x="330" y="298" width="140" height="96" rx="5" fill="url(#pitchG)"/>
+<rect x="340" y="306" width="120" height="80" rx="3" fill="#c4ab67" opacity=".55"/>
+<path d="M330 298 Q400 288 470 298 L470 394 Q400 404 330 394 Z" fill="#fff2c9" opacity=".09"/>
+<line x1="356" y1="308" x2="356" y2="384" stroke="#b39a55" stroke-width="1.4" opacity=".8"/>
+<line x1="386" y1="308" x2="386" y2="384" stroke="#b39a55" stroke-width="1.4" opacity=".8"/>
+<line x1="416" y1="308" x2="416" y2="384" stroke="#b39a55" stroke-width="1.4" opacity=".8"/>
+<line x1="446" y1="308" x2="446" y2="384" stroke="#b39a55" stroke-width="1.4" opacity=".8"/>
+<line x1="340" y1="322" x2="460" y2="322" stroke="#f6efd8" stroke-width="2" opacity=".85"/>
+<line x1="340" y1="352" x2="460" y2="352" stroke="#f6efd8" stroke-width="2" opacity=".7"/>
+<line x1="340" y1="374" x2="460" y2="374" stroke="#f6efd8" stroke-width="2" opacity=".85"/>
 </svg></div>
 <!-- Opponent player card (left) -->
 <div class="player-card pc-left" id="pcLeft">
- <div class="pc-header"><span class="pc-icon">🏏</span><span class="pc-name" id="pcNameB">BOT</span><span class="pc-dot"></span></div>
+ <div class="pc-header"><span class="pc-name" id="pcNameB">BOT</span><span class="pc-dot"></span></div>
  <div class="pc-score"><span id="pcScoreB">0</span>/<span id="pcWktsB">0</span></div>
  <div class="pc-balls" id="pcBallsB">0 balls</div>
  <div class="pc-badge" id="pcBadgeB" style="display:none">OPPONENT</div>
@@ -107,7 +95,7 @@
 </div>
 <!-- Your player card (right) -->
 <div class="player-card pc-right" id="pcRight">
- <div class="pc-header"><span class="pc-icon">🏏</span><span class="pc-name" id="pcNameA">YOU</span><span class="pc-dot online"></span></div>
+ <div class="pc-header"><span class="pc-name" id="pcNameA">YOU</span><span class="pc-dot online"></span></div>
  <div class="pc-score"><span id="pcScoreA">0</span>/<span id="pcWktsA">0</span></div>
  <div class="pc-balls" id="pcBallsA">0 balls</div>
  <div class="pc-badge" id="pcBadgeA" style="display:none">BATTING</div>
@@ -129,11 +117,7 @@
 <button class="gesture-btn disabled" data-val="6" aria-label="Pick number 6, a six"><span class="big">6</span><span class="small">SIX</span></button>
 </div></div>
 <div class="emoji-bar" id="emojiBar">
-<button class="emoji-btn" data-emoji="😤" aria-label="Sledge">😤</button>
-<button class="emoji-btn" data-emoji="😂" aria-label="Laugh">😂</button>
-<button class="emoji-btn" data-emoji="🔥" aria-label="Fire">🔥</button>
-<button class="emoji-btn" data-emoji="👏" aria-label="Clap">👏</button>
-<button class="emoji-btn emoji-expand" data-action="msgs" aria-label="Quick messages">💬</button>
+<button class="emoji-btn emoji-expand" data-action="msgs" aria-label="Quick messages"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
 </div>
 <div class="quick-msgs" id="quickMsgs">
 <button class="qmsg-btn" data-msg="Arre bhai!">Arre bhai!</button>
@@ -146,25 +130,21 @@
 
 <!-- Bottom Tab Bar -->
 <div class="tab-bar" id="tabBar">
- <button class="tab-btn" data-tab="lounge" onclick="TabBar.switch('lounge')">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <span>Lounge</span>
- </button>
- <button class="tab-btn" data-tab="arena" onclick="TabBar.switch('arena')">
+<button class="tab-btn" data-tab="lounge" onclick="TabBar.switch('lounge')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.2-3.7 4-5.5 7.5-5.5s6.3 1.8 7.5 5.5"/></svg>
+  <span>Profile</span>
+ </button><button class="tab-btn" data-tab="arena" onclick="TabBar.switch('arena')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-  <span>Open Arena</span>
- </button>
- <button class="tab-btn active" data-tab="battle" onclick="TabBar.switch('battle')">
+  <span>Arena</span>
+ </button><button class="tab-btn active" data-tab="battle" onclick="TabBar.switch('battle')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-  <span>Battle</span>
- </button>
- <button class="tab-btn" data-tab="team" onclick="TabBar.switch('team')">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-  <span>Team</span>
- </button>
- <button class="tab-btn" data-tab="tournaments" onclick="TabBar.switch('tournaments')">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
-  <span>Tournaments</span>
+  <span>Play</span>
+ </button><button class="tab-btn" data-tab="team" onclick="TabBar.switch('team')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 0 5H7M17 6h2.5a2.5 2.5 0 0 1 0 5H17"/></svg>
+  <span>Career</span>
+ </button><button class="tab-btn" data-tab="tournaments" onclick="TabBar.switch('tournaments')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.6 2.6 0 1 1 3.6 2.5c-.9.4-1.3 1-1.3 2"/><path d="M12 16.9h.01"/></svg>
+  <span>Help</span>
  </button>
 </div>
 
@@ -172,27 +152,28 @@
 <div class="overlay" id="menuOverlay">
 <div class="home-hands" id="homeHands"></div>
 <h1 class="home-title">Hand Cricket Pro</h1>
-<p class="home-subtitle">Street Cricket Reimagined</p>
-<div class="home-username" id="homeUsername" style="display:none"><span class="home-username-text" id="homeUsernameText"></span><button class="edit-name-btn" id="btnEditName" title="Change name">✏️</button></div>
+
+<div class="home-username" id="homeUsername" style="display:none"><span class="home-username-text" id="homeUsernameText"></span><button class="edit-name-btn" id="btnEditName" title="Change name" aria-label="Change name"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button></div>
 <div id="homeTrophyShelf" style="display:none;margin:4px 0;animation:fadeUp .6s .6s both"></div>
 
 <!-- Career snapshot strip (was a static fake "daily challenge") -->
 <div class="daily-strip">
- <div class="daily-item"><span class="daily-icon">🏅</span><span class="daily-lbl">RANK</span><span class="daily-val" id="homeRankVal">—</span></div>
+ <div class="daily-item"><span class="daily-icon" style="color:#7ef0dd"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M12 22s8-3.6 8-9V5.6L12 2 4 5.6V13c0 5.4 8 9 8 9z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="daily-lbl">RANK</span><span class="daily-val" id="homeRankVal">—</span></div>
  <div class="daily-sep"></div>
- <div class="daily-item"><span class="daily-icon">🏆</span><span class="daily-lbl">WINS</span><span class="daily-val" id="homeWinsVal">0</span></div>
+ <div class="daily-item"><span class="daily-icon" style="color:#fbbf24"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 0 5H7M17 6h2.5a2.5 2.5 0 0 1 0 5H17"/></svg></span><span class="daily-lbl">WINS</span><span class="daily-val" id="homeWinsVal">0</span></div>
  <div class="daily-sep"></div>
- <div class="daily-item"><span class="daily-icon">💎</span><span class="daily-lbl">BEST</span><span class="daily-val" id="homeBestVal">0</span></div>
+ <div class="daily-item"><span class="daily-icon" style="color:#a78bfa"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.7-4.7 4.4 1.2 6.3L12 17.2l-5.7 2.9 1.2-6.3-4.7-4.4 6.4-.7z" fill="currentColor"/></svg></span><span class="daily-lbl">BEST</span><span class="daily-val" id="homeBestVal">0</span></div>
 </div>
 <div class="daily-caption">Your career at a glance</div>
 <div class="mode-grid three-col">
-<div class="mode-btn" id="modeOffline"><span class="icon">🤖</span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
-<div class="mode-btn" id="modeOnline"><span class="icon">🌐</span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
-<div class="mode-btn" id="modeInstant"><span class="icon">⚡</span><span class="title">Quick Match</span><span class="desc">Instant bot battle</span></div>
+<div class="mode-btn" id="modeOffline"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><rect x="4.5" y="8" width="15" height="11" rx="4"/><path d="M12 8V4.6"/><circle cx="12" cy="3.8" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="13.4" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="13.4" r="1.3" fill="currentColor" stroke="none"/><path d="M9.6 16.7h4.8"/></svg></span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
+<div class="mode-btn" id="modeOnline"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c-3.3 3.4-3.3 14.6 0 18M12 3c3.3 3.4 3.3 14.6 0 18"/></svg></span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
+<div class="mode-btn" id="modeInstant"><span class="icon"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span class="title">Quick Match</span><span class="desc">Instant bot battle</span></div>
 </div>
-<div class="home-profile-wrap" style="display:flex;gap:8px;justify-content:center"><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button></div>
+<div class="home-profile-wrap" style="display:flex;gap:8px;justify-content:center">
+<button class="secondary small" id="btnHowTo" style="display:inline-flex;align-items:center;gap:6px"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg> How to Play</button><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button></div>
 <div class="home-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
-<div class="home-version">v2.2</div>
+<div class="home-version">v2.6.3</div>
 
 </div>
 
@@ -207,10 +188,26 @@
 <div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div>
 <h2>Toss</h2>
-<div style="display:flex;gap:10px;margin:8px 0;justify-content:center"><button id="btnHeads" class="small">Heads</button><button id="btnTails" class="small secondary">Tails</button></div>
-<div class="coin-container" id="coinBox" style="display:none"><div class="coin" id="coin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><span class="coin-icon">🏏</span><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><span class="coin-icon">⚡</span><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
-<div id="tossResult" style="font-size:13px;margin:8px 0;min-height:40px"></div>
-<div id="tossDecision" style="display:none"><p><b>You won!</b></p><div style="display:flex;gap:10px;justify-content:center"><button id="btnBatFirst" class="small">Bat</button><button id="btnBowlFirst" class="small secondary">Bowl</button></div></div>
+<div class="toss-stage">
+<div id="tossCallBox">
+<div class="toss-call-title">Call the toss!</div>
+<div class="toss-call-sub">Winner decides — bat or bowl</div>
+<div class="toss-call-btns">
+<button id="btnHeads" class="toss-btn"><span class="coin-mini h"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg></span><span><b>Heads</b><small>Call it</small></span></button>
+<button id="btnTails" class="toss-btn"><span class="coin-mini t"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span><b>Tails</b><small>Call it</small></span></button>
+</div>
+</div>
+<div class="coin-container" id="coinBox" style="display:none"><div class="coin-halo"></div><div class="coin" id="coin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><svg class="coin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><svg class="coin-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
+<div class="toss-lines" id="tossResult"></div>
+<div id="tossDecision" style="display:none">
+<div class="toss-win-ttl"><svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6l2.8 6 6.2.7-4.6 4.3 1.2 6.1L12 16.8l-5.6 2.9 1.2-6.1L3 9.3l6.2-.7z"/></svg><span class="ttl-adj">You won the toss!</span></div>
+<div class="toss-win-sub">What will you do first?</div>
+<div class="toss-choice-btns">
+<button id="btnBatFirst" class="toss-choice bat"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg><span><b>Bat first</b><small>Set the target</small></span></button>
+<button id="btnBowlFirst" class="toss-choice bowl"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg><span><b>Bowl first</b><small>Chase it down</small></span></button>
+</div>
+</div>
+</div>
 <button id="btnBack1" class="secondary small" style="margin-top:16px">Back</button></div>
 
 <div class="overlay hidden" id="onlineLobby"><h1>Play with Friend</h1>
@@ -267,11 +264,17 @@
 
 <div class="overlay hidden" id="tossOverlay"><h1>Toss</h1>
 <div class="connected-badge"><span class="dot"></span><span id="tossVs">vs</span></div>
-<p id="tossText">...</p>
+<p id="tossText" class="toss-online-status" style="font-size:14px;font-weight:800;color:#fff;min-height:20px;margin:2px 0">…</p>
 <div id="tossPreStats" style="display:none"></div>
-<div class="coin-container"><div class="coin" id="onlineCoin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><span class="coin-icon">🏏</span><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><span class="coin-icon">⚡</span><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
-<div id="onlineTossBtns" style="display:none"><div style="display:flex;gap:10px;justify-content:center"><button id="btnOHeads" class="small">Heads</button><button id="btnOTails" class="small secondary">Tails</button></div></div>
-<div id="onlineTossDec" style="display:none"><p><b>You won!</b></p><div style="display:flex;gap:10px;justify-content:center"><button id="btnOBat" class="small">Bat</button><button id="btnOBowl" class="small secondary">Bowl</button></div></div></div>
+<div class="coin-container" id="onlineCoinBox"><div class="coin-halo"></div><div class="coin" id="onlineCoin"><div class="coin-edge"></div><div class="coin-face coin-heads"><div class="coin-label"><svg class="coin-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg><span class="coin-text">Heads</span></div></div><div class="coin-face coin-tails"><div class="coin-label"><svg class="coin-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg><span class="coin-text">Tails</span></div></div><div class="coin-shine"></div></div></div>
+<div id="onlineTossBtns" style="display:none"><div class="toss-call-sub" style="margin-bottom:10px">Call the toss — winner decides bat or bowl</div><div class="toss-call-btns">
+<button id="btnOHeads" class="toss-btn"><span class="coin-mini h"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg></span><span><b>Heads</b><small>Call it</small></span></button>
+<button id="btnOTails" class="toss-btn"><span class="coin-mini t"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span><b>Tails</b><small>Call it</small></span></button>
+</div></div>
+<div id="onlineTossDec" style="display:none"><div class="toss-win-ttl"><svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6l2.8 6 6.2.7-4.6 4.3 1.2 6.1L12 16.8l-5.6 2.9 1.2-6.1L3 9.3l6.2-.7z"/></svg><span class="ttl-adj">You won the toss!</span></div><div class="toss-win-sub">What will you do first?</div><div class="toss-choice-btns">
+<button id="btnOBat" class="toss-choice bat"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg><span><b>Bat first</b><small>Set the target</small></span></button>
+<button id="btnOBowl" class="toss-choice bowl"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg><span><b>Bowl first</b><small>Chase it down</small></span></button>
+</div></div></div>
 
 <div class="overlay hidden" id="mcOverlay"><h1 id="mcTitle">Ready!</h1><div class="mc-num" id="mcNum">3</div><p id="mcPlayers" style="font-size:16px;font-weight:700"></p>
 <div id="preMatchStats" style="display:none"></div>
@@ -284,10 +287,12 @@
 <h1 id="resTitle" style="font-size:clamp(32px,6vh,48px);margin:0 0 4px;background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Over</h1>
 <p id="resMsg" style="font-size:clamp(13px,2vh,16px);margin:0 0 12px"></p>
 <div id="matchStatsBox" style="display:none"></div>
+<div id="resultActions">
 <div id="addFriendBtn" style="display:none;text-align:center"><button id="btnAddFriend" class="add-friend-btn">+ Add Friend</button></div>
 <button id="btnRematch" style="display:none">Rematch</button>
 <button id="btnAgain" style="display:none">New Match</button>
-<button id="btnMenu" class="secondary">Main Menu</button></div>
+<button id="btnMenu" class="secondary">Main Menu</button>
+</div></div>
 <div class="overlay hidden" id="leaveOverlay"><h1>Leave?</h1><p>Progress lost.</p>
 <button id="btnYesLeave" class="danger">Yes, Leave</button>
 <button id="btnNoLeave" class="secondary">Continue</button></div>
@@ -375,7 +380,7 @@
 </div>
 
 <div class="roast-box hidden" id="roastBox">
-<div class="roast-emoji">😤</div>
+<div class="roast-emoji"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M12 22c4.4 0 8-3.2 8-7.6C20 9.6 16 7.4 16 3c-4.4 1.2-7 5.2-7 8.4 0 1.2.3 2.4.8 3.4-1.5-.8-2.8-2-2.8-4.1-2.5 1.6-3 4.8-3 6.7C4 18.8 7.6 22 12 22z"/></svg></div>
 <div class="roast-text" id="roastText"></div>
 </div>
 
@@ -383,7 +388,7 @@
 <h1 id="psTitle">Select Next Batter</h1>
 <p id="psSubtitle" style="font-size:12px;opacity:.7;margin-bottom:8px"></p>
 <div class="ps-timer" id="psTimer" style="font-size:28px;font-weight:900;color:#f59e0b;margin:8px 0"></div>
-<div id="psCurrent" style="font-size:11px;color:rgba(122,56,0,.5);margin-bottom:8px"></div>
+<div id="psCurrent" style="font-size:12px;color:rgba(255,255,255,.7);margin-bottom:8px"></div>
 <div class="pool-grid" id="psGrid" style="max-height:clamp(180px,35vh,300px)"></div>
 <p id="psHint" style="font-size:10px;opacity:.5;margin-top:6px">Auto-selects in <span id="psCountdown">10</span>s</p>
 </div>
@@ -391,12 +396,12 @@
 <div class="overlay hidden" id="inningsBreakOverlay">
 <h1 id="innBreakTitle">End of 1st Innings</h1>
 <div id="innBreakStats" style="width:100%;max-width:400px;margin:10px 0"></div>
-<p id="innBreakMsg" style="font-size:13px;color:rgba(122,56,0,.5);margin:8px 0"></p>
+<p id="innBreakMsg" style="font-size:13px;color:rgba(255,255,255,.75);margin:8px 0"></p>
 <p id="innBreakTimer" style="font-size:18px;font-weight:900;color:#f59e0b"></p>
 <button id="btnInnBreakNext">Start 2nd Innings</button>
 </div>
 
-<div class="overlay hidden" id="tutorialOverlay" style="background:rgba(38,70,83,.94)">
+<div class="overlay hidden" id="tutorialOverlay">
 <h1 style="margin:0 0 6px">How to Play</h1>
 <div class="tutorial" id="tutorialCard">
 <button class="tut-skip" id="tutSkip">Skip</button>
@@ -405,7 +410,7 @@
 </div>
 </div>
 
-<script src="js/story-data.js?v=3"></script>
+<script src="js/story-data.js?v=4"></script>
 <script src="js/01-config.js"></script>
 <script src="js/02-bot-ai.js"></script>
 <script src="js/03-state.js"></script>

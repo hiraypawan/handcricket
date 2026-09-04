@@ -26,9 +26,15 @@ function defaultStoryProgress() {
   };
 }
 
+const STORY_TIER_COLORS = ["#c98d5b","#cdd6e4","#fbbf24","#7ef0dd","#fb923c","#38bdf8","#a78bfa","#fde68a"];
 function getStoryTrophyIcon(tierIdx) {
-  const icons = ["🥉", "🥈", "🥇", "💎", "🔥", "⚡", "👑", "🏆"];
-  return icons[tierIdx] || "🏆";
+  const i = Math.min(Math.max(tierIdx, 0), 7);
+  const c = STORY_TIER_COLORS[i];
+  return (
+    '<svg class="tier-art" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:' +
+    c +
+    '"><circle cx="12" cy="14.6" r="5.8"/><path d="M7.9 10.9 5.6 3l4.4 2.6L12 3l2 2.6 4.4-2.6-2.3 7.9"/></svg>'
+  );
 }
 
 function renderStoryHome() {
@@ -53,9 +59,9 @@ function renderStoryHome() {
     const t = document.createElement("div");
     t.className =
       "story-trophy" + (sp.completedTiers.includes(i) ? " earned" : "");
-    t.textContent = sp.completedTiers.includes(i)
+    t.innerHTML = sp.completedTiers.includes(i)
       ? getStoryTrophyIcon(i)
-      : "🔒";
+      : '<svg class="tier-art" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.6" y="11" width="12.8" height="9.4" rx="2.2"/><path d="M8.7 11V8.3a3.3 3.3 0 0 1 6.6 0V11"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor" stroke="none"/></svg>';
     t.title = STORY_DATA.tiers[i] ? STORY_DATA.tiers[i].name[storyLang] : "";
     shelf.appendChild(t);
   }
@@ -107,7 +113,7 @@ function renderStoryHome() {
       '<div class="tier-badge ' +
       (isCompleted ? "done" : isCurrent ? "active" : "lock") +
       '">' +
-      (isCompleted ? "✓ Done" : isCurrent ? "Playing" : "Locked") +
+      (isCompleted ? "Done" : isCurrent ? "Playing" : "Locked") +
       "</div></div>" +
       '<div class="tier-sub">' +
       tier.subtitle[storyLang] +
@@ -369,7 +375,7 @@ function showStoryTierComplete() {
 
 function showStoryComplete() {
   showTrophyCelebration(
-    "🏆",
+    getStoryTrophyIcon(7),
     "NATIONAL CHAMPION!",
     "You conquered every tier!",
     storyProgress.myTeam ? storyProgress.myTeam.name : "Your Team",
@@ -377,7 +383,7 @@ function showStoryComplete() {
 }
 
 function showTrophyCelebration(icon, title, sub, teamName) {
-  $("trophyBigIcon").textContent = icon;
+  $("trophyBigIcon").innerHTML = icon;
   $("trophyTitle").textContent = title;
   $("trophySub").textContent = sub;
   $("certTitle").textContent = "Certificate of Achievement";
@@ -415,7 +421,12 @@ function showStoryTeamBuilder() {
     const card = document.createElement("div");
     card.className = "story-player-card";
     card.dataset.idx = i;
-    const rc = p.role === "batter" ? "🏏" : p.role === "bowler" ? "⚾" : "🔄";
+    const rc =
+      p.role === "batter"
+        ? '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg>'
+        : p.role === "bowler"
+          ? '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg>'
+          : '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9M3 12h9V3"/><path d="m3 12 4.5 4.5M12 3 7.5 7.5" "/></svg>';
     card.innerHTML =
       '<div><div class="sp-name">' +
       rc +
@@ -728,7 +739,7 @@ document.querySelectorAll("#storyLang .lang-btn").forEach((b) => {
     sb.className = "mode-btn";
     sb.id = "modeStory";
     sb.innerHTML =
-      '<span class="icon">📖</span><span class="title">Story</span><span class="desc">Build your legacy</span>';
+      '<span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg></span><span class="title">Story</span><span class="desc">Build your legacy</span>';
     sb.onclick = () => {
       ensureAudio();
       sfx("tap");

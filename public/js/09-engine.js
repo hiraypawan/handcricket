@@ -34,7 +34,7 @@ function updatePlayerDisplay() {
     if (G.iBat) {
       if (batter)
         $("playerA").innerHTML =
-          "🏏 Batting: <b>" +
+          "<svg class=\"uic bats\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg> Batting: <b>" +
           batter.name +
           "</b>" +
           (batter.battingStyle && batter.battingStyle !== "balanced"
@@ -45,12 +45,12 @@ function updatePlayerDisplay() {
               "</span>"
             : "");
       if (bowler)
-        $("playerB").innerHTML = "⚾ Bowling: <b>" + bowler.name + "</b>";
+        $("playerB").innerHTML = "<svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg> Bowling: <b>" + bowler.name + "</b>";
       else $("playerB").textContent = "";
     } else {
       if (bowler)
         $("playerA").innerHTML =
-          "⚾ Bowling: <b>" +
+          "<svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg> Bowling: <b>" +
           bowler.name +
           "</b>" +
           (bowler.bowlingStyle && bowler.bowlingStyle !== "balanced"
@@ -61,7 +61,7 @@ function updatePlayerDisplay() {
               "</span>"
             : "");
       if (batter)
-        $("playerB").innerHTML = "🏏 Batting: <b>" + batter.name + "</b>";
+        $("playerB").innerHTML = "<svg class=\"uic bats\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg> Batting: <b>" + batter.name + "</b>";
     }
   } else {
     $("playerA").textContent = "";
@@ -135,6 +135,7 @@ $("btnNoLeave").onclick = () => {
   $("leaveOverlay").classList.add("hidden");
 };
 function startInnings(n) {
+  if (typeof hideDock === "function") hideDock(); // dock never overlays live play
   // C11: never double-start the 2nd innings (countdown timer + button tap, or
   // host + joiner both firing) — also clear any lingering break overlays.
   if (n === 2 && G.innings !== 1) return;
@@ -394,8 +395,7 @@ function revealBall() {
     setTimeout(() => {
       try {
         if (bVal === bowlVal) {
-          if (G.freeHit) {
-            batting.score += bVal;
+          if (G.freeHit) {            batting.score += bVal;
             batting.balls++;
             batting.hist.push(bVal);
             // per-player stats (C4)

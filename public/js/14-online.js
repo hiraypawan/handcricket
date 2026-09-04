@@ -612,6 +612,17 @@ function startOnlineToss() {
   $("onlineTossDec").style.display = "none";
   $("btnOHeads").disabled = false;
   $("btnOTails").disabled = false;
+  $("btnOHeads").classList.remove("sel");
+  $("btnOTails").classList.remove("sel");
+  const oBox = $("onlineCoinBox");
+  if (oBox) oBox.classList.remove("spinning", "win", "lose");
+  const oCoin = $("onlineCoin");
+  if (oCoin) {
+    oCoin.classList.remove("flipping", "landing");
+    oCoin.style.transform = "";
+    oCoin.style.removeProperty("--coin-total");
+  }
+  $("tossText").innerHTML = "";
   const sb = $("tossPreStats");
   if (G.oppStats) {
     const s = G.oppStats;
@@ -665,6 +676,8 @@ $("btnOTails").onclick = () => callToss("tails");
 function callToss(c) {
   sfx("coin");
   haptic(20);
+  const btnCall = c === "heads" ? $("btnOHeads") : $("btnOTails");
+  btnCall.classList.add("sel");
   $("btnOHeads").disabled = true;
   $("btnOTails").disabled = true;
   const res = Math.random() < 0.5 ? "heads" : "tails";
@@ -673,23 +686,42 @@ function callToss(c) {
   runTossAnim(res, hostWon);
 }
 function runTossAnim(res, winnerIsMe) {
-  $("tossText").textContent = "Flipping...";
-  const c = $("onlineCoin");
-  c.classList.remove("flipping", "landing");
-  c.style.transform = "";
-  void c.offsetWidth;
-  c.classList.add("flipping");
+  const w = winnerIsMe ? G.myName : G.oppName;
+  const oCoin = $("onlineCoin");
+  const oBox = $("onlineCoinBox");
+  oBox.classList.remove("win", "lose");
+  oBox.classList.add("spinning");
+  $("tossText").innerHTML =
+    '<span class="toss-msg">Flipping the coin' + tossDotsHTML() + "</span>";
+  tossSpin(oCoin, res === "heads");
   setTimeout(() => {
-    c.classList.remove("flipping");
-    const finalT = res === "heads" ? "rotateY(0)" : "rotateY(180deg)";
-    c.style.setProperty("--coin-final", finalT);
-    c.style.transform = finalT;
-    c.classList.add("landing");
-    const w = winnerIsMe ? G.myName : G.oppName;
-    $("tossText").innerHTML = res.toUpperCase() + "!<br>" + w + " won!";
-    if (winnerIsMe) $("onlineTossDec").style.display = "block";
-    else $("tossText").innerHTML += "<br>Waiting...";
-  }, 2800);
+    oBox.classList.remove("spinning");
+    tossLand(oCoin, res === "heads");
+    setTimeout(() => {
+      tossSettle(oCoin, res === "heads");
+      if (winnerIsMe) {
+        oBox.classList.add("win");
+        sfx("win");
+        haptic(30);
+        $("tossText").innerHTML =
+          tossChipHTML(res) +
+          '<span class="toss-msg pop">You won the toss!</span>' +
+          '<span class="toss-msg sub">Pick bat or bowl first</span>';
+        $("onlineTossDec").style.display = "block";
+      } else {
+        oBox.classList.add("lose");
+        sfx("lose");
+        $("tossText").innerHTML =
+          tossChipHTML(res) +
+          '<span class="toss-msg pop"><span class="bot-nm">' +
+          w +
+          "</span> won the toss</span>" +
+          '<span class="toss-msg sub">Waiting for their call' +
+          tossDotsHTML() +
+          "</span>";
+      }
+    }, 600);
+  }, 2300);
 }
 $("btnOBat").onclick = () => decToss("bat");
 $("btnOBowl").onclick = () => decToss("bowl");
@@ -701,12 +733,19 @@ function decToss(c) {
 function applyTossDec(c, isMy) {
   G.iBat = isMy ? c === "bat" : c === "bowl";
   setStage("prematch");
-  $("tossText").innerHTML +=
-    "<br><b>" + (isMy ? G.myName : G.oppName) + "</b> chose <b>" + c + "</b>!";
+  $("onlineTossDec").style.display = "none";
+  const who = isMy ? G.myName : G.oppName;
+  sfx("go");
+  $("tossText").innerHTML =
+    '<span class="toss-msg pop" style="font-size:15px"><b>' +
+    who +
+    "</b> chose to <b>" +
+    (c === "bat" ? "BAT first</b> <svg class=\"uic bats\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg>" : "BOWL first</b> <svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg>") +
+    "</span>";
   setTimeout(() => {
     $("tossOverlay").classList.add("hidden");
     showPreMC();
-  }, 2000);
+  }, 2200);
 }
 function showPreMC() {
   setStage("prematch");

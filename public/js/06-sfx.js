@@ -1,7 +1,13 @@
 /* ============================================================================
  FILE: public/js/06-sfx.js
- ROLE: SOUND & HAPTICS — WebAudio ctx, ensureAudio(), beep(), sfx(name) jingles (tap/tick/six/out/win/lose/coin…), haptic(vibrate). Depends on: nothing.
+ ROLE: SOUND & HAPTICS — WebAudio ctx, ensureAudio(), beep(), sfx(name), haptic(vibrate).
+ SOUND POLICY (v2.3): pure-UI sounds are REMOVED. sfx() only plays for real
+ gameplay moments: {go, six, out, win, lose, coin, cd, nb, fh}. tap/tick/run/start
+ are no-ops (call sites kept so future wiring still reads clearly).
+ Depends on: nothing.
 ============================================================================ */
+
+const SFX_ALLOWED = new Set(["go", "six", "out", "win", "lose", "coin", "cd", "nb", "fh"]);
 
 function ensureAudio() {
   if (!audioCtx)
@@ -29,6 +35,7 @@ function beep(f, d, t, v) {
   } catch (e) {}
 }
 function sfx(n) {
+  if (!SFX_ALLOWED.has(n)) return; // UI noise is silent by policy
   ensureAudio();
   const B = beep;
   if (n === "tap") B(600, 0.05, "square", 0.08);

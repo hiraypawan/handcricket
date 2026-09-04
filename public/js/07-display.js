@@ -1,6 +1,6 @@
 /* ============================================================================
  FILE: public/js/07-display.js
- ROLE: IN-GAME HUD — scoreboard updates (updScore/updCenterCard/updAllNames/popScore/renderBalls), labels (gLabel/oversStr), flash(), number reveal, countdown (showCD), shake()/confetti(), gesture-grid setBtns(), showLeave(), updBotLvl(), watchdog armWD/clearWD. Depends on: G (03), BotAI (02) at call-time.
+ ROLE: IN-GAME HUD + TOSS COIN — scoreboard updates (updScore/updCenterCard/updAllNames/popScore/renderBalls), labels (gLabel/oversStr), flash(), number reveal, countdown (showCD), shake()/confetti(), gesture-grid setBtns(), showLeave(), updBotLvl(), watchdog armWD/clearWD, shared toss-coin animation (tossSpin/tossLand/tossSettle). Depends on: G (03), BotAI (02) at call-time.
 ============================================================================ */
 
 function gLabel(v) {
@@ -207,4 +207,47 @@ function clearWD() {
     clearTimeout(G.watchdog);
     G.watchdog = null;
   }
+}
+
+/* ================= TOSS COIN ANIMATION (shared: offline + online) =================
+   One continuous flip: JS picks --coin-total so the spin ENDS on the winning
+   face (6 full turns for heads, 6.5 for tails) — the old code always stopped
+   heads-up then snapped the coin to tails mid-air (looked broken).
+   Timeline: tossSpin (2.3s flip) → tossLand (0.55s bounce) → tossSettle. */
+function tossSpin(coinEl, isHeads) {
+  if (!coinEl) return;
+  coinEl.classList.remove("flipping", "landing");
+  coinEl.style.setProperty("--coin-total", (isHeads ? 2160 : 2340) + "deg");
+  void coinEl.offsetWidth; // restart animation
+  coinEl.classList.add("flipping");
+}
+function tossLand(coinEl, isHeads) {
+  if (!coinEl) return;
+  coinEl.classList.remove("flipping");
+  coinEl.style.setProperty("--coin-total", (isHeads ? 2160 : 2340) + "deg");
+  void coinEl.offsetWidth;
+  coinEl.classList.add("landing");
+}
+function tossSettle(coinEl, isHeads) {
+  if (!coinEl) return;
+  coinEl.classList.remove("flipping", "landing");
+  coinEl.style.transform = isHeads ? "rotateY(0deg)" : "rotateY(180deg)";
+}
+// Small reusable builders for the result reveal
+function tossChipHTML(faceRes) {
+  const ico =
+    faceRes === "tails"
+      ? '<svg class="uic" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg>'
+      : '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg>';
+  return (
+    '<span class="toss-face-chip' +
+    (faceRes === "tails" ? " t" : "") +
+    ' pop">' +
+    ico +
+    (faceRes === "tails" ? "TAILS" : "HEADS") +
+    "</span>"
+  );
+}
+function tossDotsHTML() {
+  return '<span class="toss-dots"><i></i><i></i><i></i></span>';
 }

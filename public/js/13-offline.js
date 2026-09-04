@@ -4,16 +4,24 @@
 ============================================================================ */
 
 function resetOffline() {
-  $("coinBox").style.display = "none";
-  $("tossResult").textContent = "";
-  $("tossDecision").style.display = "none";
-  $("btnHeads").disabled = false;
-  $("btnTails").disabled = false;
+  const box = $("coinBox");
+  if (box) {
+    box.style.display = "none";
+    box.classList.remove("spinning", "win", "lose");
+  }
+  const r = $("tossResult");
+  if (r) r.innerHTML = "";
+  const d = $("tossDecision");
+  if (d) d.style.display = "none";
+  document.querySelectorAll(".toss-btn").forEach((b) => {
+    b.disabled = false;
+    b.classList.remove("sel");
+  });
   const c = $("coin");
   if (c) {
     c.classList.remove("flipping", "landing");
     c.style.transform = "";
-    c.style.removeProperty("--coin-final");
+    c.style.removeProperty("--coin-total");
   }
 }
 $("btnHeads").onclick = () => offlineToss("heads");
@@ -21,46 +29,91 @@ $("btnTails").onclick = () => offlineToss("tails");
 function offlineToss(call) {
   sfx("coin");
   haptic(20);
+  const btnCall = call === "heads" ? $("btnHeads") : $("btnTails");
+  btnCall.classList.add("sel");
   $("btnHeads").disabled = true;
   $("btnTails").disabled = true;
-  $("coinBox").style.display = "block";
-  $("tossResult").textContent = "Flipping...";
-  const c = $("coin");
-  c.classList.remove("flipping", "landing");
-  c.style.transform = "";
-  void c.offsetWidth;
-  c.classList.add("flipping");
+  const botName = (G.oppStats && G.oppStats.name) || "Ultra Bot";
   const res = Math.random() < 0.5 ? "heads" : "tails";
+  const resChip = () => tossChipHTML(res);
+
+  // Phase 1 — flip (ends ON the winning face, see tossSpin in 07-display.js)
+  const box = $("coinBox");
+  box.style.display = "block";
+  box.classList.add("spinning");
+  $("tossResult").innerHTML =
+    '<span class="toss-msg">Flipping the coin' + tossDotsHTML() + "</span>";
+  tossSpin($("coin"), res === "heads");
+
   setTimeout(() => {
-    c.classList.remove("flipping");
-    const finalT = res === "heads" ? "rotateY(0)" : "rotateY(180deg)";
-    c.style.setProperty("--coin-final", finalT);
-    c.style.transform = finalT;
-    c.classList.add("landing");
-    if (res === call) {
-      $("tossResult").innerHTML = res.toUpperCase() + "! You won!";
-      $("tossDecision").style.display = "block";
-    } else {
-      $("tossResult").innerHTML = res.toUpperCase() + "! Bot won.";
-      setTimeout(() => {
-        const bc = Math.random() < 0.5 ? "bat" : "bowl";
-        G.iBat = bc === "bowl";
-        $("tossResult").innerHTML += "<br>Bot chose <b>" + bc + "</b>.";
-        // Even when the bot wins the toss you still assign YOUR team's roles
-        // (team formats) — showRoleForOffline handles 1v1 by starting directly.
-        setTimeout(showRoleForOffline, 1500);
-      }, 1200);
-    }
-  }, 2800);
+    // Phase 2 — coin bounces to rest
+    box.classList.remove("spinning");
+    tossLand($("coin"), res === "heads");
+
+    setTimeout(() => {
+      tossSettle($("coin"), res === "heads");
+      if (res === call) {
+        // Phase 3a — YOU won: show result + decision cards
+        box.classList.add("win");
+        sfx("win");
+        haptic(30);
+        confetti(26);
+        $("tossResult").innerHTML =
+          resChip() +
+          '<span class="toss-msg pop">You won the toss!</span>' +
+          '<span class="toss-msg sub">You called ' +
+          call +
+          "</span>";
+        $("tossDecision").style.display = "flex";
+      } else {
+        // Phase 3b — bot won: reveal, then let the bot "decide"
+        box.classList.add("lose");
+        sfx("lose");
+        haptic(15);
+        $("tossResult").innerHTML =
+          resChip() +
+          '<span class="toss-msg pop"><span class="bot-nm">' +
+          botName +
+          "</span> won the toss</span>";
+        setTimeout(() => {
+          $("tossResult").innerHTML +=
+            '<span class="toss-msg sub pop">' +
+            botName +
+            " is deciding" +
+            tossDotsHTML() +
+            "</span>";
+          setTimeout(() => {
+            const bc = Math.random() < 0.5 ? "bat" : "bowl";
+            G.iBat = bc === "bowl";
+            sfx("go");
+            $("tossResult").innerHTML =
+              resChip() +
+              '<span class="toss-msg pop"><span class="bot-nm">' +
+              botName +
+              "</span> chose to <b>" +
+              (bc === "bat" ? "BAT first</b> <svg class=\"uic bats\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg>" : "BOWL first</b> <svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg>") +
+              "</span>";
+            // Even when the bot wins the toss you still assign YOUR team's roles
+            // (team formats) — showRoleForOffline handles 1v1 by starting directly.
+            setTimeout(showRoleForOffline, 1600);
+          }, 900);
+        }, 1000);
+      }
+    }, 600);
+  }, 2300);
 }
 $("btnBatFirst").onclick = () => {
   sfx("tap");
   G.iBat = true;
+  $("btnBatFirst").disabled = true;
+  $("btnBowlFirst").disabled = true;
   showRoleForOffline();
 };
 $("btnBowlFirst").onclick = () => {
   sfx("tap");
   G.iBat = false;
+  $("btnBatFirst").disabled = true;
+  $("btnBowlFirst").disabled = true;
   showRoleForOffline();
 };
 // Builds the placeholder XI (Player 1..n / Bot 1..n) for team formats BEFORE

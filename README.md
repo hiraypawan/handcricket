@@ -1,4 +1,4 @@
-# Hand Cricket Pro v2.2
+# Hand Cricket Pro v2.6
 
 Mobile-first cricket game (offline vs bot, quick match, online friend play,
 and an 8-tier story career). Static Cloudflare Pages app — **zero build step**.
@@ -16,6 +16,7 @@ and an 8-tier story career). Static Cloudflare Pages app — **zero build step**
 - `public/js/*` — modular game logic (22 files, numbered in load order)
 - `public/functions/api/*` — Cloudflare Pages Functions + Workers KV (`KV`)
 - Hands/ball UI: pure CSS/SVG (no external image assets)
+- v2.5: one design-system stylesheet (`public/css/app.css`, dark night-stadium theme), all UI glyphs are inline SVG — no emoji chrome
 
 ## Local dev
 ```bash
@@ -41,5 +42,5 @@ Edit `public/js/story-data.js`. Bump `?v=N` in its `<script src>` in
 `public/index.html` after every change to bust caches.
 
 ## Versioning
-- UI version span `.home-version` in `public/index.html` (currently `v2.2`)
+- UI version span `.home-version` in `public/index.html` (currently `v2.6`)
 - `<script src="js/story-data.js?v=N">` cache-buster
