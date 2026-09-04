@@ -1,12 +1,14 @@
 {
   "name": "handcricket",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler pages deploy public --project-name handscricket"
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public --project-name handcricket",
+    "test": "node tools/smoke.mjs"
   },
   "devDependencies": {
-    "wrangler": "latest"
+    "wrangler": "latest",
+    "jsdom": "^30.0.1"
   }
 }
