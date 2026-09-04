@@ -14,7 +14,10 @@ const ROLE_LABELS_FULL = {
 function getRoleBadgeHTML(style, type) {
   const cls = ROLE_COLORS[style] || "bal";
   const label = ROLE_LABELS[style] || "BAL";
-  const icon = type === "bat" ? "🏏" : "⚾";
+  const icon =
+    type === "bat"
+      ? '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg>'
+      : '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg>';
   return (
     '<span class="role-badge-inline ' +
     cls +
@@ -170,7 +173,7 @@ function validateRoles() {
   const lim = getRoleLimits(ts);
   if (!lim) {
     $("roleConstraints").textContent = "Single player — no roles needed";
-    $("roleConstraints").style.color = "rgba(122,56,0,.5)";
+    $("roleConstraints").style.color = "rgba(148,163,184,.75)";
     $("btnRoleStart").disabled = false;
     return true;
   }

@@ -2,7 +2,8 @@
  FILE: public/js/17-selection.js
  ROLE: PLAYER ROTATION & INNINGS BREAK — initPlayerStats, autoSelectOpponent, showPlayerSelect/selectPlayer, showInningsBreak. Depends on: engine (09).
 ============================================================================ */
-
+const BALLSVG = "<svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg>";
+const BATX = "<svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg>";
 function initPlayerStats() {
   G.myBatStats = G.myPlayers.map((p, i) => ({
     name: p.name,
@@ -213,7 +214,7 @@ function showInningsBreak() {
 
   let html = '<div class="inn-break-grid">';
 
-  html += '<div class="inn-break-side"><h4>🏏 Batting</h4>';
+  html += '<div class="inn-break-side"><h4>'+BATX+'Batting</h4>';
   inn1BatStats.forEach((s, i) => {
     if (s.balls > 0 || s.runs > 0) {
       const roleCls =
@@ -246,7 +247,7 @@ function showInningsBreak() {
     "</div></div>";
   html += "</div>";
 
-  html += '<div class="inn-break-side"><h4>⚾ Bowling</h4>';
+  html += '<div class="inn-break-side"><h4>'+BALLSVG+'Bowling</h4>';
   inn1BowlStats.forEach((s, i) => {
     if (s.balls > 0) {
       const roleCls =

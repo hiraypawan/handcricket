@@ -101,6 +101,7 @@ function updateStatsAfterMatch(result) {
   saveStats(s);
 }
 
+function escHtml(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function showProfile(name, stats) {
   const s = stats || loadStats();
   const card = $("profileCard");
@@ -114,13 +115,13 @@ function showProfile(name, stats) {
     (name ? "OPPONENT PROFILE" : "MY PROFILE") +
     "</div>" +
     // Avatar + name row
-    '<div class="prof-row"><div class="prof-avatar">🏏</div><div class="prof-info"><div class="prof-name">' +
+    '<div class="prof-row"><div class="prof-avatar av-initials">' + escHtml((displayName || "?").trim().charAt(0).toUpperCase()) + '</div><div class="prof-info"><div class="prof-name">' +
     displayName +
-    '</div><div class="prof-id" style="font-size:9px;color:rgba(122,56,0,.4)">' +
+    '</div><div class="prof-id" style="font-size:9px;color:rgba(148,163,184,.45)">' +
     ("G" + Math.floor(100000 + Math.random() * 900000)) +
     "</div></div></div>" +
     // Rank card
-    '<div class="prof-rank"><div class="prof-rank-icon">⭐</div><div class="prof-rank-text"><div class="prof-rank-name">' +
+    '<div class="prof-rank"><div class="prof-rank-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6.1 6.6.8-4.9 4.5 1.3 6.4L12 17.2l-5.9 3.2 1.3-6.4-4.9-4.5 6.6-.8z" fill="currentColor"/></svg></div><div class="prof-rank-text"><div class="prof-rank-name">' +
     rank +
     '</div><div class="prof-rank-sub">' +
     s.matches +
@@ -129,46 +130,46 @@ function showProfile(name, stats) {
     '<div class="prof-tabs"><button class="prof-tab active" onclick="ProfileTabs.switch(\'overall\',this)">OVERALL</button><button class="prof-tab" onclick="ProfileTabs.switch(\'batting\',this)">BATTING</button><button class="prof-tab" onclick="ProfileTabs.switch(\'bowling\',this)">BOWLING</button></div>' +
     // Overall stats
     '<div class="prof-stats-grid" id="profStatsOverall">' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🏏</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg></div><div class="prof-stat-val">' +
     s.matches +
     '</div><div class="prof-stat-lbl">Matches Played</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">📊</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20h14"/><path d="M8.2 17v-4.6M12 17V8.2M15.8 17v-6.4"/></svg></div><div class="prof-stat-val">' +
     s.winPct +
     '%</div><div class="prof-stat-lbl">Win Rate</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🏆</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4.6a2.4 2.4 0 0 0 0 4.8H7M17 6h2.4a2.4 2.4 0 0 1 0 4.8H17"/></svg></div><div class="prof-stat-val">' +
     s.wins +
     '</div><div class="prof-stat-lbl">Matches Won</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">⚡</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
     s.highestScore +
     '</div><div class="prof-stat-lbl">Best Score</div></div>' +
     "</div>" +
     // Batting stats (hidden)
     '<div class="prof-stats-grid" id="profStatsBatting" style="display:none">' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🏏</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg></div><div class="prof-stat-val">' +
     s.runs +
     '</div><div class="prof-stat-lbl">Total Runs</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🎯</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6" opacity=".55"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></div><div class="prof-stat-val">' +
     s.strikeRate +
     '</div><div class="prof-stat-lbl">Strike Rate</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">💥</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.4V6M12 18v3.6M2.4 12H6M18 12h3.6M5.1 5.1 7.6 7.6M16.4 16.4l2.5 2.5M18.9 5.1 16.4 7.6M7.6 16.4l-2.5 2.5"/><circle cx="12" cy="12" r="2.1" fill="currentColor" stroke="none"/></svg></div><div class="prof-stat-val">' +
     s.sixes +
     '</div><div class="prof-stat-lbl">Sixes</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🔥</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21.8c4 0 7.2-3 7.2-7 0-3.9-3.4-5.8-3.4-9.6-4.4 1-6.8 4.4-6.8 7.4 0 1.1.3 2.2.8 3.1-1.4-.7-2.6-1.8-2.6-3.7-2.2 1.4-2.7 4.3-2.7 6 0 2.2 1.9 3.8 4 3.8z"/></svg></div><div class="prof-stat-val">' +
     s.fours +
     '</div><div class="prof-stat-lbl">Fours</div></div>' +
     "</div>" +
     // Bowling stats (hidden)
     '<div class="prof-stats-grid" id="profStatsBowling" style="display:none">' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🎳</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg></div><div class="prof-stat-val">' +
     s.wicketsTaken +
     '</div><div class="prof-stat-lbl">Wickets</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">📊</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20h14"/><path d="M8.2 17v-4.6M12 17V8.2M15.8 17v-6.4"/></svg></div><div class="prof-stat-val">' +
     s.bowlingAvg +
     '</div><div class="prof-stat-lbl">Bowling Avg</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">🎯</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6" opacity=".55"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></div><div class="prof-stat-val">' +
     s.dots +
     '</div><div class="prof-stat-lbl">Dot Balls</div></div>' +
-    '<div class="prof-stat-card"><div class="prof-stat-icon">⚡</div><div class="prof-stat-val">' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
     s.ballsBowled +
     '</div><div class="prof-stat-lbl">Balls Bowled</div></div>' +
     "</div>" +

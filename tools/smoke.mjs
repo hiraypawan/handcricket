@@ -174,6 +174,29 @@ check("offline 1v1 match completes", r1.status === "finished", "result=" + r1.re
 const stats = JSON.parse(dom.window.localStorage.getItem("hc_stats") || "{}");
 check("career stats recorded after match", stats.matches >= 1, JSON.stringify({ m: stats.matches, w: stats.wins }));
 
+// ---------------------------------------------------------------- 2b. offline toss (redesign)
+// Deterministic: force heads; call heads → we win the toss → decision cards.
+ev(dom, `resetGame(); window.__mr = Math.random; Math.random = () => 0.01;`);
+ev(dom, `G.mode='offline'; G.teamSize=1; resetOffline();`);
+byId(dom, "btnHeads").click();
+await sleep(900);
+const tossSel = byId(dom, "btnHeads").classList.contains("sel");
+const tossMidSpin = byId(dom, "coinBox").classList.contains("spinning"); // mid-flip
+await sleep(3300); // flip 2300ms + bounce ~600ms + reveal
+const tossEndSpin = byId(dom, "coinBox").classList.contains("spinning");
+const tossChip = /HEADS/.test(byId(dom, "tossResult").textContent || "");
+const tossDec = byId(dom, "tossDecision").style.display === "flex";
+check(
+  "toss: call → flip → win reveal + decision cards",
+  tossSel && tossMidSpin && !tossEndSpin && tossChip && tossDec,
+  `sel=${tossSel} midSpin=${tossMidSpin} chip=${tossChip} decision=${tossDec}`,
+);
+ev(dom, `$('btnBatFirst').click()`);
+await sleep(1700);
+const batChosen = ev(dom, `G.iBat === true && (G.state === 'waiting' || G.state === 'revealing' || G.state === 'processing')`);
+ev(dom, `Math.random = window.__mr;`);
+check("toss: bat-first choice boots the innings", batChosen, `state=${ev(dom, `G.state`)}`);
+
 // ---------------------------------------------------------------- 3. offline 5v5 (team + roles)
 dom.window.localStorage.removeItem("hc_stats");
 ev(dom, `resetGame()`);

@@ -1,6 +1,6 @@
 /* ============================================================================
  FILE: public/js/01-config.js
- ROLE: CONFIG & STATIC DATA — IPL squads (TEAMS), ALL_PLAYERS, ROLE_LIMITS (gesture rules per style), bot name pools (BOT_FIRST/LAST/PREFIX/SUFFIX/EMOJI), genBotName()/genBotProfile(), getAllowedGestures(). Loaded first. Depends on: nothing.
+ ROLE: CONFIG & STATIC DATA — IPL squads (TEAMS), ALL_PLAYERS, ROLE_LIMITS (gesture rules per style), bot name pools (BOT_FIRST/LAST/PREFIX/SUFFIX), genBotName()/genBotProfile(), getAllowedGestures(). Loaded first. Depends on: nothing.
 ============================================================================ */
 
 const TEAMS = {
@@ -353,34 +353,6 @@ const BOT_SUFFIX = [
   "gg",
   "IRL",
 ];
-const BOT_EMOJI = [
-  "🦁",
-  "🐯",
-  "🦅",
-  "🐺",
-  "💀",
-  "🔥",
-  "⚡",
-  "🎮",
-  "🎯",
-  "🗡️",
-  "🛡️",
-  "🏹",
-  "💣",
-  "🏆",
-  "⭐",
-  "👑",
-  "💎",
-  "🐍",
-  "🕷️",
-  "🤖",
-  "👽",
-  "🧿",
-  "🍀",
-  "🎪",
-  "🐉",
-  "🦊",
-];
 
 function genBotName() {
   const f = BOT_FIRST[Math.floor(Math.random() * BOT_FIRST.length)];
@@ -407,7 +379,7 @@ function genBotProfile() {
     Math.floor(Math.random() * 20);
   return {
     name: n,
-    avatar: BOT_EMOJI[Math.floor(Math.random() * BOT_EMOJI.length)],
+    avatar: String(n || "B").trim().charAt(0).toUpperCase(),
     matches: m,
     wins: w,
     losses: Math.max(0, m - w - Math.floor(Math.random() * 3)),

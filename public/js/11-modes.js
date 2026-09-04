@@ -76,7 +76,7 @@ function updHomeTrophies() {
     el.style.display = "none";
     return;
   }
-  var icons = ["🥉", "🥈", "🥇", "💎", "🔥", "⚡", "👑", "🏆"];
+  var tierColors = ["#c98d5b", "#cdd6e4", "#fbbf24", "#7ef0dd", "#fb923c", "#38bdf8", "#a78bfa", "#fde68a"];
   var names = [
     "Gully",
     "Area",
@@ -101,7 +101,11 @@ function updHomeTrophies() {
       (earned ? "rgba(245,158,11,.15)" : "rgba(255,255,255,.04)") +
       ";border:1px solid " +
       (earned ? "rgba(245,158,11,.3)" : "rgba(255,255,255,.08)");
-    d.textContent = earned ? icons[i] : "🔒";
+    d.innerHTML = earned
+        ? '<svg class="tier-art" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:' +
+          tierColors[i] +
+          '"><circle cx="12" cy="14.6" r="5.8"/><path d="M7.9 10.9 5.6 3l4.4 2.6L12 3l2 2.6 4.4-2.6-2.3 7.9"/></svg>'
+        : '<svg class="tier-art" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:#5b6b81"><rect x="5.6" y="11" width="12.8" height="9.4" rx="2.2"/><path d="M8.7 11V8.3a3.3 3.3 0 0 1 6.6 0V11"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor" stroke="none"/></svg>';
     d.title = names[i];
     el.appendChild(d);
   }

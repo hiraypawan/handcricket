@@ -126,18 +126,18 @@
           },
           roasts: {
             en: [
-              'Bro your batting is so bad even the stumps feel embarrassed ★★★',
-              'I\'ve seen better cricket from a random kid in the park ★★★',
-              'You call that batting? My grandmother swings harder ★★★',
-              'Even the fielder yawned watching your innings ★★★',
-              'Bro just retire, you\'re wasting everyone\'s time ★★★'
+              'Bro your batting is so bad even the stumps feel embarrassed ',
+              'I\'ve seen better cricket from a random kid in the park ',
+              'You call that batting? My grandmother swings harder ',
+              'Even the fielder yawned watching your innings ',
+              'Bro just retire, you\'re wasting everyone\'s time '
             ],
             hi: [
-              'Bhai teri batting dekh ke stumps ko bhi sharam aa rahi hai ★★★',
-              'Park mein khelne wala bachcha bhi tere se accha khelta hai ★★★',
-              'Tu batting kar raha hai ya exercise? Dadi bhi tere se zyada maarti hai ★★★',
-              'Fielder bhi teri batting dekh ke yaun aa raha hai ★★★',
-              'Bhai tu retire ho ja, sabka time waste kar raha hai ★★★'
+              'Bhai teri batting dekh ke stumps ko bhi sharam aa rahi hai ',
+              'Park mein khelne wala bachcha bhi tere se accha khelta hai ',
+              'Tu batting kar raha hai ya exercise? Dadi bhi tere se zyada maarti hai ',
+              'Fielder bhi teri batting dekh ke yaun aa raha hai ',
+              'Bhai tu retire ho ja, sabka time waste kar raha hai '
             ]
           }
         },
@@ -173,18 +173,18 @@
           },
           roasts: {
             en: [
-              'That shot was so weak even the breeze could have stopped it ★★★',
-              'Bro I thought you were playing cricket not hide and seek ★★★',
-              'Your bowling is like a slow motion replay ★★★',
-              'Even the non-striker wanted to run away ★★★',
-              'You\'re the reason the stumps are laughing at you ★★★'
+              'That shot was so weak even the breeze could have stopped it ',
+              'Bro I thought you were playing cricket not hide and seek ',
+              'Your bowling is like a slow motion replay ',
+              'Even the non-striker wanted to run away ',
+              'You\'re the reason the stumps are laughing at you '
             ],
             hi: [
-              'Wo shot itna kamzor tha ki hawa bhi rok leti ★★★',
-              'Bhai laga tu cricket khel raha hai ya lukma chhupi ★★★',
-              'Teri bowling dekh ke laga slow motion mein dekh raha hoon ★★★',
-              'Non-striker bhi tere se bhaagna chahta tha ★★★',
-              'Tu isliye hai kyunki stumps tujhpe has rahe hain ★★★'
+              'Wo shot itna kamzor tha ki hawa bhi rok leti ',
+              'Bhai laga tu cricket khel raha hai ya lukma chhupi ',
+              'Teri bowling dekh ke laga slow motion mein dekh raha hoon ',
+              'Non-striker bhi tere se bhaagna chahta tha ',
+              'Tu isliye hai kyunki stumps tujhpe has rahe hain '
             ]
           }
         },
@@ -220,18 +220,18 @@
           },
           roasts: {
             en: [
-              'The Gully Kings more like Gully Clowns after that performance ★★★',
-              'Bro you swing at the ball like you\'re swatting mosquitoes ★★★',
-              'Your fielding is so bad the ball feels sorry for you ★★★',
-              'That was the most predictable delivery I\'ve ever seen ★★★',
-              'Even the gully dogs are barking at your batting ★★★'
+              'The Gully Kings more like Gully Clowns after that performance ',
+              'Bro you swing at the ball like you\'re swatting mosquitoes ',
+              'Your fielding is so bad the ball feels sorry for you ',
+              'That was the most predictable delivery I\'ve ever seen ',
+              'Even the gully dogs are barking at your batting '
             ],
             hi: [
-              'Gully Kings nahi ab ye Gully Jokers lag rahe hain ★★★',
-              'Bhai tu ball pe itna zor se maar raha hai jaise machhar ko maar raha ho ★★★',
-              'Teri fielding dekh ke ball ko tujhpe taras aa raha hai ★★★',
-              'Ye sabse predictable gend thi jo maine dekhi hai ★★★',
-              'Gully ke kutte bhi tere batting pe bhaunk rahe hain ★★★'
+              'Gully Kings nahi ab ye Gully Jokers lag rahe hain ',
+              'Bhai tu ball pe itna zor se maar raha hai jaise machhar ko maar raha ho ',
+              'Teri fielding dekh ke ball ko tujhpe taras aa raha hai ',
+              'Ye sabse predictable gend thi jo maine dekhi hai ',
+              'Gully ke kutte bhi tere batting pe bhaunk rahe hain '
             ]
           }
         }
@@ -280,18 +280,18 @@
           },
           roasts: {
             en: [
-              'Sector-7? More like Sector-0 after that batting display ★★★',
-              'Bro your bowling is so slow even snails are judging you ★★★',
-              'I\'ve seen better cricket from a traffic light ★★★',
-              'That shot was so bad it registered on seismographs ★★★',
-              'The Scorpions? More like the Snails with that run rate ★★★'
+              'Sector-7? More like Sector-0 after that batting display ',
+              'Bro your bowling is so slow even snails are judging you ',
+              'I\'ve seen better cricket from a traffic light ',
+              'That shot was so bad it registered on seismographs ',
+              'The Scorpions? More like the Snails with that run rate '
             ],
             hi: [
-              'Sector-7? Ye to Sector-0 ho gaya uss batting ke baad ★★★',
-              'Bhai teri bowling itni slow hai ki slow-worm bhi judge kar raha hai ★★★',
-              'Traffic light se bhi accha cricket khelta hai ★★★',
-              'Wo shot itna bura tha ki earthquake record ho gaya ★★★',
-              'Scorpions? Bhai ye to Snails lag rahe hain uss run rate se ★★★'
+              'Sector-7? Ye to Sector-0 ho gaya uss batting ke baad ',
+              'Bhai teri bowling itni slow hai ki slow-worm bhi judge kar raha hai ',
+              'Traffic light se bhi accha cricket khelta hai ',
+              'Wo shot itna bura tha ki earthquake record ho gaya ',
+              'Scorpions? Bhai ye to Snails lag rahe hain uss run rate se '
             ]
           }
         },
@@ -327,18 +327,18 @@
           },
           roasts: {
             en: [
-              'Millennium Eagles? More like Millennium Seagulls ★★★',
-              'Bro your batting era is over before it even started ★★★',
-              'I\'ve seen more exciting paint drying than your innings ★★★',
-              'That bowling was so flat it could iron clothes ★★★',
-              'The only eagle here is the one circling your wicket ★★★'
+              'Millennium Eagles? More like Millennium Seagulls ',
+              'Bro your batting era is over before it even started ',
+              'I\'ve seen more exciting paint drying than your innings ',
+              'That bowling was so flat it could iron clothes ',
+              'The only eagle here is the one circling your wicket '
             ],
             hi: [
-              'Millennium Eagles? Bhai ye to Millennium Seagulls lag rahe hain ★★★',
-              'Bhai teri batting era shuru hone se pehle hi khatam ho gaya ★★★',
-              'Teri batting se paint sookhna bhi zyada exciting hai ★★★',
-              'Wo bowling itni flat thi ki kapde bhi press ho jaate ★★★',
-              'Yahan pe ek hi eagle hai jo teri wicket ke upar ghoom raha hai ★★★'
+              'Millennium Eagles? Bhai ye to Millennium Seagulls lag rahe hain ',
+              'Bhai teri batting era shuru hone se pehle hi khatam ho gaya ',
+              'Teri batting se paint sookhna bhi zyada exciting hai ',
+              'Wo bowling itni flat thi ki kapde bhi press ho jaate ',
+              'Yahan pe ek hi eagle hai jo teri wicket ke upar ghoom raha hai '
             ]
           }
         },
@@ -374,18 +374,18 @@
           },
           roasts: {
             en: [
-              'Royal Rangers? More like Royal Losers with that score ★★★',
-              'Bro your batting is so bad the royal family disowned you ★★★',
-              'That bowling was so ordinary it should change its name ★★★',
-              'I\'ve seen better cricket from a street vendor ★★★',
-              'The only royal thing about you is your royal failure ★★★'
+              'Royal Rangers? More like Royal Losers with that score ',
+              'Bro your batting is so bad the royal family disowned you ',
+              'That bowling was so ordinary it should change its name ',
+              'I\'ve seen better cricket from a street vendor ',
+              'The only royal thing about you is your royal failure '
             ],
             hi: [
-              'Royal Rangers? Score dekh ke ye Royal Losers lag rahe hain ★★★',
-              'Bhai teri batting itni buri hai ki royal family ne disown kar diya ★★★',
-              'Wo bowling itni ordinary thi ki naam badal lena chahiye ★★★',
-              'Thhadi wale se bhi accha cricket khelta hai ★★★',
-              'Tujhme sirf royal cheez hai teri royal fail ★★★'
+              'Royal Rangers? Score dekh ke ye Royal Losers lag rahe hain ',
+              'Bhai teri batting itni buri hai ki royal family ne disown kar diya ',
+              'Wo bowling itni ordinary thi ki naam badal lena chahiye ',
+              'Thhadi wale se bhi accha cricket khelta hai ',
+              'Tujhme sirf royal cheez hai teri royal fail '
             ]
           }
         },
@@ -421,18 +421,18 @@
           },
           roasts: {
             en: [
-              'Area Champions? Not anymore after that performance ★★★',
-              'Bro your batting champion status has been revoked ★★★',
-              'That was the most overrated innings I\'ve ever witnessed ★★★',
-              'The champions look more like chumps today ★★★',
-              'Your reign is over, welcome to the relegation zone ★★★'
+              'Area Champions? Not anymore after that performance ',
+              'Bro your batting champion status has been revoked ',
+              'That was the most overrated innings I\'ve ever witnessed ',
+              'The champions look more like chumps today ',
+              'Your reign is over, welcome to the relegation zone '
             ],
             hi: [
-              'Area Champions? Ab nahi rahe uss performance ke baad ★★★',
-              'Bhai tera champion title cancel ho gaya hai ★★★',
-              'Ye sabse overrated innings thi jo maine dekhi hai ★★★',
-              'Champions nahi aaj chumps lag rahe hain ★★★',
-              'Tera raaj khatam, ab relegation zone mein swagat hai ★★★'
+              'Area Champions? Ab nahi rahe uss performance ke baad ',
+              'Bhai tera champion title cancel ho gaya hai ',
+              'Ye sabse overrated innings thi jo maine dekhi hai ',
+              'Champions nahi aaj chumps lag rahe hain ',
+              'Tera raaj khatam, ab relegation zone mein swagat hai '
             ]
           }
         }
@@ -481,18 +481,18 @@
           },
           roasts: {
             en: [
-              'Village Warriors? More like Village Walkers with that running ★★★',
-              'Bro your batting is so rural even the cows are confused ★★★',
-              'That bowling was slower than a bullock cart ★★★',
-              'I\'ve seen better cricket from farmers during harvest ★★★',
-              'The only thing you\'re conquering is the boredom ★★★'
+              'Village Warriors? More like Village Walkers with that running ',
+              'Bro your batting is so rural even the cows are confused ',
+              'That bowling was slower than a bullock cart ',
+              'I\'ve seen better cricket from farmers during harvest ',
+              'The only thing you\'re conquering is the boredom '
             ],
             hi: [
-              'Village Warriors? Bhai ye to Village Walkers lag rahe hain uss daud ke saath ★★★',
-              'Teri batting itni gaon wali hai ki gaay bhi confuse ho rahi hai ★★★',
-              'Wo bowling itni slow thi ki bail gaadi bhi tez chalti ★★★',
-              'Kisano se bhi accha cricket khelta hai harvest ke time ★★★',
-              'Tu sirf bore karne mein conquer kar raha hai ★★★'
+              'Village Warriors? Bhai ye to Village Walkers lag rahe hain uss daud ke saath ',
+              'Teri batting itni gaon wali hai ki gaay bhi confuse ho rahi hai ',
+              'Wo bowling itni slow thi ki bail gaadi bhi tez chalti ',
+              'Kisano se bhi accha cricket khelta hai harvest ke time ',
+              'Tu sirf bore karne mein conquer kar raha hai '
             ]
           }
         },
@@ -528,18 +528,18 @@
           },
           roasts: {
             en: [
-              'Desert Storm? More like Desert Drizzle with that performance ★★★',
-              'Bro your batting is as dry as the desert itself ★★★',
-              'That bowling disappeared faster than an oasis ★★★',
-              'I\'ve seen sandstorms with more direction than your bowling ★★★',
-              'The only storm here is the storm of excuses ★★★'
+              'Desert Storm? More like Desert Drizzle with that performance ',
+              'Bro your batting is as dry as the desert itself ',
+              'That bowling disappeared faster than an oasis ',
+              'I\'ve seen sandstorms with more direction than your bowling ',
+              'The only storm here is the storm of excuses '
             ],
             hi: [
-              'Desert Storm? Bhai ye to Desert Drizzle lag raha hai uss performance se ★★★',
-              'Teri batting bhi registan jaisi sukhi hai ★★★',
-              'Wo bowling bhi bimari ki tarah gayab ho gayi ★★★',
-              'Registan mein bhi bhoosa udata hai teri bowling se zyada direction ke saath ★★★',
-              'Yahan pe ek hi toofan hai jo bahane ka toofan hai ★★★'
+              'Desert Storm? Bhai ye to Desert Drizzle lag raha hai uss performance se ',
+              'Teri batting bhi registan jaisi sukhi hai ',
+              'Wo bowling bhi bimari ki tarah gayab ho gayi ',
+              'Registan mein bhi bhoosa udata hai teri bowling se zyada direction ke saath ',
+              'Yahan pe ek hi toofan hai jo bahane ka toofan hai '
             ]
           }
         },
@@ -575,18 +575,18 @@
           },
           roasts: {
             en: [
-              'Green Force? More like Green Fossils with that ancient batting ★★★',
-              'Bro your cricket is so green it needs sunlight to grow ★★★',
-              'That bowling was so weak even grass could grow through it ★★★',
-              'I\'ve seen better cricket from garden gnomes ★★★',
-              'The only force here is the force of disappointment ★★★'
+              'Green Force? More like Green Fossils with that ancient batting ',
+              'Bro your cricket is so green it needs sunlight to grow ',
+              'That bowling was so weak even grass could grow through it ',
+              'I\'ve seen better cricket from garden gnomes ',
+              'The only force here is the force of disappointment '
             ],
             hi: [
-              'Green Force? Bhai ye to Green Fossils lag rahe hain uss purani batting se ★★★',
-              'Teri cricket itni hari hai ki suraj ki roshni chahiye usse badhne ke liye ★★★',
-              'Wo bowling itni kamzor thi ki ghas bhi ug jaati ★★★',
-              'Bagiche ke dwar se bhi accha cricket khelta hai ★★★',
-              'Yahan pe ek hi force hai aur wo disappointment ki force hai ★★★'
+              'Green Force? Bhai ye to Green Fossils lag rahe hain uss purani batting se ',
+              'Teri cricket itni hari hai ki suraj ki roshni chahiye usse badhne ke liye ',
+              'Wo bowling itni kamzor thi ki ghas bhi ug jaati ',
+              'Bagiche ke dwar se bhi accha cricket khelta hai ',
+              'Yahan pe ek hi force hai aur wo disappointment ki force hai '
             ]
           }
         },
@@ -622,18 +622,18 @@
           },
           roasts: {
             en: [
-              'Village Legends? Legends of losing apparently ★★★',
-              'Bro your batting legacy ends today ★★★',
-              'That was the most legendary failure I\'ve witnessed ★★★',
-              'The only legend here is how bad you played ★★★',
-              'Three years of winning and you lose to this? Legendary ★★★'
+              'Village Legends? Legends of losing apparently ',
+              'Bro your batting legacy ends today ',
+              'That was the most legendary failure I\'ve witnessed ',
+              'The only legend here is how bad you played ',
+              'Three years of winning and you lose to this? Legendary '
             ],
             hi: [
-              'Village Legends? Haarne ke legends lag rahe ho aaj ★★★',
-              'Bhai teri batting ki legacy aaj khatam ho gayi ★★★',
-              'Ye sabse legendary fail thi jo maine dekhi hai ★★★',
-              'Yahan pe ek hi legend hai aur wo hai teri buri batting ★★★',
-              '3 saal jeete aur aaj haar gaye? Legendary hai bhai ★★★'
+              'Village Legends? Haarne ke legends lag rahe ho aaj ',
+              'Bhai teri batting ki legacy aaj khatam ho gayi ',
+              'Ye sabse legendary fail thi jo maine dekhi hai ',
+              'Yahan pe ek hi legend hai aur wo hai teri buri batting ',
+              '3 saal jeete aur aaj haar gaye? Legendary hai bhai '
             ]
           }
         }
@@ -682,18 +682,18 @@
           },
           roasts: {
             en: [
-              'Metro Mavericks? More like Metro Mistakes with that lineup ★★★',
-              'Bro your batting is so bad even your expensive gear is embarrassed ★★★',
-              'That was the most overpaid innings in cricket history ★★★',
-              'The only maverick thing here is how you mavericked your wicket away ★★★',
-              'Corporate backing couldn\'t save you from that embarrassment ★★★'
+              'Metro Mavericks? More like Metro Mistakes with that lineup ',
+              'Bro your batting is so bad even your expensive gear is embarrassed ',
+              'That was the most overpaid innings in cricket history ',
+              'The only maverick thing here is how you mavericked your wicket away ',
+              'Corporate backing couldn\'t save you from that embarrassment '
             ],
             hi: [
-              'Metro Mavericks? Bhai ye to Metro Mistakes lag rahe hain uss lineup se ★★★',
-              'Teri batting itni buri hai ki mehnga equipment bhi sharam se chhup raha hai ★★★',
-              'Ye cricket itihaas ki sabse zyada paid innings thi ★★★',
-              'Yahan pe ek maverick cheez hai aur wo hai tune apni wicket kaise maverick ki ★★★',
-              'Corporate support bhi tujhe uss sharam se nahi bacha paya ★★★'
+              'Metro Mavericks? Bhai ye to Metro Mistakes lag rahe hain uss lineup se ',
+              'Teri batting itni buri hai ki mehnga equipment bhi sharam se chhup raha hai ',
+              'Ye cricket itihaas ki sabse zyada paid innings thi ',
+              'Yahan pe ek maverick cheez hai aur wo hai tune apni wicket kaise maverick ki ',
+              'Corporate support bhi tujhe uss sharam se nahi bacha paya '
             ]
           }
         },
@@ -729,18 +729,18 @@
           },
           roasts: {
             en: [
-              'Underdogs United? More like Underwhelming United ★★★',
-              'Bro your batting is so underdog even dogs feel bad for you ★★★',
-              'That was the most united failure I\'ve seen ★★★',
-              'The only underdog thing here is your confidence ★★★',
-              'You were so bad even the underdogs felt superior ★★★'
+              'Underdogs United? More like Underwhelming United ',
+              'Bro your batting is so underdog even dogs feel bad for you ',
+              'That was the most united failure I\'ve seen ',
+              'The only underdog thing here is your confidence ',
+              'You were so bad even the underdogs felt superior '
             ],
             hi: [
-              'Underdogs United? Bhai ye to Underwhelming United lag rahe hain ★★★',
-              'Teri batting itni underdog hai ki kutte bhi tujhpe taras kha rahe hain ★★★',
-              'Ye sabse united fail thi jo maine dekhi hai ★★★',
-              'Yahan pe ek underdog cheez hai aur wo tera confidence hai ★★★',
-              'Tu itna bura tha ki underdogs bhi khud ko superior feel kar rahe the ★★★'
+              'Underdogs United? Bhai ye to Underwhelming United lag rahe hain ',
+              'Teri batting itni underdog hai ki kutte bhi tujhpe taras kha rahe hain ',
+              'Ye sabse united fail thi jo maine dekhi hai ',
+              'Yahan pe ek underdog cheez hai aur wo tera confidence hai ',
+              'Tu itna bura tha ki underdogs bhi khud ko superior feel kar rahe the '
             ]
           }
         },
@@ -776,18 +776,18 @@
           },
           roasts: {
             en: [
-              'Titan XI? More like Tiny XI after that batting collapse ★★★',
-              'Bro your batting is so small even an ant could field it ★★★',
-              'That was the least titanic performance ever ★★★',
-              'The only titan here is the titan-sized failure ★★★',
-              'You call that titan cricket? The gully is embarrassed ★★★'
+              'Titan XI? More like Tiny XI after that batting collapse ',
+              'Bro your batting is so small even an ant could field it ',
+              'That was the least titanic performance ever ',
+              'The only titan here is the titan-sized failure ',
+              'You call that titan cricket? The gully is embarrassed '
             ],
             hi: [
-              'Titan XI? Bhai ye to Tiny XI lag rahe hain uss batting collapse ke baad ★★★',
-              'Teri batting itni chhoti hai ki cheeti bhi field kar le ★★★',
-              'Ye sabse kam titanic performance thi jo kabhi hui hai ★★★',
-              'Yahan pe sirf ek titan hai aur wo tera titan-size fail hai ★★★',
-              'Tu ise titan cricket bolta hai? Gully bhi sharam se chhup rahi hai ★★★'
+              'Titan XI? Bhai ye to Tiny XI lag rahe hain uss batting collapse ke baad ',
+              'Teri batting itni chhoti hai ki cheeti bhi field kar le ',
+              'Ye sabse kam titanic performance thi jo kabhi hui hai ',
+              'Yahan pe sirf ek titan hai aur wo tera titan-size fail hai ',
+              'Tu ise titan cricket bolta hai? Gully bhi sharam se chhup rahi hai '
             ]
           }
         },
@@ -823,18 +823,18 @@
           },
           roasts: {
             en: [
-              'Shadow Squad? More like Shadow Clowns with that dirty play ★★★',
-              'Bro your batting is so dark even shadows are scared ★★★',
-              'That was the most sneaky innings I\'ve ever seen ★★★',
-              'The only shadow here is the shadow of defeat ★★★',
-              'You play in shadows because you can\'t handle the spotlight ★★★'
+              'Shadow Squad? More like Shadow Clowns with that dirty play ',
+              'Bro your batting is so dark even shadows are scared ',
+              'That was the most sneaky innings I\'ve ever seen ',
+              'The only shadow here is the shadow of defeat ',
+              'You play in shadows because you can\'t handle the spotlight '
             ],
             hi: [
-              'Shadow Squad? Bhai ye to Shadow Clowns lag rahe hain uss gande khel se ★★★',
-              'Teri batting itni dark hai ki shadows bhi darr gaye ★★★',
-              'Ye sabse chalaki bhari innings thi jo maine dekhi ★★★',
-              'Yahan pe ek hi shadow hai aur wo haar ka shadow hai ★★★',
-              'Tu shadows mein khelta hai kyunki spotlight jhel nahi sakta ★★★'
+              'Shadow Squad? Bhai ye to Shadow Clowns lag rahe hain uss gande khel se ',
+              'Teri batting itni dark hai ki shadows bhi darr gaye ',
+              'Ye sabse chalaki bhari innings thi jo maine dekhi ',
+              'Yahan pe ek hi shadow hai aur wo haar ka shadow hai ',
+              'Tu shadows mein khelta hai kyunki spotlight jhel nahi sakta '
             ]
           }
         },
@@ -870,18 +870,18 @@
           },
           roasts: {
             en: [
-              'City Champions? The city deserves better champions ★★★',
-              'Bro your batting is so overrated the city wants a refund ★★★',
-              'That was the most disappointing championship defense ★★★',
-              'The only champion thing about you is your champion excuses ★★★',
-              'You call that city-level cricket? The gully is embarrassed ★★★'
+              'City Champions? The city deserves better champions ',
+              'Bro your batting is so overrated the city wants a refund ',
+              'That was the most disappointing championship defense ',
+              'The only champion thing about you is your champion excuses ',
+              'You call that city-level cricket? The gully is embarrassed '
             ],
             hi: [
-              'City Champions? City ko acche champions chahiye ★★★',
-              'Bhai teri batting itni overrated hai ki city refund chahti hai ★★★',
-              'Ye sabse disappointing championship defense thi ★★★',
-              'Tujhme sirf champion cheez hai teri champion bahane ★★★',
-              'Tu ise city-level cricket bolta hai? Gully bhi sharam se chhup rahi hai ★★★'
+              'City Champions? City ko acche champions chahiye ',
+              'Bhai teri batting itni overrated hai ki city refund chahti hai ',
+              'Ye sabse disappointing championship defense thi ',
+              'Tujhme sirf champion cheez hai teri champion bahane ',
+              'Tu ise city-level cricket bolta hai? Gully bhi sharam se chhup rahi hai '
             ]
           }
         }
@@ -930,18 +930,18 @@
           },
           roasts: {
             en: [
-              'District Tigers? More like District Kittens after that performance ★★★',
-              'Bro your batting is so weak even a kitten could bowl you out ★★★',
-              'That was the least tigerish innings I\'ve ever seen ★★★',
-              'The only roaring here is the crowd laughing at you ★★★',
-              'You call that batting? Even the stumps are yawning ★★★'
+              'District Tigers? More like District Kittens after that performance ',
+              'Bro your batting is so weak even a kitten could bowl you out ',
+              'That was the least tigerish innings I\'ve ever seen ',
+              'The only roaring here is the crowd laughing at you ',
+              'You call that batting? Even the stumps are yawning '
             ],
             hi: [
-              'District Tigers? Bhai ye to District Kittens lag rahe hain uss performance se ★★★',
-              'Teri batting itni kamzor hai ki billi bhi tujhe out kar de ★★★',
-              'Ye sabse kam tigerish innings thi jo maine dekhi ★★★',
-              'Yahan pe sirf crowd ki hasi goonj rahi hai ★★★',
-              'Tu ise batting bolta hai? Stumps bhi yaun kar rahe hain ★★★'
+              'District Tigers? Bhai ye to District Kittens lag rahe hain uss performance se ',
+              'Teri batting itni kamzor hai ki billi bhi tujhe out kar de ',
+              'Ye sabse kam tigerish innings thi jo maine dekhi ',
+              'Yahan pe sirf crowd ki hasi goonj rahi hai ',
+              'Tu ise batting bolta hai? Stumps bhi yaun kar rahe hain '
             ]
           }
         },
@@ -977,18 +977,18 @@
           },
           roasts: {
             en: [
-              'Royal Challengers? More like Royal Chokers with that pressure performance ★★★',
-              'Bro your batting choked harder than a fish out of water ★★★',
-              'That was the most royal disaster I\'ve witnessed ★★★',
-              'The only challenge here is watching your innings without laughing ★★★',
-              'Two-time runners-up and you play like this? Pathetic ★★★'
+              'Royal Challengers? More like Royal Chokers with that pressure performance ',
+              'Bro your batting choked harder than a fish out of water ',
+              'That was the most royal disaster I\'ve witnessed ',
+              'The only challenge here is watching your innings without laughing ',
+              'Two-time runners-up and you play like this? Pathetic '
             ],
             hi: [
-              'Royal Challengers? Bhai ye to Royal Chokers lag rahe hain uss pressure mein ★★★',
-              'Teri batting paani se nikli machli jaisi ruk rahi hai ★★★',
-              'Ye sabse royal disaster thi jo maine dekhi hai ★★★',
-              'Yahan pe ek hi challenge hai aur wo bina has ke teri innings dekhna ★★★',
-              '2 baar runners-up aur aisa khel? Shakuni bhi sharam kare ★★★'
+              'Royal Challengers? Bhai ye to Royal Chokers lag rahe hain uss pressure mein ',
+              'Teri batting paani se nikli machli jaisi ruk rahi hai ',
+              'Ye sabse royal disaster thi jo maine dekhi hai ',
+              'Yahan pe ek hi challenge hai aur wo bina has ke teri innings dekhna ',
+              '2 baar runners-up aur aisa khel? Shakuni bhi sharam kare '
             ]
           }
         },
@@ -1024,18 +1024,18 @@
           },
           roasts: {
             en: [
-              'Night Riders? More like Night Criers with that losing performance ★★★',
-              'Bro your batting is so dark even midnight is confused ★★★',
-              'That was the most nightmarish innings ever ★★★',
-              'The only riding happening is riding the bench ★★★',
-              'You play cricket like it\'s a horror movie ★★★'
+              'Night Riders? More like Night Criers with that losing performance ',
+              'Bro your batting is so dark even midnight is confused ',
+              'That was the most nightmarish innings ever ',
+              'The only riding happening is riding the bench ',
+              'You play cricket like it\'s a horror movie '
             ],
             hi: [
-              'Night Riders? Bhai ye to Night Criers lag rahe hain uss haar se ★★★',
-              'Teri batting itni dark hai ki raat bhi confuse ho rahi hai ★★★',
-              'Ye sabse nightmarish innings thi jo kabhi hui ★★★',
-              'Yahan pe sirf bench pe baith ke riding ho rahi hai ★★★',
-              'Tu cricket khelta hai jaise horror movie ho ★★★'
+              'Night Riders? Bhai ye to Night Criers lag rahe hain uss haar se ',
+              'Teri batting itni dark hai ki raat bhi confuse ho rahi hai ',
+              'Ye sabse nightmarish innings thi jo kabhi hui ',
+              'Yahan pe sirf bench pe baith ke riding ho rahi hai ',
+              'Tu cricket khelta hai jaise horror movie ho '
             ]
           }
         },
@@ -1071,18 +1071,18 @@
           },
           roasts: {
             en: [
-              'Provincial Kings? More like Provincial Knitters with that boring cricket ★★★',
-              'Bro your batting is so disciplined it forgot to be exciting ★★★',
-              'That was the most royal yawn I\'ve ever experienced ★★★',
-              'The only king thing here is the king-sized disappointment ★★★',
-              'You play cricket like you\'re filing taxes ★★★'
+              'Provincial Kings? More like Provincial Knitters with that boring cricket ',
+              'Bro your batting is so disciplined it forgot to be exciting ',
+              'That was the most royal yawn I\'ve ever experienced ',
+              'The only king thing here is the king-sized disappointment ',
+              'You play cricket like you\'re filing taxes '
             ],
             hi: [
-              'Provincial Kings? Bhai ye to Provincial Knitters lag rahe hain boring cricket se ★★★',
-              'Teri batting itni disciplined hai ki exciting bhool gayi ★★★',
-              'Ye sabse badi royal yaun thi jo maine experience ki ★★★',
-              'Yahan pe sirf king-size disappointment hai ★★★',
-              'Tu cricket khelta hai jaise tax bhar raha ho ★★★'
+              'Provincial Kings? Bhai ye to Provincial Knitters lag rahe hain boring cricket se ',
+              'Teri batting itni disciplined hai ki exciting bhool gayi ',
+              'Ye sabse badi royal yaun thi jo maine experience ki ',
+              'Yahan pe sirf king-size disappointment hai ',
+              'Tu cricket khelta hai jaise tax bhar raha ho '
             ]
           }
         },
@@ -1118,18 +1118,18 @@
           },
           roasts: {
             en: [
-              'District Champions? The district deserves a better champion ★★★',
-              'Bro your batting championship reign is over ★★★',
-              'That was the most un-champion-like performance ★★★',
-              'The only thing you\'re championing is mediocrity ★★★',
-              'You call that champion cricket? The gully is embarrassed ★★★'
+              'District Champions? The district deserves a better champion ',
+              'Bro your batting championship reign is over ',
+              'That was the most un-champion-like performance ',
+              'The only thing you\'re championing is mediocrity ',
+              'You call that champion cricket? The gully is embarrassed '
             ],
             hi: [
-              'District Champions? District ko accha champion chahiye ★★★',
-              'Bhai teri batting championship ka raaj khatam ★★★',
-              'Ye sabse un-champion-like performance thi ★★★',
-              'Tu sirf mediocrity ka champion hai ★★★',
-              'Tu ise champion cricket bolta hai? Gully bhi sharam se chhup rahi hai ★★★'
+              'District Champions? District ko accha champion chahiye ',
+              'Bhai teri batting championship ka raaj khatam ',
+              'Ye sabse un-champion-like performance thi ',
+              'Tu sirf mediocrity ka champion hai ',
+              'Tu ise champion cricket bolta hai? Gully bhi sharam se chhup rahi hai '
             ]
           }
         }
@@ -1178,18 +1178,18 @@
           },
           roasts: {
             en: [
-              'State Strikers? More like State Snoozers with that energy ★★★',
-              'Bro your batting is so overpaid even your sponsors want a refund ★★★',
-              'That was the most expensive failure in cricket history ★★★',
-              'The only striking thing here is how badly you played ★★★',
-              'Corporate money, zero results. Classic ★★★'
+              'State Strikers? More like State Snoozers with that energy ',
+              'Bro your batting is so overpaid even your sponsors want a refund ',
+              'That was the most expensive failure in cricket history ',
+              'The only striking thing here is how badly you played ',
+              'Corporate money, zero results. Classic '
             ],
             hi: [
-              'State Strikers? Bhai ye to State Snoozers lag rahe hain uss energy se ★★★',
-              'Teri batting itni overpaid hai ki sponsors bhi refund chahte hain ★★★',
-              'Ye sabse mehnga fail tha cricket itihaas mein ★★★',
-              'Yahan pe striking sirf teri buri batting hai ★★★',
-              'Corporate paise, zero results. Classic hai bhai ★★★'
+              'State Strikers? Bhai ye to State Snoozers lag rahe hain uss energy se ',
+              'Teri batting itni overpaid hai ki sponsors bhi refund chahte hain ',
+              'Ye sabse mehnga fail tha cricket itihaas mein ',
+              'Yahan pe striking sirf teri buri batting hai ',
+              'Corporate paise, zero results. Classic hai bhai '
             ]
           }
         },
@@ -1225,18 +1225,18 @@
           },
           roasts: {
             en: [
-              'Empire XI? The only empire here is the empire of excuses ★★★',
-              'Bro your batting is so overrated it should be a museum exhibit ★★★',
-              'That was the most imperial disaster in cricket ★★★',
-              'The only ruling you\'re doing is ruling the loss column ★★★',
-              'Empire? More like vampire sucking the life out of cricket ★★★'
+              'Empire XI? The only empire here is the empire of excuses ',
+              'Bro your batting is so overrated it should be a museum exhibit ',
+              'That was the most imperial disaster in cricket ',
+              'The only ruling you\'re doing is ruling the loss column ',
+              'Empire? More like vampire sucking the life out of cricket '
             ],
             hi: [
-              'Empire XI? Yahan pe sirf bahano ka empire hai ★★★',
-              'Teri batting itni overrated hai ki museum mein honi chahiye ★★★',
-              'Ye sabse imperial disaster thi cricket mein ★★★',
-              'Tu sirf haar column pe rule kar raha hai ★★★',
-              'Empire? Bhai tu to vampire hai cricket ki life cheen raha hai ★★★'
+              'Empire XI? Yahan pe sirf bahano ka empire hai ',
+              'Teri batting itni overrated hai ki museum mein honi chahiye ',
+              'Ye sabse imperial disaster thi cricket mein ',
+              'Tu sirf haar column pe rule kar raha hai ',
+              'Empire? Bhai tu to vampire hai cricket ki life cheen raha hai '
             ]
           }
         },
@@ -1272,18 +1272,18 @@
           },
           roasts: {
             en: [
-              'Thunderbolts? More like Thunderbolts and Lightning Very Very Frightening ★★★',
-              'Bro your batting is so slow the thunder fell asleep ★★★',
-              'That was the most un-thunderous performance ★★★',
-              'The only bolt here is the bolt from your wicket ★★★',
-              'You call that thunder? Even the clouds are disappointed ★★★'
+              'Thunderbolts? More like Thunderbolts and Lightning Very Very Frightening ',
+              'Bro your batting is so slow the thunder fell asleep ',
+              'That was the most un-thunderous performance ',
+              'The only bolt here is the bolt from your wicket ',
+              'You call that thunder? Even the clouds are disappointed '
             ],
             hi: [
-              'Thunderbolts? Bhai ye to Thunderbolts and Lightning Very Very Frightening hai ★★★',
-              'Teri batting itni slow hai ki thunder bhi so gaya ★★★',
-              'Ye sabse un-thunderous performance thi ★★★',
-              'Yahan pe sirf bolt hai aur wo teri wicket se hai ★★★',
-              'Tu ise thunder bolta hai? Baddal bhi disappointed hain ★★★'
+              'Thunderbolts? Bhai ye to Thunderbolts and Lightning Very Very Frightening hai ',
+              'Teri batting itni slow hai ki thunder bhi so gaya ',
+              'Ye sabse un-thunderous performance thi ',
+              'Yahan pe sirf bolt hai aur wo teri wicket se hai ',
+              'Tu ise thunder bolta hai? Baddal bhi disappointed hain '
             ]
           }
         },
@@ -1319,18 +1319,18 @@
           },
           roasts: {
             en: [
-              'Phoenix Rising? More like Phoenix Crawling with that pace ★★★',
-              'Bro your batting is so flat the phoenix wouldn\'t rise from it ★★★',
-              'That was the most un-rising performance ever ★★★',
-              'The only fire here is the fire of your embarrassing innings ★★★',
-              'You can\'t rise when your cricket is this grounded ★★★'
+              'Phoenix Rising? More like Phoenix Crawling with that pace ',
+              'Bro your batting is so flat the phoenix wouldn\'t rise from it ',
+              'That was the most un-rising performance ever ',
+              'The only fire here is the fire of your embarrassing innings ',
+              'You can\'t rise when your cricket is this grounded '
             ],
             hi: [
-              'Phoenix Rising? Bhai ye to Phoenix Crawling lag raha hai uss pace se ★★★',
-              'Teri batting itni flat hai ki phoenix bhi isse nahi uthega ★★★',
-              'Ye sabse un-rising performance thi jo kabhi hui ★★★',
-              'Yahan pe sirf ek aag hai aur wo teri embarrassing innings ki aag hai ★★★',
-              'Tu uth nahi sakta jab teri cricket itni neeche hai ★★★'
+              'Phoenix Rising? Bhai ye to Phoenix Crawling lag raha hai uss pace se ',
+              'Teri batting itni flat hai ki phoenix bhi isse nahi uthega ',
+              'Ye sabse un-rising performance thi jo kabhi hui ',
+              'Yahan pe sirf ek aag hai aur wo teri embarrassing innings ki aag hai ',
+              'Tu uth nahi sakta jab teri cricket itni neeche hai '
             ]
           }
         },
@@ -1366,18 +1366,18 @@
           },
           roasts: {
             en: [
-              'Capital Kings? The capital is embarrassed to be represented by you ★★★',
-              'Bro your batting precision is as off as British weather ★★★',
-              'That was the most un-royal performance ★★★',
-              'The only capital thing here is the capital loss ★★★',
-              'You play cricket like you\'re driving on the wrong side ★★★'
+              'Capital Kings? The capital is embarrassed to be represented by you ',
+              'Bro your batting precision is as off as British weather ',
+              'That was the most un-royal performance ',
+              'The only capital thing here is the capital loss ',
+              'You play cricket like you\'re driving on the wrong side '
             ],
             hi: [
-              'Capital Kings? Capital tujhe represent karne pe sharam aa rahi hai ★★★',
-              'Bhai teri batting precision British weather jaisi hai ★★★',
-              'Ye sabse un-royal performance thi ★★★',
-              'Yahan pe sirf capital loss hai ★★★',
-              'Tu cricket khelta hai jaise galat side pe driving kar raha ho ★★★'
+              'Capital Kings? Capital tujhe represent karne pe sharam aa rahi hai ',
+              'Bhai teri batting precision British weather jaisi hai ',
+              'Ye sabse un-royal performance thi ',
+              'Yahan pe sirf capital loss hai ',
+              'Tu cricket khelta hai jaise galat side pe driving kar raha ho '
             ]
           }
         },
@@ -1413,18 +1413,18 @@
           },
           roasts: {
             en: [
-              'State Champions? The state is filing a complaint about your performance ★★★',
-              'Bro your batting is so bad the state anthem is crying ★★★',
-              'That was the most un-champion state performance ★★★',
-              'The only state here is the state of your disastrous batting ★★★',
-              'You represent the state? The state wants a new representative ★★★'
+              'State Champions? The state is filing a complaint about your performance ',
+              'Bro your batting is so bad the state anthem is crying ',
+              'That was the most un-champion state performance ',
+              'The only state here is the state of your disastrous batting ',
+              'You represent the state? The state wants a new representative '
             ],
             hi: [
-              'State Champions? State teri performance pe complaint kar raha hai ★★★',
-              'Bhai teri batting itni buri hai ki state anthem ro raha hai ★★★',
-              'Ye sabse un-champion state performance thi ★★★',
-              'Yahan pe sirf state hai aur wo teri batting ki buri state hai ★★★',
-              'Tu state ko represent karta hai? State naya representative chahta hai ★★★'
+              'State Champions? State teri performance pe complaint kar raha hai ',
+              'Bhai teri batting itni buri hai ki state anthem ro raha hai ',
+              'Ye sabse un-champion state performance thi ',
+              'Yahan pe sirf state hai aur wo teri batting ki buri state hai ',
+              'Tu state ko represent karta hai? State naya representative chahta hai '
             ]
           }
         }
@@ -1473,18 +1473,18 @@
           },
           roasts: {
             en: [
-              'Northern Storm? The only storm here is the storm of your terrible batting ★★★',
-              'Bro your batting is so lost even GPS can\'t find it ★★★',
-              'That was the most un-stormy performance ★★★',
-              'The only spinning happening is your head after that delivery ★★★',
-              'You got more confused than a cat in a spinning room ★★★'
+              'Northern Storm? The only storm here is the storm of your terrible batting ',
+              'Bro your batting is so lost even GPS can\'t find it ',
+              'That was the most un-stormy performance ',
+              'The only spinning happening is your head after that delivery ',
+              'You got more confused than a cat in a spinning room '
             ],
             hi: [
-              'Northern Storm? Yahan pe sirf teri batting ke toofan ka toofan hai ★★★',
-              'Bhai teri batting itni lost hai ki GPS bhi nahi dhoond pa raha ★★★',
-              'Ye sabse un-stormy performance thi ★★★',
-              'Yahan pe sirf ghoom raha hai tera dimaag uss gend ke baad ★★★',
-              'Tu billi jaisa confusion mein hai ghumte hue kamre mein ★★★'
+              'Northern Storm? Yahan pe sirf teri batting ke toofan ka toofan hai ',
+              'Bhai teri batting itni lost hai ki GPS bhi nahi dhoond pa raha ',
+              'Ye sabse un-stormy performance thi ',
+              'Yahan pe sirf ghoom raha hai tera dimaag uss gend ke baad ',
+              'Tu billi jaisa confusion mein hai ghumte hue kamre mein '
             ]
           }
         },
@@ -1520,18 +1520,18 @@
           },
           roasts: {
             en: [
-              'Southern Thunder? More like Southern Whispers after that performance ★★★',
-              'Bro your batting is so slow the thunder took a nap ★★★',
-              'That was the most un-thunderous attack I\'ve seen ★★★',
-              'The only lightning here is the lightning of your terrible shots ★★★',
-              'You can\'t handle the heat? Then get out of the thunder ★★★'
+              'Southern Thunder? More like Southern Whispers after that performance ',
+              'Bro your batting is so slow the thunder took a nap ',
+              'That was the most un-thunderous attack I\'ve seen ',
+              'The only lightning here is the lightning of your terrible shots ',
+              'You can\'t handle the heat? Then get out of the thunder '
             ],
             hi: [
-              'Southern Thunder? Bhai ye to Southern Whispers lag rahe hain uss performance se ★★★',
-              'Teri batting itni slow hai ki thunder bhi so gaya ★★★',
-              'Ye sabse un-thunderous attack thi jo maine dekhi ★★★',
-              'Yahan pe sirf ek lightning hai aur wo teri buri shots ki lightning hai ★★★',
-              'Tu garmi jhel nahi sakta? Toh thunder se nikal ja ★★★'
+              'Southern Thunder? Bhai ye to Southern Whispers lag rahe hain uss performance se ',
+              'Teri batting itni slow hai ki thunder bhi so gaya ',
+              'Ye sabse un-thunderous attack thi jo maine dekhi ',
+              'Yahan pe sirf ek lightning hai aur wo teri buri shots ki lightning hai ',
+              'Tu garmi jhel nahi sakta? Toh thunder se nikal ja '
             ]
           }
         },
@@ -1567,18 +1567,18 @@
           },
           roasts: {
             en: [
-              'Eastern Eagles? More like Eastern Groundhogs staying on the ground ★★★',
-              'Bro your batting is so bad even the eagle feathers are falling off ★★★',
-              'That was the most grounded performance from an eagle team ★★★',
-              'The only soaring happening is your ego, not your cricket ★★★',
-              'Eagles? The only thing flying here is the ball past your wicket ★★★'
+              'Eastern Eagles? More like Eastern Groundhogs staying on the ground ',
+              'Bro your batting is so bad even the eagle feathers are falling off ',
+              'That was the most grounded performance from an eagle team ',
+              'The only soaring happening is your ego, not your cricket ',
+              'Eagles? The only thing flying here is the ball past your wicket '
             ],
             hi: [
-              'Eastern Eagles? Bhai ye to Eastern Groundhogs lag rahe hain zameen pe ★★★',
-              'Teri batting itni buri hai ki eagle ke pankh bhi gir rahe hain ★★★',
-              'Ye sabse grounded performance thi ek eagle team ki ★★★',
-              'Yahan pe sirf tera ego udd raha hai, cricket nahi ★★★',
-              'Eagles? Yahan pe sirf ball teri wicket ke paas ud rahi hai ★★★'
+              'Eastern Eagles? Bhai ye to Eastern Groundhogs lag rahe hain zameen pe ',
+              'Teri batting itni buri hai ki eagle ke pankh bhi gir rahe hain ',
+              'Ye sabse grounded performance thi ek eagle team ki ',
+              'Yahan pe sirf tera ego udd raha hai, cricket nahi ',
+              'Eagles? Yahan pe sirf ball teri wicket ke paas ud rahi hai '
             ]
           }
         },
@@ -1614,18 +1614,18 @@
           },
           roasts: {
             en: [
-              'Western Wolves? More like Western Puppies with that performance ★★★',
-              'Bro your batting is so weak even a puppy could bowl you out ★★★',
-              'That was the least wolf-like performance ★★★',
-              'The only howling here is the crowd at your batting ★★★',
-              'You call that pack cricket? The pack is ashamed ★★★'
+              'Western Wolves? More like Western Puppies with that performance ',
+              'Bro your batting is so weak even a puppy could bowl you out ',
+              'That was the least wolf-like performance ',
+              'The only howling here is the crowd at your batting ',
+              'You call that pack cricket? The pack is ashamed '
             ],
             hi: [
-              'Western Wolves? Bhai ye to Western Puppies lag rahe hain uss performance se ★★★',
-              'Teri batting itni kamzor hai ki puppy bhi tujhe out kar de ★★★',
-              'Ye sabse kam wolf-like performance thi ★★★',
-              'Yahan pe sirf crowd ki howling hai teri batting pe ★★★',
-              'Tu ise pack cricket bolta hai? Pack sharam se chhup raha hai ★★★'
+              'Western Wolves? Bhai ye to Western Puppies lag rahe hain uss performance se ',
+              'Teri batting itni kamzor hai ki puppy bhi tujhe out kar de ',
+              'Ye sabse kam wolf-like performance thi ',
+              'Yahan pe sirf crowd ki howling hai teri batting pe ',
+              'Tu ise pack cricket bolta hai? Pack sharam se chhup raha hai '
             ]
           }
         },
@@ -1661,18 +1661,18 @@
           },
           roasts: {
             en: [
-              'National Contenders? The nation is embarrassed by your performance ★★★',
-              'Bro your batting contention ended before it started ★★★',
-              'That was the most un-contending performance ★★★',
-              'The only thing you\'re contending for is last place ★★★',
-              'Two-time runners-up and you play like this? National embarrassment ★★★'
+              'National Contenders? The nation is embarrassed by your performance ',
+              'Bro your batting contention ended before it started ',
+              'That was the most un-contending performance ',
+              'The only thing you\'re contending for is last place ',
+              'Two-time runners-up and you play like this? National embarrassment '
             ],
             hi: [
-              'National Contenders? Nation tujhe dekh ke sharam aa raha hai ★★★',
-              'Bhai teri batting contention shuru hone se pehle hi khatam ho gayi ★★★',
-              'Ye sabse un-contending performance thi ★★★',
-              'Tu sirf last place ke liye contend kar raha hai ★★★',
-              '2 baar runners-up aur aisa khel? National embarrassment hai bhai ★★★'
+              'National Contenders? Nation tujhe dekh ke sharam aa raha hai ',
+              'Bhai teri batting contention shuru hone se pehle hi khatam ho gayi ',
+              'Ye sabse un-contending performance thi ',
+              'Tu sirf last place ke liye contend kar raha hai ',
+              '2 baar runners-up aur aisa khel? National embarrassment hai bhai '
             ]
           }
         }
@@ -1721,18 +1721,18 @@
           },
           roasts: {
             en: [
-              'The Legends? The only legend here is how badly you lost ★★★',
-              'Bro your batting is so outdated even the legends cringe ★★★',
-              'That was the most un-legendary performance ★★★',
-              'The only legacy you\'re leaving is a legacy of failure ★★★',
-              'Legends? You can\'t even legend properly ★★★'
+              'The Legends? The only legend here is how badly you lost ',
+              'Bro your batting is so outdated even the legends cringe ',
+              'That was the most un-legendary performance ',
+              'The only legacy you\'re leaving is a legacy of failure ',
+              'Legends? You can\'t even legend properly '
             ],
             hi: [
-              'The Legends? Yahan pe sirf teri haar ka legend hai ★★★',
-              'Bhai teri batting itni purani hai ki legends bhi cringe kar rahe hain ★★★',
-              'Ye sabse un-legendary performance thi ★★★',
-              'Tu sirf haar ki legacy chhod raha hai ★★★',
-              'Legends? Tu sahi se legend bhi nahi ban sakta ★★★'
+              'The Legends? Yahan pe sirf teri haar ka legend hai ',
+              'Bhai teri batting itni purani hai ki legends bhi cringe kar rahe hain ',
+              'Ye sabse un-legendary performance thi ',
+              'Tu sirf haar ki legacy chhod raha hai ',
+              'Legends? Tu sahi se legend bhi nahi ban sakta '
             ]
           }
         },
@@ -1768,18 +1768,18 @@
           },
           roasts: {
             en: [
-              'The Invincibles? The only invincible thing is your ego ★★★',
-              'Bro your batting is so bad even perfectionists are disappointed ★★★',
-              'That was the most defeatable performance I\'ve witnessed ★★★',
-              'The only thing invincible here is your ability to lose ★★★',
-              'Invincibles? The only thing you\'ve invented is new ways to lose ★★★'
+              'The Invincibles? The only invincible thing is your ego ',
+              'Bro your batting is so bad even perfectionists are disappointed ',
+              'That was the most defeatable performance I\'ve witnessed ',
+              'The only thing invincible here is your ability to lose ',
+              'Invincibles? The only thing you\'ve invented is new ways to lose '
             ],
             hi: [
-              'The Invincibles? Yahan pe sirf tera ego invincible hai ★★★',
-              'Bhai teri batting itni buri hai ki perfectionists bhi disappointed hain ★★★',
-              'Ye sabse defeatable performance thi jo maine dekhi ★★★',
-              'Yahan pe sirf ek invincible cheez hai aur wo teri haarne ki kshamta hai ★★★',
-              'Invincibles? Tu sirf haarne ke naye tareefe invent kar raha hai ★★★'
+              'The Invincibles? Yahan pe sirf tera ego invincible hai ',
+              'Bhai teri batting itni buri hai ki perfectionists bhi disappointed hain ',
+              'Ye sabse defeatable performance thi jo maine dekhi ',
+              'Yahan pe sirf ek invincible cheez hai aur wo teri haarne ki kshamta hai ',
+              'Invincibles? Tu sirf haarne ke naye tareefe invent kar raha hai '
             ]
           }
         },
@@ -1815,18 +1815,18 @@
           },
           roasts: {
             en: [
-              'The Dark Horses? The only dark thing here is your future in cricket ★★★',
-              'Bro your batting is so dim even darkness is confused ★★★',
-              'That was the most brightly lit failure ★★★',
-              'The only horse here is the one that bolted from your batting ★★★',
-              'Dark Horses? You\'re about as surprising as a sunny day ★★★'
+              'The Dark Horses? The only dark thing here is your future in cricket ',
+              'Bro your batting is so dim even darkness is confused ',
+              'That was the most brightly lit failure ',
+              'The only horse here is the one that bolted from your batting ',
+              'Dark Horses? You\'re about as surprising as a sunny day '
             ],
             hi: [
-              'The Dark Horses? Yahan pe sirf tera cricket future dark hai ★★★',
-              'Bhai teri batting itni dim hai ki andhera bhi confuse ho raha hai ★★★',
-              'Ye sabse roshni bhari fail thi ★★★',
-              'Yahan pe sirf ek horse hai jo teri batting se bhaag gaya ★★★',
-              'Dark Horses? Tu dhup ke din jaisa predictable hai ★★★'
+              'The Dark Horses? Yahan pe sirf tera cricket future dark hai ',
+              'Bhai teri batting itni dim hai ki andhera bhi confuse ho raha hai ',
+              'Ye sabse roshni bhari fail thi ',
+              'Yahan pe sirf ek horse hai jo teri batting se bhaag gaya ',
+              'Dark Horses? Tu dhup ke din jaisa predictable hai '
             ]
           }
         },
@@ -1862,18 +1862,18 @@
           },
           roasts: {
             en: [
-              'The Dynasty? The only dynasty here is the dynasty of failures ★★★',
-              'Bro your batting legacy is as dead as a dodo ★★★',
-              'That was the most un-dynastic performance ★★★',
-              'The only ruling you\'re doing is ruling the loss column ★★★',
-              'Dynasty? You can\'t even spell dynasty without dying ★★★'
+              'The Dynasty? The only dynasty here is the dynasty of failures ',
+              'Bro your batting legacy is as dead as a dodo ',
+              'That was the most un-dynastic performance ',
+              'The only ruling you\'re doing is ruling the loss column ',
+              'Dynasty? You can\'t even spell dynasty without dying '
             ],
             hi: [
-              'The Dynasty? Yahan pe sirf failon ki dynasty hai ★★★',
-              'Bhai teri batting legacy dodo jaisi mar gayi hai ★★★',
-              'Ye sabse un-dynastic performance thi ★★★',
-              'Tu sirf haar column pe rule kar raha hai ★★★',
-              'Dynasty? Tu dynasty bhi nahi likh sakta bina mar ke ★★★'
+              'The Dynasty? Yahan pe sirf failon ki dynasty hai ',
+              'Bhai teri batting legacy dodo jaisi mar gayi hai ',
+              'Ye sabse un-dynastic performance thi ',
+              'Tu sirf haar column pe rule kar raha hai ',
+              'Dynasty? Tu dynasty bhi nahi likh sakta bina mar ke '
             ]
           }
         },
@@ -1909,18 +1909,18 @@
           },
           roasts: {
             en: [
-              'Mirror Match? The mirror broke looking at your batting ★★★',
-              'Bro you\'re so bad even your mirror image refuses to play ★★★',
-              'That was the most one-sided mirror match ever ★★★',
-              'The only reflection here is the reflection of defeat ★★★',
-              'You call that a mirror match? The mirror wants a divorce ★★★'
+              'Mirror Match? The mirror broke looking at your batting ',
+              'Bro you\'re so bad even your mirror image refuses to play ',
+              'That was the most one-sided mirror match ever ',
+              'The only reflection here is the reflection of defeat ',
+              'You call that a mirror match? The mirror wants a divorce '
             ],
             hi: [
-              'Mirror Match? Aaina toot gaya teri batting dekh ke ★★★',
-              'Bhai tu itna bura hai ki tera aaine wala bhi khelna nahi chahta ★★★',
-              'Ye sabse ek-sided mirror match thi jo kabhi hui ★★★',
-              'Yahan pe sirf ek reflection hai aur wo haar ka reflection hai ★★★',
-              'Tu ise mirror match bolta hai? Aaina divorce chahta hai ★★★'
+              'Mirror Match? Aaina toot gaya teri batting dekh ke ',
+              'Bhai tu itna bura hai ki tera aaine wala bhi khelna nahi chahta ',
+              'Ye sabse ek-sided mirror match thi jo kabhi hui ',
+              'Yahan pe sirf ek reflection hai aur wo haar ka reflection hai ',
+              'Tu ise mirror match bolta hai? Aaina divorce chahta hai '
             ]
           }
         }

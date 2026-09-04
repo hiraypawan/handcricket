@@ -14,7 +14,9 @@
       localStorage.setItem(LS_KEY, JSON.stringify(myFriends));
     } catch (e) {}
   }
-  function loadLocal() {
+  const AV_RBT = '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="8" width="15" height="11" rx="4"/><path d="M12 8V4.6"/><circle cx="12" cy="3.8" r="1.1" fill="currentColor" stroke="none"/><circle cx="9" cy="13.4" r="1.15" fill="currentColor" stroke="none"/><circle cx="15" cy="13.4" r="1.15" fill="currentColor" stroke="none"/><path d="M9.7 16.6h4.6"/></svg>';
+const AV_PSN = '<svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20.4c1.1-3.7 3.9-5.6 7.2-5.6s6.1 1.9 7.2 5.6"/></svg>';
+function loadLocal() {
     try {
       const raw = localStorage.getItem(LS_KEY);
       if (raw) {
@@ -102,9 +104,11 @@
       list.innerHTML = myFriends.friends
         .map(
           (f) =>
-            '<div class="friend-item">' +
-            '<div class="friend-avatar">' +
-            (f.isBot ? "🤖" : f.avatar || "👤") +
+            '<div class="friend-item' + (f.isBot ? ' isBot' : '') + '">' +
+            '<div class="friend-avatar"><span class="av-letter">' +
+            escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
+            "</span>" +
+            (f.isBot ? AV_RBT : AV_PSN) +
             "</div>" +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
@@ -119,7 +123,7 @@
             "')\">Play</button>" +
             '<button class="fa-remove" onclick="removeFriend(\'' +
             escAttr(f.name) +
-            "')\">✕</button>" +
+            "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button>" +
             "</div></div>",
         )
         .join("");
@@ -132,9 +136,11 @@
       list.innerHTML = myFriends.pending
         .map(
           (f) =>
-            '<div class="friend-item pending-item">' +
-            '<div class="friend-avatar">' +
-            (f.isBot ? "🤖" : "👤") +
+            '<div class="friend-item pending-item' + (f.isBot ? ' isBot' : '') + '">' +
+            '<div class="friend-avatar"><span class="av-letter">' +
+            escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
+            "</span>" +
+            (f.isBot ? AV_RBT : AV_PSN) +
             "</div>" +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
@@ -145,10 +151,10 @@
             '<div class="friend-actions">' +
             '<button class="fa-accept" onclick="acceptFriend(\'' +
             escAttr(f.name) +
-            "')\">✓</button>" +
+            "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12.5l5 5L19.5 7\"/></svg></button>" +
             '<button class="fa-reject" onclick="rejectFriend(\'' +
             escAttr(f.name) +
-            "')\">✕</button>" +
+            "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button>" +
             "</div></div>",
         )
         .join("");
@@ -185,7 +191,7 @@
     syncToServer();
     renderFriendList();
     sfx("win");
-    showFloatMsg(name + " is now your friend! 🤝", "true");
+    showFloatMsg(name + " is now your friend!", true, "joy");
   };
   window.rejectFriend = function (name) {
     loadLocal();
@@ -298,11 +304,11 @@
     const btnInner = $("btnAddFriend");
     if (isAlready) {
       btn.style.display = "block";
-      btnInner.textContent = "✓ Friends";
+      btnInner.textContent = "Friends";
       btnInner.className = "add-friend-btn already";
     } else if (isPending) {
       btn.style.display = "block";
-      btnInner.textContent = "✓ Request Sent";
+      btnInner.textContent = "Request Sent";
       btnInner.className = "add-friend-btn already";
     } else {
       btn.style.display = "block";
@@ -337,18 +343,17 @@
       });
       saveLocal();
       syncToServer();
-      $("btnAddFriend").textContent = "✓ Friends (Bot accepted!)";
+      $("btnAddFriend").textContent = "Friends (Bot accepted)";
       $("btnAddFriend").className = "add-friend-btn already";
       sfx("win");
-      showFloatEmoji("🎉", true);
-      showFloatMsg("We are friends now! 🤝", true);
+      showFloatMsg("You are friends now!", true, "joy");
     } else {
       myFriends.pending.push({ name: target, stats: stats, since: Date.now() });
       saveLocal();
       syncToServer();
-      $("btnAddFriend").textContent = "✓ Request Sent";
+      $("btnAddFriend").textContent = "Request Sent";
       $("btnAddFriend").className = "add-friend-btn already";
-      showFloatMsg("Friend request sent! 📩", "true");
+      showFloatMsg("Friend request sent!", true, "joy");
     }
     loadFriends();
   };
@@ -394,7 +399,7 @@
     const botStats = G.oppStats;
     setTimeout(() => {
       showFriendNotif(
-        botName + " wants to be your friend! 🤖",
+        botName + " wants to be your friend!",
         "Accept friend request from this bot?",
         [
           {
@@ -416,8 +421,7 @@
               syncToServer();
               hideFriendNotif();
               sfx("win");
-              showFloatEmoji("🎉", true);
-              showFloatMsg("We are friends! 🤝", true);
+              showFloatMsg("You are friends now!", true, "joy");
             },
           },
           {

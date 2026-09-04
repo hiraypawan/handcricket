@@ -79,7 +79,7 @@ try {
     function buildHomeHand(v, cls) {
       const w = document.createElement("div");
       w.className = "home-hand " + cls;
-      w.innerHTML = getHandSVG(v, cls === "left");
+      w.innerHTML = getHandSVG(v, cls === "right");
       return w;
     }
     let seq = [6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6];
@@ -125,6 +125,13 @@ try {
     ) {
       restore(snap, true);
       G.restored = true;
+      if (
+        snap.stage === "playing" ||
+        snap.stage === "break" ||
+        snap.stage === "over"
+      ) {
+        if (typeof hideDock === "function") hideDock();
+      }
     }
     $("menuOverlay").classList.add("hidden");
     $("waitingOverlay").classList.remove("hidden");

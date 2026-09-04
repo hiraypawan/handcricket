@@ -4,6 +4,17 @@
 ============================================================================ */
 
 /* ====== BOTTOM TAB BAR CONTROLLER ====== */
+/* The dock is a root-screen controller: it must never float over the live
+   match arena (it would cover the gesture controls), so gameplay code hides
+   it and these two root views bring it back. */
+function hideDock() {
+  const t = document.getElementById("tabBar");
+  if (t) t.classList.add("hidden");
+}
+function showDock() {
+  const t = document.getElementById("tabBar");
+  if (t) t.classList.remove("hidden");
+}
 function showMenu() {
   document.querySelectorAll(".overlay,.friends-overlay").forEach(function (o) {
     o.classList.add("hidden");
@@ -12,6 +23,7 @@ function showMenu() {
   $("storyTeamBuilder").classList.add("hidden");
   $("storyDialogue").classList.add("hidden");
   $("menuOverlay").classList.remove("hidden");
+  showDock();
   updHomeUsername();
   updHomeTrophies();
 }
@@ -22,6 +34,7 @@ function showStoryHome() {
   $("menuOverlay").classList.add("hidden");
   $("storyHome").classList.remove("hidden");
   $("storyDialogue").classList.add("hidden");
+  showDock();
   if (typeof renderStoryHome === "function") renderStoryHome();
 }
 const TabBar = {
@@ -34,14 +47,13 @@ const TabBar = {
     sfx("tap");
     haptic(10);
     if (tab === "battle") {
-      // Show main menu
+      // Play — main menu
       showMenu();
     } else if (tab === "team") {
-      // Show story mode
+      // Career — story mode
       showStoryHome();
     } else if (tab === "arena") {
-      // Quick Match overlay — hide the home menu first so the two overlays
-      // don't stack (C13), and prefill the honest quick-match screen.
+      // Arena — instant bot battle format picker (honest quick match)
       $("menuOverlay").classList.add("hidden");
       if ($("matchmakingOverlay")) {
         $("matchmakingOverlay").classList.remove("hidden");
@@ -50,11 +62,14 @@ const TabBar = {
         showMenu();
       }
     } else if (tab === "lounge") {
-      // Placeholder
-      alert("Lounge — coming soon! Chat with friends and see live matches.");
+      // Profile — same action as the home profile button
+      const b = $("btnProfile");
+      if (b) b.click();
+      else showMenu();
     } else if (tab === "tournaments") {
-      // Placeholder
-      alert("Tournaments — coming soon! Compete in brackets and win trophies.");
+      // Help — how to play (on demand, never auto-opens)
+      showMenu();
+      if (typeof openTutorial === "function") openTutorial();
     }
   },
 };

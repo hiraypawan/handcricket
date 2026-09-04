@@ -67,16 +67,17 @@ $("tutSkip").onclick = () => {
   } catch (e) {}
   closeTutorial();
 };
-try {
-  if (
-    !localStorage.getItem("hc_tut_dismissed") &&
-    !localStorage.getItem("hc_tut_skipped")
-  ) {
-    setTimeout(() => {
-      if (!$("menuOverlay").classList.contains("hidden")) openTutorial();
-    }, 800);
-  }
-} catch (e) {}
+// v2.5: the How-to-play screen NEVER auto-opens before the home screen. It is
+// only reachable on demand from the "How to Play" button on the home screen.
+const howToBtn = $("btnHowTo");
+if (howToBtn) {
+  howToBtn.onclick = () => {
+    ensureAudio();
+    sfx("tap");
+    haptic(8);
+    openTutorial();
+  };
+}
 $("btnBack1").onclick = () => {
   $("offlineSetup").classList.add("hidden");
   $("menuOverlay").classList.remove("hidden");
