@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — Hand Cricket Pro v2.6
+# AI_CONTEXT.md — Hand Cricket Pro v2.7
 
 > Read this first. It maps the whole codebase so an AI or vibe coder can make
 > changes without guessing. Companion docs (audit history & known bugs):
@@ -39,7 +39,7 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | 2 | `01-config.js` | IPL `TEAMS`, `ALL_PLAYERS`, role/gesture rules, bot name pools |
 | 3 | `02-bot-ai.js` | `BotAI` — Markov+context bot predictor (`bowl()/bat()`) |
 | 4 | `03-state.js` | `TIMER`/`CIRC`, **`G` (the single game-state object)**, `$`, session/snapshot/persist helpers, net vars |
-| 5 | `04-hands.js` | `HandRenderer` / `getHandSVG` / arena hands — v2.5 flat vector hands (gold cuff = player/right, violet = opponent/left, mirrored) |
+| 5 | `04-hands.js` | `HandRenderer` / `getHandSVG` / `buildArenaHand` / `setHandGesture` / `handPump` / `enhanceGestureButtons` — **v2.7 articulated hands**: one persistent SVG skeleton per hand (3 phalanges/finger), joint angles tweened with rAF (staggered index→pinky), bold cream keyline, opponent mirrored, viewBox 200×300 |
 | 6 | `05-navigation.js` | Home/menu show-hide, bottom `TabBar` |
 | 7 | `06-sfx.js` | `ensureAudio`, `sfx()`, haptics |
 | 8 | `07-display.js` | Scoreboard/HUD, flash, confetti, countdowns, leave dialog, shared toss-coin animation (`tossSpin`/`tossLand`/`tossSettle`) |
@@ -128,14 +128,20 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
     `showDock()`; `startInnings()` and the online mid-match restore path call
     `hideDock()`. Never show the dock inside gameplay, and never add bottom
     padding to `#app` instead.
-6c. **Arena band invariants (v2.6.1).** `.arena` is `flex-end`/`space-between`;
-    `.player-side` is `height:100%; justify-content:flex-end`. Hands live in a
-    bottom band capped at `max-height:46%` and may never rise above it, or
-    they collide with the upper band: `.timer-wrap`/`.countdown` 36%,
-    `.flash` 32% (all absolute, centered). Hand SVG canvas is 240x300 with
-    the art zoomed `translate(120,0) scale(1.32,1)`; the mirror wrapper must
-    stay the outermost group so opponent hands flip correctly. On
-    <=420px-wide screens `.player-card` is hidden (scoreboard carries it).
+6c. **Arena band + hand skeleton invariants (v2.7.2).** `.arena` is
+    `flex-end`/`space-between`; hands live in a bottom band capped at
+    `max-height:46%` and may never rise above it (they collide with
+    `.timer-wrap`/`.countdown` 36% and `.flash` 32%). The hand SVG is
+    `viewBox="0 0 200 300"` with **no horizontal stretch** (the old
+    `scale(1.32,1)` zoom is gone — do not reintroduce it). Joint groups carry
+    `data-j="<tag>f<finger>p<phalanx>"` / `data-j="<tag>t1|t2"` /
+    `data-j="<tag>wrist"` (`tag` = `p` player, `o` opponent); the tween writes
+    `rotate()` onto those nodes, so never rewrite their transforms from CSS.
+    The mirror wrapper (`translate(200 0) scale(-1 1)`) must stay OUTERMOST so
+    opponent hands flip correctly. `setHandGesture()` mounts the skeleton on
+    first call (`host.__ctl`) — do not `innerHTML`-swap arena hands anymore;
+    gesture changes must go through the controller so fingers animate.
+    On <=420px-wide screens `.player-card` is hidden (scoreboard carries it).
 6d. **Mid-match centre brand card removed (v2.6.2).** `#centerCard` stays in
     the DOM (code keeps writing it) but `display:none` — do not re-show it
     during matches; the top scoreboard, overs `x.y`, target banner and
@@ -156,6 +162,36 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
     `#resultActions` (sticky glass pill) and close buttons sticky — they
     must stay reachable while stats scroll underneath.
 
+## 6g. v2.7.1 UX/roles/banter invariants
+
+- **Role limits are the game design, not tuning knobs:** `ROLE_LIMITS` in
+  `01-config.js` = AGG `[4,5,6]`, DEF `[1,2,3]`, BAL `[1..6]`, for **bat and
+  bowl**. The bot obeys them too via `botPickWithRole()` in `09-engine.js`
+  (clamps `BotAI.bat()/bowl()` into the bot's allowed set). My own auto-pick
+  on timeout uses `pickAllowedGesture()`. Never let any picker bypass these.
+- **Banter direction rule (`19-chat.js`):** every bot line is ABOUT THE OTHER
+  SIDE. When the bot bats it roasts the player's bowling; when it bowls it
+  reacts to the player's batting. No self-praise, no self-pity. Pools:
+  `onPlayer*` fire for the player's action, `onBot*` for the bot's action,
+  and dot/over/free-hit/one-to-win/big-chase have `...Bowling` / `...Batting`
+  variants keyed on `G.iBat`. `window.BOT_CHAT_POOLS` + `window.botChatPick`
+  exist for the smoke suite; keep them.
+- **Close / action bars are `position:fixed`, not sticky** (`#btnCloseProfile`,
+  `#btnCloseFriends`, `#resultActions`). Sticky inside a backdrop-filtered
+  scroller drifted on real devices. `.overlay` has `backdrop-filter`, which
+  makes it the containing block, and it is `inset:0` — so fixed == pinned to
+  the viewport. Overlays reserve bottom padding so content clears the bar.
+- **Glass balance:** surfaces/borders/muted text were raised in the v2.7.1
+  block at the end of `app.css` (`--card:.13`, `--card-border:.26`,
+  `--ink-soft:.82`). If a panel reads washed out, raise it THERE.
+- **One-page game:** `html,body,#app` are `100dvh; overflow:hidden`; overlays
+  scroll internally only. Short-screen compaction lives in `@media
+  (max-height:700px)` / `(max-height:560px)`. Never add page-level scroll.
+- **Career stats:** `defaultStats()` gained `outs` and `bestBowlWkts`;
+  `loadStats()` derives `economy`, `dotPct`, `boundaryPct`, `batAvg`,
+  `oversBowled`, `oversFaced`. `winPct` is a bare number (the card appends
+  `%`). Profile renders Overall/Batting/Bowling grids — add new cards there.
+
 ## 7. Known limitations (do not "fix" blindly)
 
 - Online P2P needs two live browsers + PeerJS; the smoke suite cannot cover
@@ -167,5 +203,9 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
 
 ## 8. Versioning
 
-UI version string in `public/index.html` (`.home-version`); bump cache-buster
-query strings (`js/story-data.js?v=…`) whenever that data file changes.
+UI version string in `public/index.html` (`.home-version`). **Every local
+`<script src="js/…">` and the stylesheet carry `?v=<version>`** — bump ALL of
+them together with `.home-version` on any release, or proxies/browsers keep
+serving stale modules (this bit us in v2.7.2: unbusted tags + a Last-Modified-only
+dev server served old hands from cache). For local previews use
+`tools/serve-dev.py <port> <dir>` which sends `Cache-Control: no-store`.

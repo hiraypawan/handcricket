@@ -135,9 +135,12 @@ const TEAMS = {
 };
 const ALL_PLAYERS = Object.values(TEAMS).flatMap((t) => t.players);
 
+// v2.7.1: role gesture limits per the game design —
+// AGGROSSIVE may only play/face big balls (4-6), DEFENSIVE only safe ones
+// (1-3), BALANCED everything. Applies to batting AND bowling, all modes.
 const ROLE_LIMITS = {
-  aggressive: { bat: [3, 4, 5, 6], bowl: [3, 4, 5, 6] },
-  defensive: { bat: [1, 2, 3, 4], bowl: [1, 2, 3, 4] },
+  aggressive: { bat: [4, 5, 6], bowl: [4, 5, 6] },
+  defensive: { bat: [1, 2, 3], bowl: [1, 2, 3] },
   balanced: { bat: [1, 2, 3, 4, 5, 6], bowl: [1, 2, 3, 4, 5, 6] },
 };
 

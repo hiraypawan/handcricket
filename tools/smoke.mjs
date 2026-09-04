@@ -283,6 +283,151 @@ check(
 );
 
 // cleanup
+// ------------------------------------------- 6. v2.7.1 UX / roles / banter pack
+const cssSrc = readFileSync(join(root, "public/css/app.css"), "utf8");
+
+// 6a. role limits match the game design (AGG 4-6, DEF 1-3, bat AND bowl)
+const ROLE = JSON.parse(ev(dom, `JSON.stringify(ROLE_LIMITS)`));
+check(
+  "role limits: AGG 4-6 / DEF 1-3 for bat & bowl",
+  JSON.stringify(ROLE.aggressive.bat) === "[4,5,6]" &&
+    JSON.stringify(ROLE.aggressive.bowl) === "[4,5,6]" &&
+    JSON.stringify(ROLE.defensive.bat) === "[1,2,3]" &&
+    JSON.stringify(ROLE.defensive.bowl) === "[1,2,3]",
+  JSON.stringify(ROLE.aggressive) + JSON.stringify(ROLE.defensive),
+);
+
+// 6b. the BOT obeys its own role when batting and when bowling
+const botRoleOk = ev(dom, `(() => {
+  G.mode='offline';
+  G.myPlayers=[{name:'Me',battingStyle:'balanced',bowlingStyle:'balanced'}];
+  G.oppPlayers=[{name:'Bot',battingStyle:'aggressive',bowlingStyle:'aggressive'}];
+  G.batIdx=0; G.bowlIdx=0;
+  G.iBat=false;  // bot bats
+  const batOk = Array.from({length:200},()=>botPickWithRole()).every(v=>[4,5,6].includes(v));
+  G.iBat=true;   // bot bowls
+  const bowlOk = Array.from({length:200},()=>botPickWithRole()).every(v=>[4,5,6].includes(v));
+  return batOk && bowlOk;
+})()`);
+check("bot picks respect its role (200 draws bat + bowl)", botRoleOk === true);
+
+// 6c. my gesture grid greys out role-forbidden numbers
+const restr = ev(dom, `(() => {
+  G.iBat=true; G.state='waiting';
+  G.myPlayers=[{name:'A',battingStyle:'defensive',bowlingStyle:'balanced'}];
+  G.oppPlayers=[{name:'B',battingStyle:'balanced',bowlingStyle:'balanced'}];
+  G.batIdx=0; G.bowlIdx=0;
+  applyGestureRestrictions();
+  const out={};
+  document.querySelectorAll('.gesture-btn').forEach(b=>out[b.dataset.val]=b.classList.contains('restricted'));
+  removeGestureRestrictions();
+  return JSON.stringify(out);
+})()`);
+const R = JSON.parse(restr);
+check(
+  "defensive batter: 4,5,6 greyed; 1,2,3 free",
+  R["4"] === true && R["5"] === true && R["6"] === true &&
+    R["1"] === false && R["2"] === false && R["3"] === false,
+  restr,
+);
+
+// 6d. banter is never self-directed: every line the bot speaks about its OWN
+//     scoring must address the opponent (second person / their bowling/ball)
+const OPP_KEYS = ["onBotSix","onBotFour","onBotOut","onDotBatting","onOverEndBatting",
+  "onFreeHitBatting","onOneToWinBotBatting","onBigChaseBotBatting","onBotWinning"];
+const pools = ev(dom, `JSON.stringify(window.BOT_CHAT_POOLS)`);
+const POOLS = JSON.parse(pools);
+const directed = /teri|tera|tere|tujh|tu\b|bowling|bowler|ball|defend/i;
+let badLines = [];
+for (const k of OPP_KEYS) {
+  for (const l of POOLS[k] || []) if (!directed.test(l.t)) badLines.push(k + ": " + l.t);
+}
+check("banter pools address the opponent, never self-praise", badLines.length === 0, badLines.join(" | "));
+
+// 6e. profile: no sign-in stub, richer stats visible
+ev(dom, `saveStats(defaultStats()); showProfile()`);
+const profTxt = byId(dom, "profileCard")?.textContent || "";
+check(
+  "profile has no 'Sign in' stub",
+  !/sign in/i.test(profTxt),
+);
+check(
+  "profile shows expanded stats (avg, dot%, boundary%, economy, overs, best bowl, streak, hat-tricks)",
+  ["Batting Avg","Dot Ball %","Boundary %","Economy","Overs Bowled","Best Bowling",
+   "Best Win Streak","Hat-tricks","Runs Conceded","Overs Faced"].every((t) => profTxt.includes(t)),
+);
+
+// 6f. career math for the new derived stats
+const derived = ev(dom, `(() => {
+  saveStats(defaultStats());
+  updateStatsAfterMatch({won:true,myRuns:50,myBalls:30,mySixes:2,myFours:4,
+    myHist:['DOT','DOT'],oppWickets:3,oppBalls:24,oppRuns:20});
+  const s = loadStats();
+  return JSON.stringify({eco:s.economy,dot:s.dotPct,avg:s.batAvg,ov:s.oversBowled,best:s.bestBowlWkts});
+})()`);
+const D = JSON.parse(derived);
+check(
+  "derived stats compute (economy 5.00, dot 7%, avg 16.7, 4.0 ov, best 3W)",
+  D.eco === "5.00" && D.dot === 7 && D.avg === "16.7" && D.ov === "4.0" && D.best === 3,
+  derived,
+);
+
+// 6g. close/action bars are pinned (position:fixed) so they can't drift on scroll
+check(
+  "profile/friends close + result actions are position:fixed",
+  /#btnCloseProfile,#btnCloseFriends\{position:fixed/.test(cssSrc) &&
+    /#resultActions\{position:fixed/.test(cssSrc),
+);
+
+// 6h. glass rebalance tokens actually raised (surfaces >= .10 alpha)
+check(
+  "glass tokens rebalanced (card .13 / border .26 / soft .82)",
+  /--card:rgba\(255,255,255,\.13\)/.test(cssSrc) &&
+    /--card-border:rgba\(255,255,255,\.26\)/.test(cssSrc) &&
+    /--ink-soft:rgba\(248,250,252,\.82\)/.test(cssSrc),
+);
+
+// ------------------------------------------- 7. v2.7.2 articulated hands
+const svg5 = ev(dom, `getHandSVG(5, true)`);
+check(
+  "hand svg is an articulated skeleton (joint groups, no 1.32 stretch)",
+  svg5.includes('data-j="pf2p3"') && svg5.includes('data-j="pt1"') &&
+    !svg5.includes("scale(1.32,1)"),
+);
+check(
+  "opponent hand mirrored by outermost wrapper",
+  ev(dom, `getHandSVG(5, false)`).includes("translate(200 0) scale(-1 1)"),
+);
+const miniCount = ev(dom, `document.querySelectorAll('.gesture-btn .mini-hand svg').length`);
+check("six gesture buttons carry mini hand previews", miniCount === 6, "count=" + miniCount);
+
+// tween: with a deliberately LONG duration the joint must be caught
+// strictly between the curled and extended angles (an innerHTML teleport
+// would jump straight to the target). Deterministic: no settle-timing race.
+ev(dom, `document.getElementById('arenaPlayer').__ctl.set(0, { animate: false })`);
+await sleep(80);
+ev(dom, `document.getElementById('arenaPlayer').__ctl.set(5, { duration: 2000, stagger: 0 })`);
+await sleep(250);
+const midRot = parseFloat(ev(dom,
+  `document.querySelector('#arenaPlayer [data-j="pf0p1"]').getAttribute('transform').match(/rotate\\(([-0-9.]+)/)[1]`));
+ev(dom, `document.getElementById('arenaPlayer').__ctl.set(0, { animate: false })`);
+const endRot = parseFloat(ev(dom,
+  `document.querySelector('#arenaPlayer [data-j="pf0p1"]').getAttribute('transform').match(/rotate\\(([-0-9.]+)/)[1]`));
+check(
+  "fingers tween through intermediate angles (not a teleport)",
+  midRot > -2.5 && midRot < 25.5 && endRot === 26,
+  `mid=${midRot.toFixed(2)} (between 26 and -3) settled=${endRot}`,
+);
+check(
+  "wicket pump hook flags the dismissed side's hand",
+  ev(dom, `handPump(true); document.getElementById('handPlayer').classList.contains('wicket')`) === true,
+);
+check(
+  "hand motion css present (desync shake, six throw, ring, reduced-motion guard)",
+  /@keyframes hn27/.test(cssSrc) && /@keyframes th27x/.test(cssSrc) &&
+    /@keyframes ring27/.test(cssSrc) && /prefers-reduced-motion:reduce/.test(cssSrc),
+);
+
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);
