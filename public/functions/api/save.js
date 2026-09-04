@@ -1,4 +1,4 @@
-export onRequestPost = async (ctx) => {
+export const onRequestPost = async (ctx) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -40,7 +40,7 @@ export onRequestPost = async (ctx) => {
   }
 };
 
-export onRequestOptions = async () => {
+export const onRequestOptions = async () => {
   return new Response(null, {
     status: 204,
     headers: {
