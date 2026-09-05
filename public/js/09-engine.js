@@ -698,6 +698,9 @@ function finishMatch() {
      streak and record this pairing for head-to-head. Feature-detected so an
      older cached bundle can't break the result screen. */
   if (typeof hcRecordPlayedDay === "function") hcRecordPlayedDay();
+  /* A knockout cup is a bracket of ordinary matches, so it advances here rather
+     than in a parallel engine. Returns true only when a cup fixture resolved. */
+  if (typeof hcCupMatchEnd === "function") hcCupMatchEnd(matchResult);
   if (typeof hcRecordH2H === "function" && typeof getUsername === "function") {
     hcRecordH2H(getUsername(), matchResult.oppName, matchResult);
   }

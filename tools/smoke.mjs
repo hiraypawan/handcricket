@@ -766,6 +766,80 @@ check(
 );
 check("ball trail respects reduced motion", /prefers-reduced-motion:reduce\)\{\.ball-trail\{display:none\}\}/.test(cssSrc));
 
+// ---------------------------------------------------------------- 12. knockout cup
+// 11f cleared localStorage, which took hcp_username with it — restore it, then
+// read the player's name back out of the draw rather than hardcoding it.
+ev(dom, `localStorage.removeItem("hcp_cup"); setUsername("Alice")`);
+const CUP_ME = ev(dom, `getUsername()`);
+check("cup overlay exists", !!byId(dom, "cupOverlay"));
+check("tournaments tab opens the cup, not the tutorial", /hcOpenCup\(\)/.test(jsSrc("05-navigation.js")));
+check("no cup running initially", ev(dom, `hcHasActiveCup()`) === false);
+
+ev(dom, `hcOpenCup()`);
+await sleep(60);
+const cupHost = byId(dom, "cupBracket");
+check("opening the cup offers 4 and 8 player draws", /4 players/.test(cupHost.innerHTML) && /8 players/.test(cupHost.innerHTML));
+
+cupHost.querySelector('.cup-size[data-size="4"]').click();
+await sleep(60);
+let cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("4-player draw includes the player", cup.draw[0] === CUP_ME && cup.draw.length === 4, cup.draw.join(", "));
+check("every slot in the draw is a distinct player", new Set(cup.draw).size === 4);
+check("a 4-player draw is labelled Semi-final", /Semi-final/.test(cupHost.innerHTML));
+check("cup is active once drawn", ev(dom, `hcHasActiveCup()`) === true);
+
+const cupOpp = ev(dom, `(function(){var c=JSON.parse(localStorage.getItem('hcp_cup'));return c.remaining.filter(n=>n!==c.draw[0])[0];})()`);
+ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(cupOpp)}})`);
+cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check(
+  "winning a semi halves the field (fixtures you don't play still resolve)",
+  cup.remaining.length === 2 && cup.remaining.indexOf(cupOpp) === -1,
+  cup.remaining.join(", "),
+);
+check("cup wins are counted", cup.wins === 1, String(cup.wins));
+const cupOpp2 = cup.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(cupOpp2)}})`);
+cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("winning the final crowns the player", cup.champion === CUP_ME && ev(dom, `hcHasActiveCup()`) === false, String(cup.champion));
+
+// a loss hands the cup to the opponent; a tie eliminates nobody
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="4"]').click();
+await sleep(40);
+let cupL = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+const lostTo = cupL.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:false, lost:true, oppName:${JSON.stringify(lostTo)}})`);
+cupL = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("losing eliminates the player and crowns the opponent", cupL.champion === lostTo && cupL.remaining.indexOf(CUP_ME) === -1, String(cupL.champion));
+
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="4"]').click();
+await sleep(40);
+let cupT = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+const tiedWith = cupT.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:false, lost:false, tied:true, oppName:${JSON.stringify(tiedWith)}})`);
+cupT = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("a tie replays the fixture instead of eliminating anyone", cupT.remaining.length === 4 && !cupT.champion, cupT.remaining.join(", "));
+
+// 8-player bracket takes exactly three wins
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="8"]').click();
+await sleep(40);
+let cup8 = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("8-player draw is labelled Quarter-final", /Quarter-final/.test(byId(dom, "cupBracket").innerHTML));
+let cupRounds = 0;
+for (let i = 0; i < 5 && !cup8.champion; i++) {
+  const o = cup8.remaining.filter((n) => n !== cup8.draw[0])[0];
+  if (!o) break;
+  ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(o)}})`);
+  cup8 = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+  cupRounds++;
+}
+check("an 8-player cup needs exactly 3 wins", cupRounds === 3 && cup8.champion === CUP_ME, "rounds=" + cupRounds);
+
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);

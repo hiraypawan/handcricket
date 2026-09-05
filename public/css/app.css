@@ -1504,3 +1504,45 @@ input,select,textarea{font-size:16px}
 .lb-avatar{border-radius:50%;overflow:hidden}
 .lb-avatar svg{display:block;width:100%;height:100%}
 .ptr-row{display:flex;justify-content:flex-end;margin-bottom:8px}
+
+/* ======================================================== v2.9 knockout cup ==
+   A shrinking field, not a wall of grey: eliminated names leave the grid, so
+   the bracket reads as a tournament narrowing rather than a scoreboard. */
+.cup-wrap{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0}
+.cup-empty{text-align:center;padding:22px 10px;color:var(--ink-soft);font-size:13.5px;
+  font-family:"Rubik",sans-serif}
+.cup-sizes{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
+.cup-size{flex:1 1 140px;max-width:190px;background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.16);border-radius:14px;padding:14px 12px;
+  font-family:"Luckiest Guy",cursive;font-size:15px;color:#fff;cursor:pointer;
+  display:flex;flex-direction:column;gap:5px;align-items:center}
+.cup-size span{font-family:"Rubik",sans-serif;font-size:11px;font-weight:600;
+  color:var(--ink-faint);letter-spacing:.4px}
+.cup-size:active{transform:translateY(1px);border-color:var(--amber)}
+.cup-head{text-align:center;margin-bottom:12px}
+.cup-round{font-family:"Luckiest Guy",cursive;font-size:17px;color:var(--amber);letter-spacing:.6px}
+.cup-field{font-size:11.5px;color:var(--ink-faint);font-family:"Rubik",sans-serif;
+  letter-spacing:.8px;text-transform:uppercase;margin-top:3px}
+.cup-grid{display:flex;flex-direction:column;gap:8px}
+.cup-match{display:grid;grid-template-columns:1fr 30px 1fr;align-items:center;gap:6px;
+  padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09)}
+.cup-match.mine{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.07)}
+.cup-slot{font-family:"Rubik",sans-serif;font-size:12.5px;font-weight:700;color:var(--ink-soft);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cup-slot.me{color:#fff;font-weight:900}
+.cup-vsep{font-size:10px;color:var(--ink-faint);text-align:center;font-weight:800;letter-spacing:.6px}
+.cup-play{width:100%;margin-top:13px;background:var(--amber);border:0;border-radius:13px;
+  padding:13px;font-family:"Luckiest Guy",cursive;font-size:15px;color:#1a1206;cursor:pointer}
+.cup-play:active{transform:translateY(1px)}
+.cup-quit{width:100%;margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.14);
+  border-radius:11px;padding:9px;font-family:"Rubik",sans-serif;font-size:12px;
+  color:var(--ink-faint);cursor:pointer}
+.cup-done{text-align:center;padding:20px 12px;border-radius:16px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10)}
+.cup-done.won{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.09)}
+.cup-trophy{font-size:44px;line-height:1}
+.cup-champ{font-family:"Luckiest Guy",cursive;font-size:19px;color:#fff;margin-top:8px}
+.cup-sub{font-size:12.5px;color:var(--ink-soft);font-family:"Rubik",sans-serif;margin-top:5px}
+.cup-again{width:100%;margin-top:13px;background:var(--amber);border:0;border-radius:13px;
+  padding:12px;font-family:"Luckiest Guy",cursive;font-size:14px;color:#1a1206;cursor:pointer}
