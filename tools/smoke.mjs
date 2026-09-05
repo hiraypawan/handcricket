@@ -355,6 +355,12 @@ check(
   "",
 );
 check(
+  "quick search needs a username + leaves pool on bot fallback",
+  /if \(!me0\.trim\(\)\)/.test(repoSrc("public/js/18-instant.js")) &&
+    /qmLeave\(\);/.test(repoSrc("public/js/18-instant.js")),
+  "",
+);
+check(
   "matchmaking converges concurrent seekers (deterministic room + adopt)",
   /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
     /readMatch\(KV, sidOf\(cand\)\)/.test(repoSrc("functions/api/quickmatch.js")),

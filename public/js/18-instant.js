@@ -38,16 +38,22 @@ function qmCid() {
     return "";
   }
 }
-function resetMatchmakingUI() {
-  stopQmSearch();
+/* Tell the pool I'm gone (bot fallback, match start, cancel) — otherwise my
+   ghost entry can pair a stranger into an empty room for up to 20s. */
+function qmLeave() {
   try {
-    const me = (typeof getUsername === "function" && getUsername()) || "Player";
+    const me = (typeof getUsername === "function" && getUsername()) || "";
+    if (!me) return;
     fetch("/api/quickmatch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "leave", user: me, cid: qmCid() }),
     }).catch(() => {});
   } catch (e) {}
+}
+function resetMatchmakingUI() {
+  stopQmSearch();
+  qmLeave();
   mmSearching = false;
   mmPersona = null;
   clearInterval(matchTimer);
@@ -89,6 +95,18 @@ const MM_SEARCH_STAGES = [
   "Still looking...",
 ];
 function findOpponent() {
+  /* Every seeker is a named real player — no anonymous "Player" entries.
+     The name gate has no dismiss path, but this guards direct calls too. */
+  const me0 = (typeof getUsername === "function" && getUsername()) || "";
+  if (!me0.trim()) {
+    if (typeof ensureUsername === "function") {
+      ensureUsername(() => {
+        if ((typeof getUsername === "function" && getUsername() || "").trim())
+          findOpponent();
+      });
+    }
+    return;
+  }
   mmSearching = true;
   $("searchSpinner").style.display = "block";
   $("mmPersona").classList.add("hidden");
@@ -97,7 +115,7 @@ function findOpponent() {
   btn.textContent = "Searching...";
   if (typeof window.hcPresenceSet === "function")
     window.hcPresenceSet("seeking", null);
-  const me = (typeof getUsername === "function" && getUsername()) || "Player";
+  const me = (typeof getUsername === "function" && getUsername()) || "";
   const teamSize = getTeamSize();
   /* Real pairs need overlap time (separate taps + KV propagation), so the
      hunt runs ~18-25s; a Play Bot Now shortcut appears after ~8s for solo
@@ -166,6 +184,7 @@ function findOpponent() {
     S.cancelled = true;
     clearInterval(S.poll);
     mmSearch = null;
+    qmLeave();
     if (botNowBtn) botNowBtn.style.display = "none";
     mmPersona = genBotProfile();
     renderMMPersona(mmPersona);
@@ -268,6 +287,7 @@ $("btnMMPlayBot").onclick = () => {
 /* keep the revealed persona when the match actually starts */
 function resetMatchmakingUI2() {
   stopQmSearch();
+  qmLeave();
   mmSearching = false;
   clearInterval(matchTimer);
 }

@@ -172,9 +172,11 @@ export const onRequestPost = async (ctx) => {
       return json({ error: 'Server storage is not configured yet', degraded: true }, 503);
     const body = await ctx.request.json();
     const { action, user, teamSize } = body;
-    if (!user || !action) return json({ error: 'Missing params' }, 400);
+    if (!action) return json({ error: 'Missing params' }, 400);
     const KV = ctx.env.KV;
-    const me = String(user).trim().slice(0, 24);
+    /* Named real players only — blank guests can't pair or be displayed. */
+    const me = String(user || '').trim().slice(0, 24);
+    if (!me) return json({ error: 'Missing user' }, 400);
     const cid = body.cid
       ? String(body.cid).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 32) || null
       : null;

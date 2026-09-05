@@ -71,5 +71,42 @@ await post({ action: "seek", user: "Solo1", cid: "s1", teamSize: 1 });
 const solo = await post({ action: "poll", user: "Solo1", cid: "s1", teamSize: 1 });
 check("lone seeker waits", solo.status === "waiting", solo.status);
 
+// 5. four seekers pair off into two complementary rooms, oldest-first
+store.clear();
+for (const [u, c] of [["NA", "ca"], ["NB", "cb"], ["NC", "cc"], ["ND", "cd"]]) {
+  await post({ action: "seek", user: u, cid: c, teamSize: 1 });
+}
+const r = {};
+for (const [u, c] of [["NA", "ca"], ["NB", "cb"], ["NC", "cc"], ["ND", "cd"]]) {
+  r[u] = await post({ action: "poll", user: u, cid: c, teamSize: 1 });
+}
+const rooms = new Set([r.NA.room, r.NB.room, r.NC.room, r.ND.room]);
+const ab =
+  r.NA.status === "matched" &&
+  r.NB.status === "matched" &&
+  r.NA.room === r.NB.room &&
+  r.NA.opp === "NB" &&
+  r.NB.opp === "NA" &&
+  ((r.NA.role === "host" && r.NB.role === "guest") ||
+    (r.NA.role === "guest" && r.NB.role === "host"));
+const cd =
+  r.NC.status === "matched" &&
+  r.ND.status === "matched" &&
+  r.NC.room === r.ND.room &&
+  r.NC.opp === "ND" &&
+  r.ND.opp === "NC" &&
+  ((r.NC.role === "host" && r.ND.role === "guest") ||
+    (r.NC.role === "guest" && r.ND.role === "host"));
+check(
+  "four seekers form two clean pairs",
+  ab && cd && rooms.size === 2,
+  `AB=${r.NA.room}/${r.NA.role}+${r.NB.role} CD=${r.NC.room}/${r.NC.role}+${r.ND.role}`,
+);
+
+// 6. blank guests are rejected, never pooled
+store.clear();
+const blank = await post({ action: "seek", user: "   ", cid: "bx", teamSize: 1 });
+check("blank username rejected", blank.error === "Missing user", JSON.stringify(blank));
+
 console.log(failures === 0 ? "✅ QM-SIM: all checks passed" : `❌ QM-SIM: ${failures} failed`);
 process.exit(failures === 0 ? 0 : 1);
