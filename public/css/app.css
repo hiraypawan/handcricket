@@ -1332,3 +1332,74 @@ input,select,textarea{font-size:16px}
 .persona-stats span{font-size:10.5px;font-weight:800;color:var(--ink-faint);
   text-transform:uppercase;letter-spacing:.6px}
 .pre-stats-meta{font-size:11.5px;color:var(--ink-faint);margin:-2px 0 8px;letter-spacing:.3px}
+
+/* ==========================================================================
+   v2.8b — leaderboard, scroll hardening, role-restriction reasons
+   ========================================================================== */
+
+/* ---- leaderboard ---- */
+.lb-sub{font-size:12px;color:var(--ink-faint);margin:-2px 0 10px}
+.lb-list{width:min(100%,380px);display:flex;flex-direction:column;gap:7px;margin:0 auto}
+.lb-empty{text-align:center;opacity:.6;padding:26px 16px;font-size:13px;line-height:1.7}
+.lb-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;
+  width:100%;text-align:left;padding:10px 13px;border-radius:16px;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;
+  font-family:inherit;transition:all .15s}
+.lb-row:active{transform:scale(.985);border-color:rgba(45,212,191,.4)}
+.lb-rank{font-family:var(--font-title);font-size:15px;color:var(--ink-faint);text-align:center}
+.lb-row.gold .lb-rank{color:#fde68a}
+.lb-row.silver .lb-rank{color:#cbd5e1}
+.lb-row.bronze .lb-rank{color:#f0a868}
+.lb-row.gold{background:linear-gradient(135deg,rgba(251,191,36,.16),rgba(255,255,255,.04));border-color:rgba(251,191,36,.4)}
+.lb-name{font-size:14px;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-you{font-size:10px;font-weight:900;letter-spacing:1px;color:#052e2b;background:var(--teal);
+  border-radius:99px;padding:2px 6px;margin-left:7px;vertical-align:middle}
+.lb-wins{font-family:var(--font-title);font-size:18px;color:var(--amber);text-align:right;line-height:1}
+.lb-wins small{display:block;font-family:"Rubik",sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);margin-top:2px}
+.lb-meta{font-size:11px;font-weight:700;color:var(--ink-faint);white-space:nowrap}
+.lb-row.me{border-color:rgba(45,212,191,.45);background:rgba(45,212,191,.09)}
+.lb-mine{margin-top:10px;font-size:12.5px;color:var(--ink-soft);text-align:center;
+  padding:10px 14px;border-radius:14px;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.25)}
+.friend-item{cursor:pointer}
+
+/* ---- scroll hardening ----------------------------------------------------
+   Sheets are the ONLY scroller (no nested scroll traps), they never chain the
+   scroll to the page, and the last row always clears the dock. */
+.overlay,.friends-overlay,.story-home,.role-assign-overlay,.trophy-celebrate{
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.friend-list{overflow:visible;flex:none}
+.friend-notif{overscroll-behavior:contain}
+.profile-card,.opp-profile-card{overflow:visible}
+.prof-stats-grid{overflow:visible}
+/* short viewports: shrink the coin + pre-match card so the toss fits */
+@media(max-height:700px){
+  .coin-container{width:clamp(78px,12vh,104px);height:clamp(78px,12vh,104px);margin:4px auto}
+  .pre-stats-box{padding:10px 12px}
+  .pre-stat-row{padding:2px 0}
+  .toss-lines{min-height:40px;margin:4px 0 2px}
+  .overlay h1{font-size:clamp(18px,3vh,24px)}
+}
+@media(max-height:560px){
+  .coin-container{width:70px;height:70px}
+  #tossPreStats{display:none!important}
+}
+
+/* ---- role restriction: say WHY a number is locked ---- */
+.gesture-btn.restricted{position:relative}
+.gesture-btn.restricted::after{content:attr(data-lock-reason);
+  position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);
+  white-space:nowrap;font-size:10.5px;font-weight:800;letter-spacing:.3px;
+  color:#fda4af;background:rgba(30,10,16,.95);border:1px solid rgba(251,113,133,.4);
+  border-radius:9px;padding:4px 8px;opacity:0;pointer-events:none;transition:opacity .15s;z-index:20}
+.gesture-btn.restricted.lock-hint::after{opacity:1}
+.role-legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px auto 0;max-width:340px}
+.role-legend span{font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:4px 9px;border-radius:99px;
+  border:1px solid rgba(255,255,255,.14);color:var(--ink-soft)}
+.role-legend .lg-agg{color:#fecaca;border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.1)}
+.role-legend .lg-def{color:#bae6fd;border-color:rgba(125,211,252,.4);background:rgba(125,211,252,.1)}
+.role-legend .lg-bal{color:#d9f99d;border-color:rgba(163,230,53,.35);background:rgba(163,230,53,.08)}
+.role-hint{margin-top:7px;text-align:center}
+.role-hint.hidden{display:none!important}
+.role-hint .role-legend{margin:0 auto}

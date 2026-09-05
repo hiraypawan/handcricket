@@ -97,7 +97,6 @@ const TEAMS = {
       { name: "Chahal", role: "bowler" },
       { name: "Sandeep", role: "bowler" },
       { name: "Boult", role: "bowler" },
-      { name: "Bolt", role: "bowler" },
     ],
   },
   srh: {

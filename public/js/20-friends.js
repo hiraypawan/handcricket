@@ -113,13 +113,15 @@ function loadLocal() {
     if (currentTab === "list") {
       if (!myFriends.friends || myFriends.friends.length === 0) {
         list.innerHTML =
-          '<div style="text-align:center;opacity:.5;padding:20px;font-size:13px">No friends yet. Play a match and add your opponent!</div>';
+          '<div class="lb-empty">No friends yet.<br>Play a match and add your opponent, or share an invite from the Leaderboard.</div>';
         return;
       }
       list.innerHTML = myFriends.friends
         .map(
           (f) =>
-            '<div class="friend-item' + (f.isBot ? ' isBot' : '') + '">' +
+            '<div class="friend-item' + (f.isBot ? " isBot" : "") + '" onclick="showUserProfile(\'' +
+            escAttr(f.name) +
+            '\')">' +
             '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
@@ -133,10 +135,10 @@ function loadLocal() {
             (f.stats ? getRank(f.stats) : "") +
             "</div></div>" +
             '<div class="friend-actions">' +
-            '<button class="fa-challenge" onclick="challengeFriend(\'' +
+            '<button class="fa-challenge" onclick="event.stopPropagation();challengeFriend(\'' +
             escAttr(f.name) +
             "')\">Play</button>" +
-            '<button class="fa-remove" onclick="removeFriend(\'' +
+            '<button class="fa-remove" onclick="event.stopPropagation();removeFriend(\'' +
             escAttr(f.name) +
             "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button>" +
             "</div></div>",
@@ -164,10 +166,10 @@ function loadLocal() {
             (f.stats ? getRank(f.stats) : "New player") +
             "</div></div>" +
             '<div class="friend-actions">' +
-            '<button class="fa-accept" onclick="acceptFriend(\'' +
+            '<button class="fa-accept" onclick="event.stopPropagation();acceptFriend(\'' +
             escAttr(f.name) +
             "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 12.5l5 5L19.5 7\"/></svg></button>" +
-            '<button class="fa-reject" onclick="rejectFriend(\'' +
+            '<button class="fa-reject" onclick="event.stopPropagation();rejectFriend(\'' +
             escAttr(f.name) +
             "')\"><svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button>" +
             "</div></div>",
@@ -543,5 +545,32 @@ function loadLocal() {
     }, 3000);
   };
 
-  window.maybeBotChallenge = function () {};
+  /* v2.8: was an empty stub that the engine called after every match. Now the
+     opponent may ask for a rematch — reusing the same notification chrome as
+     friend requests, and restarting against the SAME persona so the career you
+     just saw is the one you play again. */
+  window.maybeBotChallenge = function () {
+    if (!G.isBot || G.storyMatch) return;
+    if (Math.random() > 0.35) return;
+    const p = G.botProfile;
+    if (!p || !p.name) return;
+    setTimeout(() => {
+      showFriendNotif(p.name + " wants a rematch", "Same format, straight away?", [
+        {
+          label: "Rematch",
+          cls: "fnb-accept",
+          action: () => {
+            hideFriendNotif();
+            document
+              .querySelectorAll(".overlay,.friends-overlay")
+              .forEach((o) => o.classList.add("hidden"));
+            showDock();
+            if (typeof startQuickBotMatch === "function") startQuickBotMatch(p);
+            else showMenu();
+          },
+        },
+        { label: "Later", cls: "fnb-reject", action: () => hideFriendNotif() },
+      ]);
+    }, 2600);
+  };
 })();

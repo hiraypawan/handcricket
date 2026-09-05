@@ -324,6 +324,15 @@ const ProfileTabs = {
     sfx("tap");
   },
 };
+$("btnLeaderboard").onclick = () => {
+  sfx("tap");
+  showLeaderboard();
+};
+$("btnCloseLb").onclick = () => {
+  sfx("tap");
+  $("leaderboardOverlay").classList.add("hidden");
+  showMenu();
+};
 function showOppProfile() {
   if (!G.oppStats) {
     return;
@@ -341,3 +350,70 @@ function showOppProfile() {
 // Batting restricts YOUR gesture picks. Bowling restricts YOUR picks when bowling.
 // Bowling role is HIDDEN from opponent until wicket or over ends.
 
+
+/* ============================================================================
+   v2.8 LEADERBOARD + OTHER-PLAYER PROFILES
+   The board is built from `profile:*` in KV, which only real players write
+   (publishProfile runs from updateStatsAfterMatch; personas are generated in
+   memory and never persisted), so bots cannot appear on it.
+============================================================================ */
+async function showLeaderboard() {
+  const ov = $("leaderboardOverlay");
+  const list = $("lbList");
+  if (!ov || !list) return;
+  document.querySelectorAll(".overlay,.friends-overlay").forEach((o) => o.classList.add("hidden"));
+  ov.classList.remove("hidden");
+  list.innerHTML = '<div class="lb-empty">Loading...</div>';
+  let data = null;
+  try {
+    const r = await fetch(
+      "/api/leaderboard?limit=20&me=" + encodeURIComponent(getUsername() || ""),
+    );
+    if (r.ok) data = await r.json();
+  } catch (e) {}
+  if (!data || !Array.isArray(data.leaders) || !data.leaders.length) {
+    list.innerHTML =
+      '<div class="lb-empty">No ranked players yet.<br>Finish a match to publish your career.</div>';
+    return;
+  }
+  list.innerHTML =
+    data.leaders
+      .map((p, i) => {
+        const medal = i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
+        const isMe = p.name.toLowerCase() === (getUsername() || "").toLowerCase();
+        return (
+          '<button class="lb-row' + (medal ? " " + medal : "") + (isMe ? " me" : "") +
+          '" onclick="showUserProfile(\'' +
+          String(p.name).replace(/\\/g, "\\\\").replace(/'/g, "\\'") +
+          '\')">' +
+          '<span class="lb-rank">' + (i + 1) + "</span>" +
+          '<span class="lb-name">' + escHtml(p.name) + (isMe ? '<span class="lb-you">YOU</span>' : "") + "</span>" +
+          '<span class="lb-wins">' + p.wins + '<small>wins</small></span>' +
+          '<span class="lb-meta">' + p.matches + "M · " + p.winPct + "%</span>" +
+          "</button>"
+        );
+      })
+      .join("") +
+    (data.me && data.me.rank > data.leaders.length
+      ? '<div class="lb-mine">Your rank: <b>#' + data.me.rank + "</b> — " + data.me.wins + " wins from " + data.me.matches + " matches</div>"
+      : "");
+}
+
+/* Open ANY player's profile with their LIVE stats (friend list, leaderboard).
+   Falls back to whatever snapshot the caller already had. */
+async function showUserProfile(name, fallbackStats) {
+  if (!name) return;
+  let stats = fallbackStats || null;
+  try {
+    const r = await fetch("/api/profile?user=" + encodeURIComponent(name));
+    if (r.ok) {
+      const j = await r.json();
+      if (j && j.profile && j.profile.stats) stats = j.profile.stats;
+    }
+  } catch (e) {}
+  if (!stats) {
+    toast("No public career for " + name + " yet", "warn");
+    return;
+  }
+  showProfile(name, stats, null);
+}

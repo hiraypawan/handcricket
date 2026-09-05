@@ -568,6 +568,81 @@ check(
   !/>\s*BOT\s*</.test(markup) && !/Ultra Bot/.test(markup),
 );
 
+// ---------------------------------------------------------------- 10. v2.8b
+// 10a. roster integrity: no duplicate names inside a squad (breaks online role
+// sync, which matches players by name)
+const rosterDupes = ev(dom, `(() => {
+  const bad = [];
+  Object.keys(TEAMS).forEach((k) => {
+    const n = TEAMS[k].players.map((p) => p.name);
+    const d = n.filter((x, i) => n.indexOf(x) !== i);
+    if (d.length) bad.push(k + ':' + d.join(','));
+  });
+  return bad.join('|');
+})()`);
+check("no duplicate player names within any squad (RR Boult/Bolt fixed)", rosterDupes === "", rosterDupes || "clean");
+
+// 10b. role locks explain themselves
+ev(dom, `resetGame(); G.mode='offline'; G.teamSize=3; G.state='waiting'; G.iBat=true;
+  G.myPlayers=[{name:'Me1',role:'batter',battingStyle:'defensive',bowlingStyle:'balanced'},
+               {name:'Me2',role:'bowler',battingStyle:'balanced',bowlingStyle:'balanced'},
+               {name:'Me3',role:'all',battingStyle:'balanced',bowlingStyle:'balanced'}];
+  G.batIdx=0; applyGestureRestrictions()`);
+const lockedBtns = [...byId(dom, "gestureGrid").querySelectorAll(".gesture-btn.restricted")];
+const reasons = new Set(lockedBtns.map((b) => b.dataset.lockReason));
+check(
+  "defensive batter locks 4,5,6",
+  lockedBtns.map((b) => b.dataset.val).join(",") === "4,5,6",
+  lockedBtns.map((b) => b.dataset.val).join(","),
+);
+check(
+  "every locked number carries a reason the player can read",
+  lockedBtns.length === 3 && reasons.size === 1 && /Defensive batter/.test([...reasons][0] || ""),
+  [...reasons][0],
+);
+check(
+  "arena shows a role hint line while numbers are locked",
+  !byId(dom, "roleHint").classList.contains("hidden") &&
+    /Defensive/.test(byId(dom, "roleHint").textContent),
+  byId(dom, "roleHint").textContent.trim().slice(0, 60),
+);
+ev(dom, `G.myPlayers[0].battingStyle='balanced'; applyGestureRestrictions()`);
+check(
+  "balanced role unlocks everything and hides the hint",
+  byId(dom, "gestureGrid").querySelectorAll(".gesture-btn.restricted").length === 0 &&
+    byId(dom, "roleHint").classList.contains("hidden"),
+);
+
+// 10c. leaderboard + other-player profiles
+check("leaderboard overlay + button exist", !!byId(dom, "leaderboardOverlay") && !!byId(dom, "btnLeaderboard"));
+check("showLeaderboard/showUserProfile are wired", ev(dom, `typeof showLeaderboard`) === "function" && ev(dom, `typeof showUserProfile`) === "function");
+ev(dom, `window.__net.length=0; showLeaderboard()`);
+await sleep(200);
+const lbCall = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
+check("leaderboard fetches /api/leaderboard with my name", /\/api\/leaderboard\?limit=20&me=/.test(lbCall), lbCall.slice(0, 90));
+ev(dom, `window.__net.length=0; showUserProfile('Rohit')`);
+await sleep(200);
+const profCall = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
+check("tapping a player fetches their LIVE profile", /\/api\/profile\?user=Rohit/.test(profCall), profCall.slice(0, 90));
+
+// 10d. the two engine hooks are no longer empty stubs
+check("checkBotChallenges polls the inbox", /pollInbox/.test(jsSrc("20-friends.js")));
+check("maybeBotChallenge offers a rematch", /wants a rematch/.test(jsSrc("20-friends.js")));
+
+// 10e. sheets scroll: no nested scroller inside a scrolling sheet
+check(
+  "friend list is not a nested scroller (scroll-lock fix)",
+  /\.friend-list\{overflow:visible;flex:none\}/.test(cssSrc),
+);
+check(
+  "sheets keep the last row clear of the dock",
+  /padding-bottom:calc\(84px/.test(cssSrc) && /overscroll-behavior:contain/.test(cssSrc),
+);
+check(
+  "no font size below 10px anywhere in the stylesheet",
+  !/font-size:[1-9](\.\d)?px/.test(cssSrc),
+);
+
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);

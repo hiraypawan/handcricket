@@ -75,6 +75,11 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | **Invite join** | The lobby has a room-code field (`#roomCodeInput`, normalised to `A-Z0-9`), so a lost invite link is not a dead end. Hosts see the 6-char code plus the link. Joiners now get `setUsername()` and are gated by `ensureUsername()`. | `14-online.js` (`setLobbyMode`/`resolveRoomCode`), `18-instant.js` boot |
 | **Feedback** | `toast()` and `confirmDialog()` (in `07-display.js`) replace every native `alert()`/`confirm()`. Add a smoke check if you reintroduce one. | `07-display.js` |
 | **Nav** | The dock is Profile · **Friends** · Play · Career · Help. The old "Arena" tab duplicated the home Quick Match tile; Friends had no root entry at all. Profile and Friends sheets now close each other, and overlays have explicit `z-index`. | `05-navigation.js`, `index.html`, `app.css` |
+| **Leaderboard** | `GET /api/leaderboard?limit&me` ranks `profile:*` by wins (ties → win%). Real players only: personas are generated in memory and never persisted, plus an `isPersona` guard. Home → **Leaderboard**; tapping a row opens that player's live profile. | `functions/api/leaderboard.js`, `10-profiles.js`, `#leaderboardOverlay` |
+| **Player profiles** | `showUserProfile(name)` fetches `/api/profile?user=` for **live** stats — used by friend rows and leaderboard rows. Action buttons `stopPropagation` so they don't also open the sheet. | `10-profiles.js`, `20-friends.js` |
+| **Role locks** | Every greyed gesture number carries `data-lock-reason`; the arena shows a one-line role hint; tapping a locked number toasts the reason instead of doing nothing. | `15-roles.js`, `#roleHint` |
+| **Scroll** | Sheets are the only scroller (`.friend-list` is no longer a nested scroller), `overscroll-behavior:contain`, and `padding-bottom` clears the dock. Short viewports shrink the coin and hide `#tossPreStats`. | `app.css` |
+| **Rosters** | No duplicate names inside a squad — RR had both `Boult` and `Bolt`, which broke online role sync (it matches by name). | `01-config.js` |
 | **Type** | No font size below 10px (was 7px). `.prof-id` was 9px at 2.33:1 contrast; it is now 11px on `--ink-soft`. | `app.css` |
 
 > ⚠️ Rule: **never create load-time dependencies on later files.** If a file

@@ -29,6 +29,47 @@ function getRoleBadgeHTML(style, type) {
   );
 }
 
+/* v2.8 ROLE LOCK EXPLANATIONS
+   A greyed number used to give the player no clue why it was disabled. Every
+   locked button now carries the reason, the arena shows a one-line summary of
+   the active role, and tapping a locked number repeats the reason. */
+const ROLE_LOCK_COPY = {
+  aggressive: {
+    bat: "Aggressive batter — only 4, 5, 6 allowed",
+    bowl: "Aggressive bowler — only 4, 5, 6 allowed",
+  },
+  defensive: {
+    bat: "Defensive batter — only 1, 2, 3 allowed",
+    bowl: "Defensive bowler — only 1, 2, 3 allowed",
+  },
+  balanced: { bat: "", bowl: "" },
+};
+
+function setRoleHint(player, isBatting, lockedCount) {
+  const el = $("roleHint");
+  if (!el) return;
+  const style = (isBatting ? player && player.battingStyle : player && player.bowlingStyle) || "balanced";
+  if (!lockedCount || style === "balanced") {
+    el.classList.add("hidden");
+    el.textContent = "";
+    return;
+  }
+  const cls = ROLE_COLORS[style] || "bal";
+  const copy = (ROLE_LOCK_COPY[style] || {})[isBatting ? "bat" : "bowl"] || "";
+  el.innerHTML =
+    '<span class="role-legend"><span class="lg-' +
+    cls +
+    '">' +
+    escHtml(player.name || "") +
+    " \u00b7 " +
+    (ROLE_LABELS_FULL[style] || "") +
+    (isBatting ? " (batting)" : " (bowling)") +
+    "</span><span>" +
+    escHtml(copy) +
+    "</span></span>";
+  el.classList.remove("hidden");
+}
+
 function applyGestureRestrictions() {
   try {
     const isBatting = G.iBat;
@@ -38,12 +79,28 @@ function applyGestureRestrictions() {
       return;
     }
     const allowed = getAllowedGestures(myPlayer, isBatting);
+    const style =
+      (isBatting ? myPlayer.battingStyle : myPlayer.bowlingStyle) || "balanced";
+    const reason = (ROLE_LOCK_COPY[style] || {})[isBatting ? "bat" : "bowl"] || "";
     const btns = $("gestureGrid").querySelectorAll(".gesture-btn");
+    let locked = 0;
     btns.forEach((b) => {
       const val = parseInt(b.dataset.val);
       const isAllowed = allowed.includes(val);
-      b.classList.toggle("restricted", !isAllowed && G.state === "waiting");
+      const lock = !isAllowed && G.state === "waiting";
+      b.classList.toggle("restricted", lock);
+      if (lock) {
+        locked++;
+        b.dataset.lockReason = reason || "Locked by this player's role";
+        b.setAttribute("aria-disabled", "true");
+        b.title = b.dataset.lockReason;
+      } else {
+        b.removeAttribute("data-lock-reason");
+        b.removeAttribute("aria-disabled");
+        b.title = "";
+      }
     });
+    setRoleHint(myPlayer, isBatting, locked);
   } catch (e) {
     removeGestureRestrictions();
   }
@@ -52,8 +109,38 @@ function applyGestureRestrictions() {
 function removeGestureRestrictions() {
   $("gestureGrid")
     .querySelectorAll(".gesture-btn")
-    .forEach((b) => b.classList.remove("restricted"));
+    .forEach((b) => {
+      b.classList.remove("restricted", "lock-hint");
+      b.removeAttribute("data-lock-reason");
+      b.removeAttribute("aria-disabled");
+    });
+  const el = $("roleHint");
+  if (el) {
+    el.classList.add("hidden");
+    el.textContent = "";
+  }
 }
+
+/* Tapping a locked number tells you why instead of doing nothing. */
+(function () {
+  const grid = $("gestureGrid");
+  if (!grid) return;
+  grid.addEventListener(
+    "click",
+    (e) => {
+      const btn = e.target.closest && e.target.closest(".gesture-btn.restricted");
+      if (!btn) return;
+      e.stopPropagation();
+      e.preventDefault();
+      grid.querySelectorAll(".gesture-btn").forEach((b) => b.classList.remove("lock-hint"));
+      btn.classList.add("lock-hint");
+      if (typeof toast === "function") toast(btn.dataset.lockReason || "Locked by this player's role", "warn");
+      if (typeof haptic === "function") haptic(12);
+      setTimeout(() => btn.classList.remove("lock-hint"), 2200);
+    },
+    true,
+  );
+})();
 
 // Bowler role reveal after wicket or over
 function revealBowlerRole(isWicket) {
