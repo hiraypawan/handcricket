@@ -7,8 +7,11 @@
    (see bottom). Depends on: nothing at load; setUsername/publish at call.
 ============================================================================ */
 
-/* Set by the Pages dashboard (public Client ID, not a secret). Until the
-   owner creates it, every function below no-ops and no button renders. */
+/* Public Client ID (not a secret — it ships in page source by design).
+   Served from /api/config (Pages env HC_GOOGLE_CLIENT_ID wins); falls back
+   to the built-in ID so sign-in works with zero dashboard steps. */
+const HC_GOOGLE_ID_FALLBACK =
+  "972270818286-73keh4u80nn5ll0pv9i2hk1nr1o7mf8i.apps.googleusercontent.com";
 async function hcGoogleClientId() {
   if (window.__hcGoogleId !== undefined) return window.__hcGoogleId;
   let id = "";
@@ -19,7 +22,7 @@ async function hcGoogleClientId() {
       id = (j && j.googleClientId) || "";
     }
   } catch (e) {}
-  window.__hcGoogleId = id || "";
+  window.__hcGoogleId = id || HC_GOOGLE_ID_FALLBACK;
   return window.__hcGoogleId;
 }
 function hcGoogleLoad() {

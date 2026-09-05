@@ -7,6 +7,7 @@ import {
   checkOwner,
   updateLeaderboardIndex,
   verifyGoogleIdToken,
+  GOOGLE_CLIENT_ID_FALLBACK,
 } from '../../lib/api/shared.js';
 
 /* GET stays public — a friend's career is meant to be viewable.
@@ -40,9 +41,11 @@ export const onRequestPost = async (ctx) => {
     /* Optional Google link: a verified subject can reclaim its own career
        on a new device even with a fresh device token. */
     let gsub = null;
-    if (idToken && ctx.env.HC_GOOGLE_CLIENT_ID) {
+    const aud =
+      (ctx.env && ctx.env.HC_GOOGLE_CLIENT_ID) || GOOGLE_CLIENT_ID_FALLBACK;
+    if (idToken && aud) {
       try {
-        const v = await verifyGoogleIdToken(idToken, ctx.env.HC_GOOGLE_CLIENT_ID, ctx.env.KV);
+        const v = await verifyGoogleIdToken(idToken, aud, ctx.env.KV);
         if (v.ok) gsub = v.sub;
       } catch (e) { /* anonymous fallback below */ }
     }
