@@ -24,7 +24,7 @@ let html = readFileSync(join(root, "public/index.html"), "utf8");
 
 // Inline all LOCAL scripts so jsdom executes them (external CDN scripts are
 // dropped — the game guards every PeerJS/GA usage at runtime).
-html = html.replace(/<script src="js\/([^"?]+)(\?[^"]*)?"?><\/script>/g, (m, file) => {
+html = html.replace(/<script[^>]*src="js\/([^"?]+)(\?[^"]*)?"[^>]*><\/script>/g, (m, file) => {
   const code = readFileSync(join(root, "public/js", file), "utf8");
   return "<script>\n" + code + "\n</script>";
 });
