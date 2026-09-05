@@ -1,5 +1,9 @@
 import { cors, corsHeaders, json } from '../../lib/api/shared.js';
 import { handleQuickmatch } from '../../lib/api/qm-core.js';
+/* NOTE: the Matchmaker Durable Object class intentionally lives in a
+   SEPARATE Worker (workers/matchmaker) — Pages projects cannot define DO
+   classes. This route only talks to it through the MATCHMAKER binding and
+   falls back to the KV core when the binding is absent. */
 
 /* QUICK MATCHMAKING route — thin proxy with KV fallback.
    Preferred path: the Matchmaker Durable Object (single global instance, so
@@ -51,6 +55,7 @@ export const onRequestPost = async (ctx) => {
       } catch (e) { /* diagnostics never break matching */ }
     };
     const out = await handleQuickmatch(store, log, body);
+    out.body.via = 'kv';
     return json(out.body, out.code || 200);
   } catch (err) {
     return json({ error: err.message }, 500);

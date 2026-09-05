@@ -1,0 +1,18 @@
+{
+  "name": "handcricket-matchmaker",
+  "main": "src/index.js",
+  "compatibility_date": "2025-09-01",
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "7872bcfef01247f881c7c48d9dba79dc",
+      "preview_id": "e18830349fcf44e78e1bdf7b6ebed0ea"
+    }
+  ],
+  "exports": {
+    "Matchmaker": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
+}

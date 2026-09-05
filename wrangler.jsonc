@@ -13,14 +13,8 @@
     "bindings": [
       {
         "name": "MATCHMAKER",
-        "class_name": "Matchmaker"
+        "class_name": "Matchmaker",
+        "script_name": "handscricket"
       }
     ]
-  },
-  "exports": {
-    "Matchmaker": {
-      "type": "durable-object",
-      "storage": "sqlite"
-    }
   }
-}
