@@ -8,31 +8,58 @@ function genId() {
 }
 const PEER_OPTS = {
   debug: 0,
-  config: {
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      { urls: "stun:stun1.l.google.com:19302" },
-      { urls: "stun:stun2.l.google.com:19302" },
-      { urls: "stun:stun3.l.google.com:19302" },
-      { urls: "stun:stun4.l.google.com:19302" },
-      {
-        urls: "turn:openrelay.metered.us:80",
-        username: "openrelayproject",
-        credential: "openrelayproject",
-      },
-      {
-        urls: "turn:openrelay.metered.us:443",
-        username: "openrelayproject",
-        credential: "openrelayproject",
-      },
-      {
-        urls: "turn:openrelay.metered.us:443?transport=tcp",
-        username: "openrelayproject",
-        credential: "openrelayproject",
-      },
-    ],
-  },
+  config: { iceServers: buildIceServers() },
 };
+
+/* ICE servers. The Metered "openrelay" TURN below is free, public and
+   rate-limited — it is shared with every other app on the internet, so under
+   load it fails and the player just sees "my friend can't join".
+   Set these three Pages environment variables to swap in a real relay with no
+   code change:
+       HC_TURN_URLS       turn:relay.example.com:3478,turn:relay.example.com:3478?transport=tcp
+       HC_TURN_USERNAME   <username>
+       HC_TURN_CREDENTIAL <credential>
+   They are injected by functions/api/config.js (or a static /hc-config.json). */
+function buildIceServers() {
+  const stun = [
+    "stun:stun.l.google.com:19302",
+    "stun:stun1.l.google.com:19302",
+    "stun:stun2.l.google.com:19302",
+    "stun:stun3.l.google.com:19302",
+    "stun:stun4.l.google.com:19302",
+  ].map(function (u) { return { urls: u }; });
+
+  const cfg = (typeof window !== "undefined" && window.__hcTurn) || {};
+  if (cfg.urls && cfg.username && cfg.credential) {
+    const urls = String(cfg.urls).split(",").map(function (u) { return u.trim(); }).filter(Boolean);
+    return stun.concat([{
+      urls: urls,
+      username: String(cfg.username),
+      credential: String(cfg.credential),
+    }]);
+  }
+
+  // Free fallback. Good enough to demo, not good enough to rely on.
+  return stun.concat([
+    { urls: "turn:openrelay.metered.us:80", username: "openrelayproject", credential: "openrelayproject" },
+    { urls: "turn:openrelay.metered.us:443", username: "openrelayproject", credential: "openrelayproject" },
+    { urls: "turn:openrelay.metered.us:443?transport=tcp", username: "openrelayproject", credential: "openrelayproject" },
+  ]);
+}
+window.buildIceServers = buildIceServers;
+
+/* Pull the relay config once at boot so a paid TURN takes effect without a
+   rebuild. Silently ignored if the endpoint is absent. */
+(function loadTurnConfig() {
+  try {
+    fetch("/api/config")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d && d.turn && d.turn.urls) window.__hcTurn = d.turn;
+      })
+      .catch(function () {});
+  } catch (e) {}
+})();
 
 /* v2.8: the lobby used to dead-end with alert("No room!") and had no way to
    type a code — if you lost the invite link you were stuck. */
@@ -417,9 +444,16 @@ function handleNet(d) {
   } else if (d.type === "roles") {
     if (d.players && G.oppPlayers.length) {
       d.players.forEach(function (dp) {
-        var match = G.oppPlayers.find(function (p) {
-          return p.name === dp.name;
-        });
+        var match = null;
+        // Prefer the slot the sender assigned; only fall back to name for a
+        // peer still running the old protocol.
+        if (typeof dp.idx === "number" && G.oppPlayers[dp.idx]) {
+          match = G.oppPlayers[dp.idx];
+        } else {
+          match = G.oppPlayers.find(function (p) {
+            return p.name === dp.name;
+          });
+        }
         if (match && dp.battingStyle) match.battingStyle = dp.battingStyle;
       });
     }
@@ -605,8 +639,12 @@ function checkTeams() {
         G.myPlayers = players;
         sendMsg({
           type: "roles",
-          players: players.map(function (p) {
-            return { name: p.name, battingStyle: p.battingStyle };
+          /* Synced BY INDEX. Matching on name looked fine until the RR squad
+             shipped both "Boult" and "Bolt" — one duplicate name silently
+             mis-assigned styles for the whole squad. The name rides along only
+             so a mismatched squad can be detected and reported. */
+          players: players.map(function (p, i) {
+            return { idx: i, name: p.name, battingStyle: p.battingStyle };
           }),
         });
         startOnlineToss();

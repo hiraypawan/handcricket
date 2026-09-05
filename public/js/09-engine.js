@@ -136,6 +136,10 @@ $("btnNoLeave").onclick = () => {
 };
 function startInnings(n) {
   if (typeof hideDock === "function") hideDock(); // dock never overlays live play
+  /* v2.9: the crowd only moves while a match is on. Off the field the stadium
+     stays still — motion you cannot turn off is noise, not polish. */
+  const ar = document.querySelector(".arena");
+  if (ar) ar.classList.add("live");
   // C11: never double-start the 2nd innings (countdown timer + button tap, or
   // host + joiner both firing) — also clear any lingering break overlays.
   if (n === 2 && G.innings !== 1) return;
@@ -377,9 +381,26 @@ $("gestureGrid").addEventListener("click", (e) => {
     triggerReveal();
   }
 });
+/* A single 620ms streak across the arena at the moment of the reveal. It is the
+   one moving thing in the play area, so it reads as the ball rather than as
+   decoration, and it is suppressed under prefers-reduced-motion in CSS. */
+function ballTrail() {
+  try {
+    const ar = document.querySelector(".arena");
+    if (!ar) return;
+    const el = document.createElement("div");
+    el.className = "ball-trail";
+    ar.appendChild(el);
+    setTimeout(function () {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 700);
+  } catch (e) {}
+}
+
 function revealBall() {
   if (G.state !== "revealing") return;
   G.state = "processing";
+  ballTrail();
   try {
     const batAuto = G.iBat ? G.iAuto : G.oppAuto,
       bowlAuto = G.iBat ? G.oppAuto : G.iAuto;
@@ -667,9 +688,19 @@ function finishMatch() {
     // v2.8: the balls the OPPONENT faced — needed to count dots BOWLED,
     // which the career bowling card previously could not do.
     oppHist: G.opp.hist,
+    /* v2.9: who the match was against. Head-to-head and scorecard sharing both
+       need it, and matchResult is the only object that outlives the innings. */
+    oppName: G.oppName || (G.oppPlayers && G.oppPlayers.length ? G.oppPlayers[0].name : "") || "Opponent",
   };
   G.recentResult = matchResult;
   updateStatsAfterMatch(matchResult);
+  /* Retention bookkeeping (23-features.js): count the day for the daily
+     streak and record this pairing for head-to-head. Feature-detected so an
+     older cached bundle can't break the result screen. */
+  if (typeof hcRecordPlayedDay === "function") hcRecordPlayedDay();
+  if (typeof hcRecordH2H === "function" && typeof getUsername === "function") {
+    hcRecordH2H(getUsername(), matchResult.oppName, matchResult);
+  }
   const statsBox = $("matchStatsBox");
   statsBox.style.display = "block";
   const s = loadStats();
@@ -700,6 +731,7 @@ function finishMatch() {
     s.dots +
     '</div><div class="lbl">Dots</div></div></div></div></div>';
   $("btnRematch").style.display = "inline-block";
+  if ($("btnShareCard")) $("btnShareCard").style.display = "inline-block";
   $("btnAgain").style.display = "none";
   $("btnMenu").style.display = "inline-block";
   $("resultOverlay").classList.remove("hidden");
@@ -724,6 +756,12 @@ $("btnInnBreakNext").onclick = () => {
   $("inningsBreakOverlay").classList.add("hidden");
   startInnings(2);
 };
+if ($("btnShareCard")) {
+  $("btnShareCard").onclick = () => {
+    sfx("tap");
+    if (typeof hcShareScorecard === "function") hcShareScorecard(G.recentResult);
+  };
+}
 $("btnRematch").onclick = () => {
   sfx("tap");
   $("resultOverlay").classList.add("hidden");
@@ -786,6 +824,8 @@ $("btnMenu").onclick = () => {
 };
 $("btnMenu").className = "back-btn";
 function resetGame() {
+  const ar0 = document.querySelector(".arena");
+  if (ar0) ar0.classList.remove("live");
   clearWD();
   stopTimer();
   if (G.selectTimer) {

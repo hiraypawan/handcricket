@@ -34,7 +34,7 @@ function resetMatchmakingUI() {
 function renderMMPersona(p) {
   const st = personaStats(p);
   $("mmPersona").innerHTML =
-    '<div class="persona-avatar">' + escHtml((p.name || "?").trim().charAt(0).toUpperCase()) + "</div>" +
+    (typeof avatarHtml === "function" ? avatarHtml(p.name || "?", 62, "persona-avatar") : '<div class="persona-avatar">' + escHtml((p.name || "?").trim().charAt(0).toUpperCase()) + "</div>") +
     '<div class="persona-body"><div class="persona-name">' + escHtml(p.name) + "</div>" +
     '<div class="persona-meta">' + escHtml(p.city) + " \u00b7 " + escHtml(p.style) + "</div>" +
     '<div class="persona-stats">' +

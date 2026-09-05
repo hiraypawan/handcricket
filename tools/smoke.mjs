@@ -643,6 +643,129 @@ check(
   !/font-size:[1-9](\.\d)?px/.test(cssSrc),
 );
 
+// ---------------------------------------------------------------- 11. v2.9
+// 11a. API ownership token
+const tok1 = ev(dom, `getClientToken()`);
+const tok2 = ev(dom, `getClientToken()`);
+check("device token is generated once and reused", /^[A-Za-z0-9]{16,64}$/.test(tok1) && tok1 === tok2, tok1);
+check("token is stored, not re-randomised", ev(dom, `localStorage.getItem("hcp_token")`) === tok1);
+ev(dom, `window.__net.length=0; publishProfile()`);
+await sleep(120);
+const profBody = ev(dom, `window.__net.map(c=>c.body).filter(Boolean).pop() || "{}"`);
+check(
+  "career publish sends the ownership token",
+  JSON.parse(profBody).token === tok1,
+  profBody.slice(0, 70),
+);
+check(
+  "friend mutations send the ownership token",
+  /token:\s*getClientToken\(\)/.test(jsSrc("20-friends.js")),
+);
+check(
+  "story save sends the ownership token",
+  /token:\s*getClientToken\(\)/.test(jsSrc("16-story.js")),
+);
+
+// 11b. generated avatars are deterministic
+const avA1 = ev(dom, `avatarSvg("Rohit", 40)`);
+const avA2 = ev(dom, `avatarSvg("Rohit", 40)`);
+const avB = ev(dom, `avatarSvg("Priya", 40)`);
+check("same name always draws the same face", avA1 === avA2 && /<svg/.test(avA1), avA1.length + " chars");
+check("different names draw different faces", avA1 !== avB);
+check("avatar svg is labelled for screen readers", /aria-label="Avatar for Rohit"/.test(avA1));
+check(
+  "profile, persona, friend and leaderboard rows all use it",
+  ["10-profiles.js", "18-instant.js", "20-friends.js"].every((f) => /avatarHtml\(/.test(jsSrc(f))),
+);
+
+// 11c. analytics consent
+check(
+  "GA is gated on stored consent",
+  /localStorage\.getItem\('hcp_consent'\) === 'yes'/.test(html) &&
+    !/^<script async src="https:\/\/www\.googletagmanager\.com/m.test(html),
+);
+check("consent bar can record a decline", ev(dom, `typeof hcConsent`) === "function");
+ev(dom, `hcConsent(false)`);
+check("declining persists the choice", ev(dom, `localStorage.getItem("hcp_consent")`) === "no");
+
+// 11d. installability
+const swSrc = readFileSync(join(root, "public/sw.js"), "utf8");
+const manifest = JSON.parse(readFileSync(join(root, "public/manifest.webmanifest"), "utf8"));
+check("manifest declares name + icons", manifest.name === "Hand Cricket Pro" && manifest.icons.length >= 2);
+check("service worker exists and is registered", /register\("sw\.js"\)/.test(jsSrc("21-shell.js")));
+check(
+  "service worker never caches /api/ (live reads must stay live)",
+  /startsWith\('\/api\/'\)/.test(swSrc) && /return;/.test(swSrc),
+);
+check("manifest is linked from the page", /rel="manifest"/.test(html));
+
+// 11e. retention: daily streak
+ev(dom, `localStorage.removeItem("hcp_activity")`);
+const st1 = ev(dom, `hcRecordPlayedDay()`);
+const st1b = ev(dom, `hcRecordPlayedDay()`);
+const act = ev(dom, `JSON.stringify(hcGetActivity())`);
+check("first match today starts a 1-day streak", st1 === 1, String(st1));
+check("a second match the same day does not double-count", st1b === 1 && JSON.parse(act).playedToday === true, String(st1b));
+check("streak card renders into the profile", /sk-flame/.test(ev(dom, `hcStreakCardHtml()`)));
+
+// 11f. head-to-head
+ev(dom, `localStorage.clear()`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{won:true})`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{won:true})`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{lost:true})`);
+const h2h = ev(dom, `hcH2HHtml("Alice","Rohit")`);
+check("head-to-head tracks wins and losses", /2&ndash;1/.test(h2h) && /You lead/.test(h2h), h2h.slice(0, 60));
+check("no record renders nothing", ev(dom, `hcH2HHtml("Alice","Nobody")`) === "");
+check("you cannot have a rivalry with yourself", ev(dom, `hcH2HHtml("Alice","alice")`) === "");
+
+// 11g. auto-pick respects the format's role limits
+const picked = ev(dom, `JSON.stringify(hcAutoPickRoles(
+  [{name:'a',role:'batter'},{name:'b',role:'batter'},{name:'c',role:'all'},
+   {name:'d',role:'all'},{name:'e',role:'bowler'}], 5)
+  .map(p=>p.battingStyle))`);
+const pickedArr = JSON.parse(picked);
+check(
+  "5v5 auto-pick stays inside max 2 aggressive / 2 defensive",
+  pickedArr.filter((x) => x === "aggressive").length <= 2 &&
+    pickedArr.filter((x) => x === "defensive").length <= 2,
+  picked,
+);
+check(
+  "5v5 auto-pick keeps the balanced minimum",
+  pickedArr.filter((x) => x === "balanced").length >= 1,
+  picked,
+);
+check("auto-pick button exists on the role screen", !!byId(dom, "btnAutoRoles"));
+
+// 11h. online plumbing
+check(
+  "role sync is index-based, not name-based",
+  /idx:\s*i,\s*name:\s*p\.name/.test(jsSrc("14-online.js")) &&
+    /typeof dp\.idx === "number"/.test(jsSrc("14-online.js")),
+);
+check(
+  "matchResult carries the opponent name (h2h + share need it)",
+  /oppName:\s*G\.oppName/.test(jsSrc("09-engine.js")),
+);
+check(
+  "TURN is configurable instead of hardcoded to the free relay",
+  /window\.__hcTurn/.test(jsSrc("14-online.js")) && /HC_TURN_URLS/.test(readFileSync(join(root, "functions/api/config.js"), "utf8")),
+);
+check("ICE servers still work with no config", ev(dom, `buildIceServers().length`) >= 8);
+ev(dom, `window.__hcTurn = {urls:"turn:r.test:3478", username:"u", credential:"c"}`);
+const ices = ev(dom, `JSON.stringify(buildIceServers())`);
+check("a configured relay replaces the free one", /turn:r\.test:3478/.test(ices) && !/metered/.test(ices), ices.slice(0, 60));
+
+// 11i. sharing + refresh
+check("share button exists on the result screen", !!byId(dom, "btnShareCard"));
+check("share scorecard is implemented", ev(dom, `typeof hcShareScorecard`) === "function");
+check("leaderboard + friends have an explicit refresh", !!byId(dom, "btnLbRefresh") && !!byId(dom, "btnFriendsRefresh"));
+check(
+  "arena gets a live crowd band while a match is on",
+  /crowd-band/.test(html) && /classList\.add\("live"\)/.test(jsSrc("09-engine.js")),
+);
+check("ball trail respects reduced motion", /prefers-reduced-motion:reduce\)\{\.ball-trail\{display:none\}\}/.test(cssSrc));
+
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);

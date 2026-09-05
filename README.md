@@ -14,6 +14,7 @@ and an 8-tier story career). Static Cloudflare Pages app — **zero build step**
 - `public/index.html` — slim shell (markup + `<link>` + ordered `<script>`s)
 - `public/css/app.css` — all styles
 - `public/js/*` — modular game logic (22 files, numbered in load order)
+- `lib/api/shared.js` — shared ownership/leaderboard-index helpers (outside `functions/` so it is never routable)
 - `functions/api/*` — Cloudflare Pages Functions + Workers KV (`KV`).
   ⚠️ This directory **must** stay at the repo root (a sibling of `public/`).
   Cloudflare only compiles Functions from `<root>/functions`; when it lived in
@@ -51,7 +52,7 @@ Edit `public/js/story-data.js`. Bump `?v=N` in its `<script src>` in
 
 ## Versioning
 Keep these four in step when you ship:
-- `.home-version` in `public/index.html` (currently `v2.8.0`)
+- `.home-version` in `public/index.html` (currently `v2.9.0`)
 - `?v=` cache-buster on every `<script>`/`<link>` in `public/index.html`
 - `version` in `package.json`
 - the `# Hand Cricket Pro vX.Y` heading in this file

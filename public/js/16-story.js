@@ -497,7 +497,11 @@ async function cloudSaveStory() {
     const r = await fetch("/api/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: storyProgress.user, data: storyProgress }),
+      body: JSON.stringify({
+        user: storyProgress.user,
+        data: storyProgress,
+        token: getClientToken(),
+      }),
     });
     if (!r.ok) throw new Error("save status " + r.status);
   } catch (e) {

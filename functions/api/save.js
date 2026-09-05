@@ -1,3 +1,5 @@
+import { checkOwner } from '../../lib/api/shared.js';
+
 export const onRequestPost = async (ctx) => {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -7,7 +9,16 @@ export const onRequestPost = async (ctx) => {
 
   try {
     const body = await ctx.request.json();
-    const { user, data } = body;
+    const { user, data, token } = body;
+
+    // Nobody should be able to overwrite another player's story career.
+    const own = await checkOwner(ctx.env.KV, user, token);
+    if (!own.ok) {
+      return new Response(
+        JSON.stringify({ error: own.error, recoverable: !!own.recoverable }),
+        { status: own.status, headers: { 'Content-Type': 'application/json', ...corsHeaders } },
+      );
+    }
 
     if (!user || typeof user !== 'string') {
       return new Response(JSON.stringify({ error: 'Missing or invalid user' }), {

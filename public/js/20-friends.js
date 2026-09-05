@@ -44,7 +44,12 @@ function loadLocal() {
       const r = await fetch("/api/friends", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.assign({ action, user }, extra || {})),
+        body: JSON.stringify(
+          Object.assign(
+            { action, user, token: getClientToken() },
+            extra || {},
+          ),
+        ),
       });
       if (!r.ok) return null;
       return await r.json();
@@ -122,11 +127,11 @@ function loadLocal() {
             '<div class="friend-item' + (f.isBot ? " isBot" : "") + '" onclick="showUserProfile(\'' +
             escAttr(f.name) +
             '\')">' +
-            '<div class="friend-avatar"><span class="av-letter">' +
+            (typeof avatarHtml === "function" ? avatarHtml(f.name || "?", 40, "friend-avatar") : '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
             AV_PSN +
-            "</div>" +
+            "</div>") +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
             "" +
@@ -154,11 +159,11 @@ function loadLocal() {
         .map(
           (f) =>
             '<div class="friend-item pending-item' + (f.isBot ? ' isBot' : '') + '">' +
-            '<div class="friend-avatar"><span class="av-letter">' +
+            (typeof avatarHtml === "function" ? avatarHtml(f.name || "?", 40, "friend-avatar") : '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
             AV_PSN +
-            "</div>" +
+            "</div>") +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
             "</div>" +
@@ -416,6 +421,25 @@ function loadLocal() {
   $("btnCloseFriends").onclick = () => {
     $("friendsOverlay").classList.add("hidden");
   };
+
+  /* KV is eventually consistent, so a request sent a moment ago can take a few
+     seconds to show up. The 20s poll hides that, but "is it broken?" is the
+     obvious read — an explicit refresh makes the wait look deliberate. */
+  const frb = $("btnFriendsRefresh");
+  if (frb && !frb.__wired) {
+    frb.__wired = true;
+    frb.onclick = async () => {
+      frb.classList.add("busy");
+      frb.disabled = true;
+      try {
+        await loadFriends();
+        await pollInbox(true);
+      } catch (e) {}
+      frb.classList.remove("busy");
+      frb.disabled = false;
+      if (typeof toast === "function") toast("Friend list refreshed", "good");
+    };
+  }
 
   setTimeout(() => loadFriends(), 500);
 

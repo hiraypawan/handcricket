@@ -75,6 +75,26 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | **Invite join** | The lobby has a room-code field (`#roomCodeInput`, normalised to `A-Z0-9`), so a lost invite link is not a dead end. Hosts see the 6-char code plus the link. Joiners now get `setUsername()` and are gated by `ensureUsername()`. | `14-online.js` (`setLobbyMode`/`resolveRoomCode`), `18-instant.js` boot |
 | **Feedback** | `toast()` and `confirmDialog()` (in `07-display.js`) replace every native `alert()`/`confirm()`. Add a smoke check if you reintroduce one. | `07-display.js` |
 | **Nav** | The dock is Profile · **Friends** · Play · Career · Help. The old "Arena" tab duplicated the home Quick Match tile; Friends had no root entry at all. Profile and Friends sheets now close each other, and overlays have explicit `z-index`. | `05-navigation.js`, `index.html`, `app.css` |
+## v2.9 — ownership, scale, installability, retention
+
+| Area | Change | Files |
+| --- | --- | --- |
+| **API ownership** | Every mutating endpoint requires a device token. The browser generates one on first run (`hcp_token`); the server records the first token to claim a name and returns 403 afterwards. Profiles idle >90 days can be re-claimed so clearing localStorage isn't a permanent lockout. **This is not authentication** — it stops drive-by tampering, not a determined attacker. | `lib/api/shared.js`, all of `functions/api/` |
+| **Leaderboard index** | `leaderboard:top` holds the sorted top 50. A publish rewrites it (1 get + 1 put); a leaderboard read is 1 get. The old `list` + per-player `get` scan is now only the one-time seed path (`?refresh=1` forces a reseed). | `lib/api/shared.js`, `functions/api/leaderboard.js` |
+| **Relay config** | `buildIceServers()` prefers `HC_TURN_URLS/USERNAME/CREDENTIAL` from `/api/config`, falling back to the free Metered openrelay. Set them in the Pages dashboard to swap relays with no rebuild. | `public/js/14-online.js`, `functions/api/config.js` |
+| **Role sync** | Online styles now sync **by squad index**, not by name — the RR `Boult`/`Bolt` duplicate proved name matching was unsafe. Name is still sent for fallback with older peers. | `public/js/14-online.js` |
+| **Analytics consent** | GA is not loaded until `hcp_consent === 'yes'`. A dismissible bar records accept *or* decline. | `public/index.html`, `public/js/21-shell.js` |
+| **Installable** | Manifest + service worker (network-first, never caches `/api/`). Icons are generated PNGs, committed. | `public/manifest.webmanifest`, `public/sw.js`, `public/img/` |
+| **Avatars** | Deterministic inline-SVG faces from a name hash — same name, same face, on every device. No image assets, no network. Replaces the bare initial in profile, persona, friend and leaderboard rows. | `public/js/22-avatars.js` |
+| **Retention** | Daily streak (`hcp_activity`, one increment per calendar day), head-to-head per pairing (`hcp_h2h:<me>:<them>`), and "Auto-pick my XI" which fills legal role styles per `getRoleLimits()`. | `public/js/23-features.js`, hooks in `09-engine.js` |
+| **Sharing** | Result screen renders the scorecard to a canvas and uses the Web Share API; falls back to download, then to a clipboard text summary. | `public/js/23-features.js` |
+| **Arena life** | A crowd band drifts in the stands while a match is live; a ball trail plays on reveal. Both suppressed under `prefers-reduced-motion`. | `public/index.html`, `public/css/app.css`, `09-engine.js` |
+| **Type ramp** | `--ink-soft`/`--ink-faint` widened from .62/.40 to .80/.45 — the two were 22 points apart, so secondary and tertiary text read as one tier. | `public/css/app.css` |
+
+### Not done, and why
+- **SRI on the PeerJS CDN tag** — the sandbox has no outbound network, so the hash could not be computed. Guessing one would break online play outright. `21-shell.js` detects a failed load and labels the online buttons instead.
+- **Server-authoritative online play** — PeerJS is peer-to-peer, so either client can still misreport a score. Needs a Durable Object per room.
+
 | **Leaderboard** | `GET /api/leaderboard?limit&me` ranks `profile:*` by wins (ties → win%). Real players only: personas are generated in memory and never persisted, plus an `isPersona` guard. Home → **Leaderboard**; tapping a row opens that player's live profile. | `functions/api/leaderboard.js`, `10-profiles.js`, `#leaderboardOverlay` |
 | **Player profiles** | `showUserProfile(name)` fetches `/api/profile?user=` for **live** stats — used by friend rows and leaderboard rows. Action buttons `stopPropagation` so they don't also open the sheet. | `10-profiles.js`, `20-friends.js` |
 | **Role locks** | Every greyed gesture number carries `data-lock-reason`; the arena shows a one-line role hint; tapping a locked number toasts the reason instead of doing nothing. | `15-roles.js`, `#roleHint` |

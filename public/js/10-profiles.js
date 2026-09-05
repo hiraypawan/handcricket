@@ -136,6 +136,27 @@ function getPlayerId(name) {
   }
 }
 
+/* Device ownership token. Generated once, kept in localStorage, and sent with
+   every mutating API call. The server records the first token that claims a
+   name and rejects the rest, so nobody can inflate someone else's career or
+   delete their friendships. Not a login — just enough to stop drive-by writes.
+   See lib/api/shared.js for the server side. */
+function getClientToken() {
+  try {
+    let t = localStorage.getItem("hcp_token");
+    if (t && /^[A-Za-z0-9]{16,64}$/.test(t)) return t;
+    const buf = new Uint8Array(24);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(buf);
+    else for (let i = 0; i < buf.length; i++) buf[i] = Math.floor(Math.random() * 256);
+    t = Array.from(buf, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, 40);
+    localStorage.setItem("hcp_token", t);
+    return t;
+  } catch (e) {
+    return "hcptoken" + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+  }
+}
+window.getClientToken = getClientToken;
+
 /* Publish my career so friends' lists and the profile endpoint show real
    numbers instead of the snapshot taken when the request was sent. */
 function publishProfile() {
@@ -145,8 +166,22 @@ function publishProfile() {
     fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, stats: loadStats() }),
-    }).catch(() => {});
+      body: JSON.stringify({ user, stats: loadStats(), token: getClientToken() }),
+    })
+      .then((r) => {
+        /* 403 = this name is already claimed by another device. Say so once
+           instead of silently dropping every future save. */
+        if (r.status === 403 && !window.__profileClaimWarned) {
+          window.__profileClaimWarned = true;
+          if (typeof toast === "function") {
+            toast(
+              "\"" + user + "\" is already claimed on another device. Your stats stay saved here.",
+              "warn",
+            );
+          }
+        }
+      })
+      .catch(() => {});
   } catch (e) {}
 }
 
@@ -214,7 +249,7 @@ function showProfile(name, stats, meta) {
     (name ? "OPPONENT PROFILE" : "MY PROFILE") +
     "</div>" +
     // Avatar + name row
-    '<div class="prof-row"><div class="prof-avatar av-initials">' + escHtml((rawName || "?").trim().charAt(0).toUpperCase()) + '</div><div class="prof-info"><div class="prof-name">' +
+    '<div class="prof-row">' + (typeof avatarHtml === "function" ? avatarHtml(rawName || "?", 46, "prof-avatar") : '<div class="prof-avatar av-initials">' + escHtml((rawName || "?").trim().charAt(0).toUpperCase()) + "</div>") + '<div class="prof-info"><div class="prof-name">' +
     displayName +
     '</div><div class="prof-id">' +
     getPlayerId(rawName) +
@@ -303,6 +338,20 @@ function showProfile(name, stats, meta) {
     s.runsConceded +
     '</div><div class="prof-stat-lbl">Runs Conceded</div></div>' +
     "</div>";
+
+  /* v2.9: retention + rivalry. My own card shows the daily streak; an
+     opponent's card shows the head-to-head record for this pairing. Both come
+     from 23-features.js and both feature-detect so a stale bundle can't break
+     the sheet. */
+  try {
+    const mine = !name || (typeof getUsername === "function" && String(name).toLowerCase() === String(getUsername()).toLowerCase());
+    if (mine) {
+      if (typeof hcStreakCardHtml === "function") card.insertAdjacentHTML("beforeend", hcStreakCardHtml());
+    } else if (typeof hcH2HHtml === "function" && typeof getUsername === "function") {
+      card.insertAdjacentHTML("beforeend", hcH2HHtml(getUsername(), rawName));
+    }
+  } catch (e) {}
+
   // v2.8: these two sheets used to be able to sit open at the same time with
   // z-index:auto, so stacking depended on DOM order. Open one, close the other.
   const fr = $("friendsOverlay");
@@ -357,17 +406,32 @@ function showOppProfile() {
    (publishProfile runs from updateStatsAfterMatch; personas are generated in
    memory and never persisted), so bots cannot appear on it.
 ============================================================================ */
-async function showLeaderboard() {
+async function showLeaderboard(forceRefresh) {
   const ov = $("leaderboardOverlay");
   const list = $("lbList");
   if (!ov || !list) return;
+  /* The leaderboard reads a maintained index, so a friend who just won a match
+     is not there until their next publish. An explicit refresh beats making the
+     player guess whether the numbers are stale. */
+  const rb = $("btnLbRefresh");
+  if (rb && !rb.__wired) {
+    rb.__wired = true;
+    rb.onclick = async () => {
+      rb.classList.add("busy");
+      rb.disabled = true;
+      await showLeaderboard(true);
+      rb.classList.remove("busy");
+      rb.disabled = false;
+    };
+  }
   document.querySelectorAll(".overlay,.friends-overlay").forEach((o) => o.classList.add("hidden"));
   ov.classList.remove("hidden");
   list.innerHTML = '<div class="lb-empty">Loading...</div>';
   let data = null;
   try {
     const r = await fetch(
-      "/api/leaderboard?limit=20&me=" + encodeURIComponent(getUsername() || ""),
+      "/api/leaderboard?limit=20&me=" + encodeURIComponent(getUsername() || "") +
+        (forceRefresh ? "&refresh=1" : ""),
     );
     if (r.ok) data = await r.json();
   } catch (e) {}
@@ -387,6 +451,7 @@ async function showLeaderboard() {
           String(p.name).replace(/\\/g, "\\\\").replace(/'/g, "\\'") +
           '\')">' +
           '<span class="lb-rank">' + (i + 1) + "</span>" +
+          (typeof avatarHtml === "function" ? avatarHtml(p.name, 30, "lb-avatar") : "") +
           '<span class="lb-name">' + escHtml(p.name) + (isMe ? '<span class="lb-you">YOU</span>' : "") + "</span>" +
           '<span class="lb-wins">' + p.wins + '<small>wins</small></span>' +
           '<span class="lb-meta">' + p.matches + "M · " + p.winPct + "%</span>" +

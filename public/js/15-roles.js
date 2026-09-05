@@ -176,6 +176,23 @@ function showRoleAssign(players, mode, callback) {
   roleAssignCallback = callback;
   renderRoleGrid();
   $("roleAssignOverlay").classList.remove("hidden");
+
+  /* v2.9: "Auto-pick my XI". In 5v5 and 11v11 this screen asks for six or
+     twenty-two decisions before the match starts, which is why team formats
+     felt like homework. One tap fills a legal squad — openers attack, the tail
+     defends, and getRoleLimits() is respected. Everything stays editable
+     afterwards, so it is a starting point, not a lock-in. */
+  const autoBtn = $("btnAutoRoles");
+  if (autoBtn) {
+    autoBtn.style.display = roleAssignPlayers.length > 1 ? "inline-block" : "none";
+    autoBtn.onclick = () => {
+      sfx("tap");
+      if (typeof hcAutoPickRoles !== "function") return;
+      roleAssignPlayers = hcAutoPickRoles(roleAssignPlayers, G.teamSize || roleAssignPlayers.length);
+      renderRoleGrid();
+      if (typeof toast === "function") toast("Squad styles auto-picked — tap any row to change", "good");
+    };
+  }
 }
 
 function renderRoleGrid() {

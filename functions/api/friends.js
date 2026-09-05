@@ -1,3 +1,5 @@
+import { checkOwner } from '../../lib/api/shared.js';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -69,8 +71,16 @@ export const onRequestGet = async (ctx) => {
 export const onRequestPost = async (ctx) => {
   try {
     const body = await ctx.request.json();
-    const { action, user, target, targetStats, isBot, data } = body;
+    const { action, user, target, targetStats, isBot, data, token } = body;
     if (!user || !action) return json({ error: 'Missing params' }, 400);
+
+    /* Ownership gate. Without this anyone could POST
+       {action:'remove', user:'alice', target:'bob'} and silently delete a
+       friendship that belongs to two other people. */
+    const own = await checkOwner(ctx.env.KV, user, token);
+    if (!own.ok) {
+      return json({ error: own.error, recoverable: !!own.recoverable }, own.status);
+    }
 
     const KV = ctx.env.KV;
     const userData = await getFriends(KV, user);
