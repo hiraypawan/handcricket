@@ -1613,6 +1613,9 @@ input,select,textarea{font-size:16px}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rp-sc{font-family:"Rubik",sans-serif;font-size:11.5px;color:var(--ink-soft);white-space:nowrap}
 .rp-when{font-family:"Rubik",sans-serif;font-size:11px;color:var(--ink-faint)}
+/* home secondary row (How to Play / Profile / Friends / Leaderboard):
+   wrap on narrow screens and never stretch full-width per button */
+.home-btn-row button{width:auto;flex:0 1 auto;margin-top:0;white-space:nowrap}
 /* team-builder type-my-XI rows */
 .tb-mode-row{display:flex;gap:8px;width:min(100%,380px);margin:8px auto 4px}
 .tb-mode-row .ftab{flex:1;margin-top:0}

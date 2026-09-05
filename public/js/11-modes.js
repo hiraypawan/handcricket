@@ -149,6 +149,12 @@ $("modeInstant").onclick = () => {
     startMatchmaking();
   });
 };
+$("modeStory").onclick = () => {
+  ensureAudio();
+  sfx("tap");
+  haptic();
+  if (typeof enterStoryMode === "function") enterStoryMode();
+};
 $("btnProfile").onclick = () => {
   sfx("tap");
   showProfile();

@@ -199,8 +199,9 @@
 <div class="mode-grid">
 <div class="mode-btn" id="modeOnline"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c-3.3 3.4-3.3 14.6 0 18M12 3c3.3 3.4 3.3 14.6 0 18"/></svg></span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
 <div class="mode-btn" id="modeInstant"><span class="icon"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span class="title">Quick Match</span><span class="desc">Get a game in seconds</span></div>
+<div class="mode-btn" id="modeStory"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="14.6" r="5.8"/><path d="M7.9 10.9 5.6 3l4.4 2.6L12 3l2 2.6 4.4-2.6-2.3 7.9"/></svg></span><span class="title">Story</span><span class="desc">Career mode</span></div>
 </div>
-<div class="home-profile-wrap home-btn-row" style="display:flex;gap:8px;justify-content:center">
+<div class="home-profile-wrap home-btn-row" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
 <button class="secondary small" id="btnHowTo" style="display:inline-flex;align-items:center;gap:6px"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg> How to Play</button><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button><button class="secondary small" id="btnLeaderboard">Leaderboard</button></div>
 <div class="home-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
 <div class="home-version">v2.9.0</div>
@@ -238,6 +239,7 @@
 <div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
 <div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div>
+<input type="text" id="mmTeamName" placeholder="Team name (optional)" maxlength="16" autocomplete="off"/>
 <div class="persona-card hidden" id="mmPersona"></div>
 <button id="btnMMPlayBot" class="small" style="margin-top:8px">Find Opponent</button>
 <button id="btnMMCancel" class="secondary small" style="margin-top:8px">Cancel</button></div>

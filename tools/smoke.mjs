@@ -150,6 +150,7 @@ check("page boots with zero JS errors", errors.length === 0, errors.slice(0, 3).
 const wired = {
   modeOnline: !!byId(dom, "modeOnline")?.onclick,
   modeInstant: !!byId(dom, "modeInstant")?.onclick,
+  modeStory: !!byId(dom, "modeStory")?.onclick,
   btnCreate: !!byId(dom, "btnCreate")?.onclick,
   btnMMPlayBot: !!byId(dom, "btnMMPlayBot")?.onclick,
   btnTbType: !!byId(dom, "btnTbType")?.onclick,
@@ -189,7 +190,8 @@ const resTiles = byId(dom, "matchStatsBox")?.querySelectorAll(".stat-item").leng
 check("result screen renders the full stats card", resTiles >= 10, "tiles=" + resTiles);
 
 // ---------------------------------------------------------------- 2b. sides locked: YOU right, opponent left
-ev(dom, `resetGame(); G.teamSize=1; G.iBat=true; G.mode='offline'; G.isBot=true; G.isHost=true; G.myPlayers=[]; G.oppPlayers=[]; startOffline();`);
+// typed team name must survive boot (rename feature); username fallback otherwise
+ev(dom, `resetGame(); G.teamSize=1; G.iBat=true; G.mode='offline'; G.isBot=true; G.isHost=true; G.myName='Tigers'; G.myPlayers=[]; G.oppPlayers=[]; startOffline();`);
 await sleep(1200);
 const sideB = byId(dom, "labelB")?.textContent || "";
 const sideA = byId(dom, "labelA")?.textContent || "";
@@ -197,8 +199,8 @@ const youLit = byId(dom, "teamB")?.classList.contains("you") === true;
 const oppLit = byId(dom, "teamA")?.classList.contains("you") === false;
 const scoreSync = ev(dom, `$('scoreB').textContent == String(G.me.score) && $('scoreA').textContent == String(G.opp.score)`);
 check(
-  "sides locked: B=me highlighted, A=opponent",
-  sideB === "YOU" && sideA !== "YOU" && youLit && oppLit && scoreSync,
+  "sides locked: B=me highlighted, A=opponent, team rename kept",
+  sideB === "Tigers" && sideA !== "Tigers" && youLit && oppLit && scoreSync,
   `A=${sideA} B=${sideB} you=${youLit} sync=${scoreSync}`,
 );
 
@@ -645,6 +647,17 @@ ev(dom, `window.__net.length=0; showUserProfile('Rohit')`);
 await sleep(200);
 const profCall = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
 check("tapping a player fetches their LIVE profile", /\/api\/profile\?user=Rohit/.test(profCall), profCall.slice(0, 90));
+// solo player with no server reach: board must still show the local career
+ev(dom, `setUsername('Alice'); saveStats(Object.assign(defaultStats(), { matches: 3, wins: 2 }));`);
+ev(dom, `window.__realFetch = window.fetch; window.fetch = () => Promise.reject(new Error('offline')); showLeaderboard();`);
+await sleep(300);
+const lbLocal = byId(dom, "lbList")?.textContent || "";
+check(
+  "leaderboard falls back to local career when offline",
+  /YOU/.test(lbLocal) && /couldn't reach the server/i.test(lbLocal),
+  lbLocal.slice(0, 80),
+);
+ev(dom, `window.fetch = window.__realFetch;`);
 
 // 10d. the two engine hooks are no longer empty stubs
 check("checkBotChallenges polls the inbox", /pollInbox/.test(jsSrc("20-friends.js")));

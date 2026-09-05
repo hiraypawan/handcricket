@@ -427,7 +427,28 @@ async function showLeaderboard(forceRefresh) {
   document.querySelectorAll(".overlay,.friends-overlay").forEach((o) => o.classList.add("hidden"));
   ov.classList.remove("hidden");
   list.innerHTML = '<div class="lb-empty">Loading...</div>';
+  /* Local fallback: a solo player (or a device that cannot reach the API)
+     must still see their own career on this board. */
+  const localName = getUsername() || "YOU";
+  const local = (typeof loadStats === "function" && loadStats()) || { matches: 0 };
+  const hasLocal = (local.matches || 0) > 0;
+  const localRowHTML = (note) =>
+    '<div class="lb-row me"><span class="lb-rank">–</span>' +
+    (typeof avatarHtml === "function" ? avatarHtml(localName, 30, "lb-avatar") : "") +
+    '<span class="lb-name">' +
+    escHtml(localName) +
+    '<span class="lb-you">YOU</span></span>' +
+    '<span class="lb-wins">' +
+    (local.wins || 0) +
+    "<small>wins</small></span>" +
+    '<span class="lb-meta">' +
+    (local.matches || 0) +
+    "M · " +
+    (local.winPct || 0) +
+    "%</span></div>" +
+    (note ? '<div class="lb-mine">' + note + "</div>" : "");
   let data = null;
+  let fetchFailed = false;
   try {
     const r = await fetch(
       "/api/leaderboard?limit=20&me=" + encodeURIComponent(getUsername() || "") +
@@ -437,14 +458,40 @@ async function showLeaderboard(forceRefresh) {
       { cache: "no-store" },
     );
     if (r.ok) data = await r.json();
-  } catch (e) {}
-  if (!data || !Array.isArray(data.leaders) || !data.leaders.length) {
+    else fetchFailed = true;
+  } catch (e) {
+    fetchFailed = true;
+  }
+  const leaders = data && Array.isArray(data.leaders) ? data.leaders : [];
+  if (!leaders.length) {
+    if (hasLocal) {
+      list.innerHTML = localRowHTML(
+        fetchFailed
+          ? "Couldn't reach the server — showing this device's career."
+          : "Your career is on this device — it appears here after it syncs.",
+      );
+      return;
+    }
     list.innerHTML =
-      '<div class="lb-empty">No ranked players yet.<br>Finish a match to publish your career.</div>';
+      '<div class="lb-empty">' +
+      (fetchFailed ? "Couldn't load the leaderboard.<br>Check your connection and tap Refresh." : "No ranked players yet.<br>Finish a match to publish your career.") +
+      "</div>";
     return;
   }
+  /* Server board exists but I am missing from it while this device has a
+     career (publish blocked or not yet synced) — append my local row. */
+  const meLower = (getUsername() || "").toLowerCase();
+  const onBoard =
+    leaders.some((p) => String(p.name || "").toLowerCase() === meLower) ||
+    (data.me && data.me.rank);
+  const tail =
+    !onBoard && hasLocal
+      ? localRowHTML("Your device career — it joins the board once it syncs.")
+      : data.me && data.me.rank > leaders.length
+        ? '<div class="lb-mine">Your rank: <b>#' + data.me.rank + "</b> — " + data.me.wins + " wins from " + data.me.matches + " matches</div>"
+        : "";
   list.innerHTML =
-    data.leaders
+    leaders
       .map((p, i) => {
         const medal = i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "";
         const isMe = p.name.toLowerCase() === (getUsername() || "").toLowerCase();
@@ -461,10 +508,7 @@ async function showLeaderboard(forceRefresh) {
           "</button>"
         );
       })
-      .join("") +
-    (data.me && data.me.rank > data.leaders.length
-      ? '<div class="lb-mine">Your rank: <b>#' + data.me.rank + "</b> — " + data.me.wins + " wins from " + data.me.matches + " matches</div>"
-      : "");
+      .join("") + tail;
 }
 
 /* Open ANY player's profile with their LIVE stats (friend list, leaderboard).

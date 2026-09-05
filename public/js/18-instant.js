@@ -107,9 +107,22 @@ function resetMatchmakingUI2() {
     mmFindTimer = null;
   }
 }
+function teamDisplayName() {
+  try {
+    const v = ($("mmTeamName") && $("mmTeamName").value) || "";
+    if (v.trim()) return v.trim().slice(0, 16);
+    return localStorage.getItem("hcp_teamname") || "";
+  } catch (e) {
+    return "";
+  }
+}
 function startMatchmaking() {
   mmSearching = false;
   clearInterval(matchTimer);
+  try {
+    const saved = localStorage.getItem("hcp_teamname") || "";
+    if (saved && $("mmTeamName") && !$("mmTeamName").value) $("mmTeamName").value = saved;
+  } catch (e) {}
   G.teamSize = getTeamSize();
   G.mode = "offline";
   G.isHost = true;
@@ -132,7 +145,14 @@ function startQuickBotMatch(persona) {
   G.oppStats = persona ? personaStats(persona) : null;
   if (persona) G.oppName = persona.name;
   G.iBat = Math.random() < 0.5; // coin flip decides who bats first
-  G.myName = getUsername() || "Player";
+  /* Renamable T20/quick team: typed name wins, else username, else YOU. */
+  const tn = teamDisplayName();
+  if (tn) {
+    try {
+      localStorage.setItem("hcp_teamname", tn);
+    } catch (e) {}
+  }
+  G.myName = tn || getUsername() || "Player";
   G.oppName = "";
   // never inherit a previous match's roster (e.g. a story XI)
   G.myPlayers = [];

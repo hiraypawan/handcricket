@@ -87,7 +87,8 @@ function startOffline() {
     ensureOfflineRosters();
   }
   G.oppName = botName;
-  G.myName = "YOU";
+  /* Keep a display name set upstream (typed team name); default to YOU. */
+  if (!G.myName || G.myName === "Player") G.myName = getUsername() || "YOU";
   updAllNames();
   updScore();
   renderBalls();
