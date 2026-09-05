@@ -736,6 +736,14 @@ function finishMatch() {
   if (typeof hcRecordH2H === "function" && typeof getUsername === "function") {
     hcRecordH2H(getUsername(), matchResult.oppName, matchResult);
   }
+  /* Match over: opponent counts as just-seen (never "offline 29m ago" right
+     after playing), and presence drops back to menu so the Watch button and
+     playing state don't linger on a finished game. */
+  try {
+    if (typeof hcTouchSeen === "function") hcTouchSeen(G.oppName);
+    if (typeof window.hcPresenceSet === "function")
+      window.hcPresenceSet("menu", null);
+  } catch (e) {}
   const statsBox = $("matchStatsBox");
   statsBox.style.display = "block";
   const s = loadStats();

@@ -163,7 +163,29 @@ function loadLocal() {
       };
     }
     const rec = window.__presenceMap && window.__presenceMap[key];
-    if (!rec) return { online: true, label: "", known: false, bot: false };
+    if (!rec) {
+      /* No server word yet: if we JUST dealt with them, they're Online —
+         otherwise unknown (fail open for challenges). */
+      try {
+        if (
+          typeof hcSeenAt === "function" &&
+          Date.now() - hcSeenAt(name) < 5 * 60 * 1000
+        )
+          return { online: true, label: "Online", known: true, bot: false };
+      } catch (e) {}
+      return { online: true, label: "", known: false, bot: false };
+    }
+    if (!rec.online) {
+      /* Server says offline, but we interacted seconds ago (played a match,
+         accepted a request): trust our eyes for 5 minutes. */
+      try {
+        if (
+          typeof hcSeenAt === "function" &&
+          Date.now() - hcSeenAt(name) < 5 * 60 * 1000
+        )
+          return { online: true, label: "Online", known: true, bot: false, state: rec.state, room: rec.room };
+      } catch (e) {}
+    }
     const lab = presenceLabel(rec.online, rec.lastSeen);
     return { online: !!rec.online, label: lab.txt, known: true, bot: false, state: rec.state, room: rec.room };
   };
@@ -316,6 +338,9 @@ function loadLocal() {
       return;
     }
     const req = myFriends.pending.splice(idx, 1)[0];
+    try {
+      if (typeof hcTouchSeen === "function") hcTouchSeen(req.name);
+    } catch (e) {}
     myFriends.friends.push({
       name: req.name,
       stats: req.stats || null,
@@ -371,6 +396,9 @@ function loadLocal() {
   window.challengeFriend = function (name) {
     ensureAudio();
     sfx("tap");
+    try {
+      if (typeof hcTouchSeen === "function") hcTouchSeen(name);
+    } catch (e) {}
     /* Play requests only go to friends who are online — real (presence) or
        bot (pseudo-presence). Unknown status fails open (old behavior). */
     try {
@@ -683,13 +711,17 @@ function loadLocal() {
               const dup = myFriends.friends.some(
                 (f) => f.name.toLowerCase() === botName.toLowerCase(),
               );
-              if (!dup)
+              if (!dup) {
+                try {
+                  if (typeof hcTouchSeen === "function") hcTouchSeen(botName);
+                } catch (e) {}
                 myFriends.friends.push({
                   name: botName,
                   stats: botStats || null,
                   since: Date.now(),
                   isBot: true,
                 });
+              }
               saveLocal();
               syncToServer();
               hideFriendNotif();

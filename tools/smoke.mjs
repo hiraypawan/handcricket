@@ -411,6 +411,20 @@ check("bot careers are deterministic per name", bcA === bcB && JSON.parse(bcA).m
 const bpA = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
 const bpB = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
 check("bot presence is deterministic per time bucket", bpA === bpB && typeof JSON.parse(bpA).online === "boolean", bpA);
+ev(dom, `hcTouchSeen('Test Hero');`);
+const bpSeen = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
+check("just-played bot shows Online, never stale-offline", JSON.parse(bpSeen).online === true, bpSeen);
+check(
+  "match end stamps seen + resets presence to menu",
+  /hcTouchSeen\(G\.oppName\)/.test(repoSrc("public/js/09-engine.js")) &&
+    /hcPresenceSet\("menu"/.test(repoSrc("public/js/09-engine.js")),
+  "",
+);
+check(
+  "friend presence prefers fresh interaction over stale server state",
+  /hcSeenAt/.test(repoSrc("public/js/20-friends.js")),
+  "",
+);
 // spectate + auth + ranks wiring (static: no live peers in jsdom)
 check("spectate client present", ev(dom, `typeof hcSpectate`) === "function" && ev(dom, `typeof window.spectateTick`) === "function");
 check("spectate endpoints exist", /spectate/.test(repoSrc("public/js/26-spectate.js")) && /action.*publish/.test(repoSrc("functions/api/spectate.js")));

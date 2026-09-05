@@ -493,9 +493,40 @@ function botCareerFor(name) {
     : "0.0";
   return s;
 }
+/* Last-interaction stamps (match played, request accepted, challenge sent):
+   shared by bot + real presence so someone you JUST dealt with never shows
+   as "offline 29m ago". Cap 60 names. */
+function hcTouchSeen(name) {
+  try {
+    const k = String(name || "").toLowerCase();
+    if (!k) return;
+    const m = JSON.parse(localStorage.getItem("hcp_seen") || "{}");
+    m[k] = Date.now();
+    const ks = Object.keys(m);
+    if (ks.length > 60) {
+      ks.sort((a, b) => m[a] - m[b])
+        .slice(0, ks.length - 60)
+        .forEach((dd) => delete m[dd]);
+    }
+    localStorage.setItem("hcp_seen", JSON.stringify(m));
+  } catch (e) {}
+}
+function hcSeenAt(name) {
+  try {
+    const m = JSON.parse(localStorage.getItem("hcp_seen") || "{}");
+    return m[String(name || "").toLowerCase()] || 0;
+  } catch (e) {
+    return 0;
+  }
+}
 /* Deterministic pseudo-presence for bots: same bot shows the same status to
-   everyone at the same time (5-minute buckets, ~2/3 online). */
+   everyone at the same time (5-minute buckets, ~2/3 online) — unless you
+   interacted recently, in which case they're plainly Online. */
 function botPresence(name) {
+  try {
+    if (Date.now() - hcSeenAt(name) < 5 * 60 * 1000)
+      return { online: true, lastMin: 0 };
+  } catch (e) {}
   const bucket = Math.floor(Date.now() / 300000);
   const h = hashStr(String(name).toLowerCase() + ":" + bucket);
   if (h % 3 !== 0) return { online: true, lastMin: 0 };
