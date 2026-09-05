@@ -340,6 +340,20 @@ const xiSaved = ev(dom, `getCustomTeams().some(t => t.name === 'Smoke XI' && t.p
 check("typed XI saves as a custom team", xiSaved === true, "");
 const presetHit = ev(dom, `Object.values(TEAMS).flatMap(t => t.players.map(p => p.name)).some(n => ['Kohli','Rohit','Dhoni','Bumrah','Pant','Buttler','Warner','Maxwell','Starc','Kuldeep','Chahal','Hardik','Jadeja','Pant'].includes(n))`);
 check("preset squads carry no real-famous names", presetHit === false, "");
+const fs5b = await import("node:fs");
+const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
+check(
+  "matchmaking converges concurrent seekers (deterministic room + adopt)",
+  /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
+    /peerRec/.test(repoSrc("functions/api/quickmatch.js")),
+  "",
+);
+check(
+  "join retries ~1min with backoff instead of giving up",
+  /JOIN_BACKOFF\s*=/.test(repoSrc("public/js/14-online.js")) &&
+    /scheduleJoinRetry/.test(repoSrc("public/js/14-online.js")),
+  "",
+);
 // bot skill tiers + progressive careers + pseudo-presence are pure/deterministic
 const tierNew = ev(dom, `BotAI.skillFor({matches:0,wins:0}).key`);
 const tierPro = ev(dom, `BotAI.skillFor({matches:10,wins:4}).key`);
@@ -353,8 +367,6 @@ const bpB = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
 check("bot presence is deterministic per time bucket", bpA === bpB && typeof JSON.parse(bpA).online === "boolean", bpA);
 // spectate + auth + ranks wiring (static: no live peers in jsdom)
 check("spectate client present", ev(dom, `typeof hcSpectate`) === "function" && ev(dom, `typeof window.spectateTick`) === "function");
-const fs5b = await import("node:fs");
-const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
 check("spectate endpoints exist", /spectate/.test(repoSrc("public/js/26-spectate.js")) && /action.*publish/.test(repoSrc("functions/api/spectate.js")));
 check("google auth scaffolded", /accounts\.google\.com\/gsi\/client/.test(repoSrc("public/js/27-auth.js")) && /verifyGoogleIdToken/.test(repoSrc("lib/api/shared.js")));
 const merged = ev(dom, `mergeStats({matches:2,wins:1,runs:50,highestScore:30,bestWinStreak:2}, {matches:3,wins:1,runs:70,highestScore:60,bestWinStreak:5})`);

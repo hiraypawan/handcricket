@@ -230,7 +230,7 @@ function startPeer(isHost, roomId) {
       $("roomCodeShare").classList.remove("hidden");
       $("btnCopyCode").style.display = "block";
       $("waitTitle").textContent = "Waiting for friend...";
-      $("waitDesc").textContent = "Share the code or the link:";
+      $("waitDesc").textContent = "Share the code or the link — keep this screen open.";
       connLog("Room: " + G.roomId);
       connLog("Waiting...");
     } else {
@@ -250,8 +250,8 @@ function startPeer(isHost, roomId) {
   peer.on("error", (err) => {
     connLog(err.type, true);
     if (err.type === "peer-unavailable") {
-      connLog("Room not found", true);
-      $("btnRetry").style.display = "block";
+      connLog("Host not reachable yet", true);
+      scheduleJoinRetry();
     } else if (err.type === "unavailable-id") {
       setTimeout(() => {
         destroyPeer();
@@ -278,11 +278,56 @@ function startPeer(isHost, roomId) {
   });
 }
 
+/* Join backoff: the host registers on the PeerJS cloud a moment after WE
+   start dialing (slow mobile networks especially), so the first attempts can
+   legitimately 404. Retry ~1 minute before giving up — never one-and-done. */
+const JOIN_BACKOFF = [2000, 3000, 5000, 8000, 8000, 10000, 10000, 15000];
+let lastRetryAt = 0;
+function scheduleJoinRetry() {
+  /* peer-level and conn-level errors can both fire for one failed attempt —
+     coalesce them so attempts advance once per failure, not twice. */
+  const now = Date.now();
+  if (now - lastRetryAt < 1000) return;
+  lastRetryAt = now;
+  if (joinAttempts >= JOIN_BACKOFF.length) {
+    connLog("Room not found — ask the host to keep their room open, then tap Retry", true);
+    $("btnRetry").style.display = "block";
+    return;
+  }
+  const wait = JOIN_BACKOFF[joinAttempts];
+  connLog(
+    "Retrying in " + Math.round(wait / 1000) + "s... (host may still be connecting)",
+    false,
+    true,
+  );
+  setTimeout(() => {
+    if (peer && !peer.destroyed) joinHost();
+  }, wait);
+}
 function joinHost() {
   connGen++;
   joinAttempts++;
   const gen = connGen;
-  connLog("Attempt " + joinAttempts + "/3...");
+  connLog("Attempt " + joinAttempts + "/" + JOIN_BACKOFF.length + "...");
+  /* Fire-and-forget early warning: if the host's presence is stale, say so
+     instead of burning a minute of blind retries. Never blocks the join. */
+  if (joinAttempts === 1 && G.oppName) {
+    (async () => {
+      try {
+        const r = await fetch(
+          "/api/presence?names=" + encodeURIComponent(G.oppName),
+        );
+        if (!r.ok) return;
+        const j = await r.json();
+        const rec =
+          j.presence && j.presence[String(G.oppName).toLowerCase()];
+        if (rec && !rec.online && Date.now() - (rec.lastSeen || 0) > 150000) {
+          toast("Host looks offline — ask them to keep the room open", "warn");
+          connLog("Host looks offline", true);
+        }
+      } catch (e) {}
+    })();
+  }
   conn = peer.connect("hcp_" + G.roomId, { reliable: true });
   setupConn(conn, gen, true);
 }
@@ -312,9 +357,8 @@ function setupConn(c, gen, isJoiner) {
   c.on("error", (e) => {
     if (gen !== connGen) return;
     connLog(e.type || "err", true);
-    if (isJoiner && joinAttempts < 3) {
-      connLog("Retry 2s...", false, true);
-      setTimeout(joinHost, 2000);
+    if (isJoiner) {
+      scheduleJoinRetry();
     } else if (!isJoiner) {
       connLog("Waiting for friend retry...", false, true);
     } else $("btnRetry").style.display = "block";

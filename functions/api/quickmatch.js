@@ -34,6 +34,38 @@ function roomId() {
   return s;
 }
 
+/* Deterministic room for a pair: two concurrent polls that both decide to
+   match the same two seekers MUST converge on the same room, or the guest
+   joins a room nobody hosts ("Room not found" forever). Same pair + same
+   seek timestamps => same room, same roles, harmless double-write. */
+function roomFor(a, b, tsA, tsB) {
+  const pair = [a.toLowerCase(), b.toLowerCase()].sort().join('|') + '|' + Math.min(tsA, tsB);
+  let h = 2166136261;
+  for (let i = 0; i < pair.length; i++) {
+    h ^= pair.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const C = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  let s = '';
+  let x = h >>> 0;
+  for (let i = 0; i < 6; i++) {
+    x = (Math.imul(x, 1103515245) + 12345) & 0x7fffffff;
+    s += C[x % C.length];
+  }
+  return s;
+}
+
+async function readMatch(KV, user) {
+  try {
+    const raw = await KV.get(matchKey(user));
+    if (!raw) return null;
+    const m = JSON.parse(raw);
+    return m && m.room ? m : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function tryMatch(KV, pool, me) {
   const now = Date.now();
   const mine = pool.find((s) => s.user.toLowerCase() === me.toLowerCase());
@@ -47,18 +79,35 @@ async function tryMatch(KV, pool, me) {
     others.find((s) => Number(s.teamSize) === Number(mine.teamSize)) ||
     (relaxed ? others[0] : null);
   if (!peer) return null;
-  const room = roomId();
+  /* Adopt, don't duplicate: if either side already holds a match record for
+     THIS pair, return my side of it instead of minting a second room. */
+  const peerRec = await readMatch(KV, peer.user);
+  if (
+    peerRec &&
+    peerRec.opp &&
+    peerRec.opp.toLowerCase() === me.toLowerCase() &&
+    now - (peerRec.ts || 0) < 30000
+  ) {
+    const mineIsHost = peerRec.role !== 'host';
+    return {
+      room: peerRec.room,
+      opp: peer.user,
+      role: mineIsHost ? 'host' : 'guest',
+      teamSize: peerRec.teamSize || mine.teamSize,
+    };
+  }
   const hostFirst = (peer.ts || 0) <= (mine.ts || 0);
+  const room = roomFor(mine.user, peer.user, mine.ts || 0, peer.ts || 0);
   const hostRec = {
     room,
-    opp: hostFirst ? peer.user : mine.user,
+    opp: hostFirst ? mine.user : peer.user,
     role: 'host',
     teamSize: Number(hostFirst ? peer.teamSize : mine.teamSize) || 1,
     ts: now,
   };
   const guestRec = {
     room,
-    opp: hostFirst ? mine.user : peer.user,
+    opp: hostFirst ? peer.user : mine.user,
     role: 'guest',
     teamSize: hostRec.teamSize,
     ts: now,
@@ -111,7 +160,7 @@ export const onRequestPost = async (ctx) => {
       const rec = { user: me, teamSize: Number(teamSize) || 1, ts: Date.now() };
       if (ix >= 0) pool[ix] = rec;
       else pool.push(rec);
-      await KV.put(POOL_KEY, JSON.stringify(pool));
+      await KV.put(POOL_KEY, JSON.stringify(pool.slice(-50)));
       const m = await tryMatch(KV, pool, me);
       if (m) return json({ status: 'matched', room: m.room, opp: m.opp, role: m.role, teamSize: m.teamSize });
       return json({ status: 'waiting' });

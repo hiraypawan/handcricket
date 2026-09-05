@@ -176,7 +176,8 @@ function joinRealMatch(m) {
   }
   if (G.isHost) {
     $("waitTitle").textContent = "Opponent found!";
-    $("waitDesc").textContent = (m.opp || "Opponent") + " is joining...";
+    $("waitDesc").textContent =
+      (m.opp || "Opponent") + " is joining... keep this screen open.";
     connLog("Creating room " + m.room + "...");
   } else {
     $("waitTitle").textContent = "Opponent found!";

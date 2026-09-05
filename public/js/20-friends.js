@@ -394,7 +394,8 @@ function loadLocal() {
     $("connLog").innerHTML = "";
     $("connBadge").style.display = "none";
     $("waitTitle").textContent = "Challenge sent to " + name + "!";
-    $("waitDesc").textContent = "Share the invite link — they'll join as your opponent.";
+    $("waitDesc").textContent =
+      "Share the invite link — they'll join as your opponent. Keep this screen open.";
     connLog("Creating room to challenge " + name + "...");
     startPeer(true);
     /* v2.8: actually deliver something. The room id exists as soon as
