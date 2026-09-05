@@ -1,4 +1,4 @@
-# Hand Cricket Pro v2.6
+# Hand Cricket Pro v2.8
 
 Mobile-first cricket game (offline vs bot, quick match, online friend play,
 and an 8-tier story career). Static Cloudflare Pages app — **zero build step**.
@@ -14,15 +14,23 @@ and an 8-tier story career). Static Cloudflare Pages app — **zero build step**
 - `public/index.html` — slim shell (markup + `<link>` + ordered `<script>`s)
 - `public/css/app.css` — all styles
 - `public/js/*` — modular game logic (22 files, numbered in load order)
-- `public/functions/api/*` — Cloudflare Pages Functions + Workers KV (`KV`)
+- `functions/api/*` — Cloudflare Pages Functions + Workers KV (`KV`).
+  ⚠️ This directory **must** stay at the repo root (a sibling of `public/`).
+  Cloudflare only compiles Functions from `<root>/functions`; when it lived in
+  `public/functions` every deploy shipped zero Functions *and* published the
+  handler source as static files.
 - Hands/ball UI: pure CSS/SVG (no external image assets)
 - v2.5: one design-system stylesheet (`public/css/app.css`, dark night-stadium theme), all UI glyphs are inline SVG — no emoji chrome
 
 ## Local dev
 ```bash
-npx wrangler pages dev ./public
+npm install
+npx wrangler pages dev public --kv KV
 ```
-Open the printed URL (usually `http://localhost:8788`).
+Open the printed URL (usually `http://localhost:8788`). You should see
+`✨ Compiled Worker successfully` — that means `functions/` was picked up and
+`/api/*` is live against a local (simulated) KV. If it prints
+`No Functions. Shimming...`, the `functions/` directory has moved.
 
 ## Tests
 ```bash
@@ -42,5 +50,8 @@ Edit `public/js/story-data.js`. Bump `?v=N` in its `<script src>` in
 `public/index.html` after every change to bust caches.
 
 ## Versioning
-- UI version span `.home-version` in `public/index.html` (currently `v2.6`)
-- `<script src="js/story-data.js?v=N">` cache-buster
+Keep these four in step when you ship:
+- `.home-version` in `public/index.html` (currently `v2.8.0`)
+- `?v=` cache-buster on every `<script>`/`<link>` in `public/index.html`
+- `version` in `package.json`
+- the `# Hand Cricket Pro vX.Y` heading in this file

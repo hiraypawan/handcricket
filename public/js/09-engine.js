@@ -163,9 +163,7 @@ function startInnings(n) {
     ? G.mode === "online"
       ? G.myName
       : "YOU"
-    : G.mode === "online"
-      ? G.oppName
-      : "BOT";
+    : G.oppName || "Opponent";
   const ov = G.totalBalls / 6;
   const ft = G.totalWkts + " wk, " + ov + " ov";
   if (typeof botChat === "function") {
@@ -445,9 +443,7 @@ function revealBall() {
               ? G.mode === "online"
                 ? G.myName
                 : "YOU"
-              : G.mode === "online"
-                ? G.oppName
-                : "BOT";
+              : G.oppName || "Opponent";
             $("status").innerHTML = '<span class="hl">' + who + " OUT!</span>";
             // per-player stats (C4): mark batter out + credit the bowler
             {
@@ -496,9 +492,7 @@ function revealBall() {
             ? G.mode === "online"
               ? G.myName
               : "YOU"
-            : G.mode === "online"
-              ? G.oppName
-              : "BOT";
+            : G.oppName || "Opponent";
           $("status").innerHTML = bn + ' +<span class="hl">' + runs + "</span>";
           popScore(G.iBat ? "A" : "B");
         }
@@ -583,9 +577,7 @@ function endInnings() {
     ? G.mode === "online"
       ? G.myName
       : "YOU"
-    : G.mode === "online"
-      ? G.oppName
-      : "BOT";
+    : G.oppName || "Opponent";
   if (G.innings === 1) {
     G.target = bat.score;
     setStage("break");
@@ -612,7 +604,7 @@ function finishMatch() {
   const won = my > op,
     tied = my === op;
   const mn = G.mode === "online" ? G.myName : "YOU",
-    on = G.mode === "online" ? G.oppName : "BOT";
+    on = G.oppName || "Opponent";
   if (won) {
     t = "YOU WIN!";
     m =
@@ -672,6 +664,9 @@ function finishMatch() {
     oppBalls: G.opp.balls,
     oppWickets: G.opp.wkts,
     myHist: G.me.hist,
+    // v2.8: the balls the OPPONENT faced — needed to count dots BOWLED,
+    // which the career bowling card previously could not do.
+    oppHist: G.opp.hist,
   };
   G.recentResult = matchResult;
   updateStatsAfterMatch(matchResult);

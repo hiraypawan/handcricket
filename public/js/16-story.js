@@ -535,9 +535,15 @@ $("btnStoryBack").onclick = () => {
   $("storyDialogue").classList.add("hidden");
 };
 $("btnStoryBack").className = "back-btn";
-$("btnStoryRestart").onclick = () => {
+$("btnStoryRestart").onclick = async () => {
   sfx("tap");
-  if (confirm("Restart story? All progress will be lost!")) {
+  // v2.8: in-app sheet instead of the native confirm()
+  const ok = await confirmDialog(
+    "Restart story?",
+    "Your career progress will be lost.",
+    "Restart",
+  );
+  if (ok) {
     storyProgress = defaultStoryProgress();
     cloudSaveStory();
     renderStoryHome();

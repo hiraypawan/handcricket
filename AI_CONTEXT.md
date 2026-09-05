@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — Hand Cricket Pro v2.7
+# AI_CONTEXT.md — Hand Cricket Pro v2.8
 
 > Read this first. It maps the whole codebase so an AI or vibe coder can make
 > changes without guessing. Companion docs (audit history & known bugs):
@@ -17,7 +17,11 @@ handcricket/
 │   │                       theme, responsive framing + every screen (edit visuals HERE).
 │   │                       NOTE: old css/theme.css layer was deleted in v2.5.
 │   ├── js/                  Game logic — see the numbered load order below
-│   └── functions/           Cloudflare Pages Functions (KV-backed REST)
+│   └── (no functions/ here — see below)
+├── functions/               Cloudflare Pages Functions (KV-backed REST).
+│                            MUST be at the repo root: Pages only compiles
+│                            <root>/functions. Inside public/ it is deployed
+│                            as static files and the API 404s.
 ├── tools/smoke.mjs          jsdom regression suite — RUN BEFORE/AFTER changes
 ├── docs/                    Analysis artifacts (audit, directory map, bug hunt)
 ├── AI_CONTEXT.md            ← you are here
@@ -56,6 +60,22 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | 19 | `18-instant.js` | **Quick Match** (honest instant bot game) + boot-time init (loads last) |
 | 20 | `19-chat.js` | Quick-chat + bot banter — float bubbles are TEXT + inline-SVG face chips (`faceSVG`, mood tokens). Legacy emoji tokens map via `LEGACY_EMOJI_TO_MOOD` (never rendered as emoji) |
 | 21 | `20-friends.js` | Friend lists/sync, friend requests, challenge invite |
+
+## 2b. v2.8 changes you must not undo
+
+| Area | What changed | Where |
+|------|--------------|-------|
+| **Deploy** | `functions/` moved from `public/functions/` to the repo root. Pages only compiles `<root>/functions`; the old path shipped zero Functions **and** exposed handler source at `/functions/api/*.js`. | `functions/api/*`, `.github/workflows/deploy.yml` (also fixed `--project-name handscricket` → `handcricket`) |
+| **Friends** | The client now speaks the server protocol (`add` / `accept` / `reject` / `remove`). It used to POST `{action:"sync"}` for everything, which the server rejected with **400 "Invalid action"**, so no request ever reached a second device. `sync` is still accepted server-side as a merge, for old clients. | `20-friends.js`, `functions/api/friends.js` |
+| **Invites** | "Play" on a friend creates a room **and** pushes an invite (with the code) into their inbox. The inbox is polled on boot, on opening Friends, and every 20s while visible — there is no realtime channel. | `20-friends.js` (`pollInbox`/`joinInvite`), `functions/api/challenges.js` |
+| **Stats** | `outs` now comes from `result.myWickets` (times you were dismissed). It used to add `result.oppWickets` — the wickets you **took** — so Batting Avg was runs ÷ wickets-taken. Bowling "Dots Bowled" now counts `result.oppHist` (added to the engine result); it used to show your batting dots. | `09-engine.js`, `10-profiles.js` |
+| **Stats keys** | Career is per-username (`hc_stats:<name>`, legacy global blob migrated on first `setUsername`). Player id is a stable `HC-######` derived from the name, not a re-randomised fake. Opponent names are escaped before `innerHTML`. | `10-profiles.js` |
+| **Opponents** | Offline + Quick Match opponents are personas: clean Indian name, home city, style, career — all derived **deterministically from the name** (`genBotProfile(name)` + `personaStats()`), so the same player never shows two careers. No "BOT"/"Ultra Bot" labels remain in the UI. | `01-config.js`, `11-modes.js`, `13-offline.js`, `18-instant.js`, `07-display.js` |
+| **Quick Match** | Two steps: **Find Opponent** → ~1.1–1.8s reveal of the persona card → **Start Match**. | `18-instant.js`, `#mmPersona` |
+| **Invite join** | The lobby has a room-code field (`#roomCodeInput`, normalised to `A-Z0-9`), so a lost invite link is not a dead end. Hosts see the 6-char code plus the link. Joiners now get `setUsername()` and are gated by `ensureUsername()`. | `14-online.js` (`setLobbyMode`/`resolveRoomCode`), `18-instant.js` boot |
+| **Feedback** | `toast()` and `confirmDialog()` (in `07-display.js`) replace every native `alert()`/`confirm()`. Add a smoke check if you reintroduce one. | `07-display.js` |
+| **Nav** | The dock is Profile · **Friends** · Play · Career · Help. The old "Arena" tab duplicated the home Quick Match tile; Friends had no root entry at all. Profile and Friends sheets now close each other, and overlays have explicit `z-index`. | `05-navigation.js`, `index.html`, `app.css` |
+| **Type** | No font size below 10px (was 7px). `.prof-id` was 9px at 2.33:1 contrast; it is now 11px on `--ink-soft`. | `app.css` |
 
 > ⚠️ Rule: **never create load-time dependencies on later files.** If a file
 > needs a value from a later file at parse time, reorder the `<script>` tags in

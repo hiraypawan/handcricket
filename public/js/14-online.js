@@ -34,13 +34,56 @@ const PEER_OPTS = {
   },
 };
 
+/* v2.8: the lobby used to dead-end with alert("No room!") and had no way to
+   type a code — if you lost the invite link you were stuck. */
+function showLobbyError(msg) {
+  const el = $("lobbyError");
+  if (!el) return;
+  if (!msg) {
+    el.classList.add("hidden");
+    el.textContent = "";
+    return;
+  }
+  el.textContent = msg;
+  el.classList.remove("hidden");
+}
+function normalizeRoomCode(v) {
+  return String(v || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+}
+/* Code from the ?room= deep link, or from the code field. */
+function resolveRoomCode() {
+  const fromUrl = new URLSearchParams(location.search).get("room");
+  if (fromUrl) return normalizeRoomCode(fromUrl);
+  const field = $("roomCodeInput");
+  return field ? normalizeRoomCode(field.value) : "";
+}
+function setLobbyMode(isJoiner, code) {
+  const join = !!isJoiner;
+  $("btnJoin").style.display = join ? "block" : "none";
+  $("btnCreate").style.display = join ? "none" : "block";
+  $("hostFormat").style.display = join ? "none" : "block";
+  $("joinerNote").style.display = join ? "block" : "none";
+  $("roomCodeWrap").style.display = join ? "block" : "none";
+  const toggle = $("btnShowJoin");
+  if (toggle) toggle.style.display = join ? "none" : "block";
+  if (code && $("roomCodeInput")) $("roomCodeInput").value = code;
+  showLobbyError("");
+}
+
 $("btnCreate").onclick = () => {
   sfx("tap");
-  G.myName = $("nameInput").value.trim() || getUsername() || "Host";
+  const nm = $("nameInput").value.trim() || getUsername() || "";
+  if (!nm) {
+    showLobbyError("Enter your name so your friend knows who they are playing.");
+    $("nameInput").focus();
+    return;
+  }
+  G.myName = nm;
   setUsername(G.myName);
   G.isHost = true;
   G.wantRejoin = false;
   G.teamSize = getTeamSize();
+  showLobbyError("");
   $("onlineLobby").classList.add("hidden");
   $("waitingOverlay").classList.remove("hidden");
   $("connLog").innerHTML = "";
@@ -50,13 +93,29 @@ $("btnCreate").onclick = () => {
 };
 $("btnJoin").onclick = () => {
   sfx("tap");
-  G.myName = $("nameInput").value.trim() || "Player";
-  G.isHost = false;
-  const rid = new URLSearchParams(location.search).get("room");
-  if (!rid) {
-    alert("No room!");
+  const nm = $("nameInput").value.trim() || getUsername() || "";
+  if (!nm) {
+    showLobbyError("Enter your name first.");
+    $("nameInput").focus();
     return;
   }
+  const rid = resolveRoomCode();
+  if (!rid) {
+    showLobbyError("Enter the room code your friend shared.");
+    if ($("roomCodeWrap").style.display === "none") setLobbyMode(true, "");
+    $("roomCodeInput").focus();
+    return;
+  }
+  if (rid.length < 4) {
+    showLobbyError("That code looks too short — check it and try again.");
+    return;
+  }
+  G.myName = nm;
+  // the joiner never had setUsername() called, so their career and friend list
+  // were written under an empty username
+  setUsername(nm);
+  G.isHost = false;
+  showLobbyError("");
   const sess = loadSession();
   G.wantRejoin = !!(sess && sess.role === "join" && sess.room === rid);
   $("onlineLobby").classList.add("hidden");
@@ -73,12 +132,14 @@ $("btnRetry").onclick = () => {
   $("connBadge").style.display = "none";
   connLog("Retrying...");
   destroyPeer();
-  if (G.isHost) startPeer(true);
-  else startPeer(false, new URLSearchParams(location.search).get("room"));
+  if (G.isHost) startPeer(true, G.roomId);
+  else startPeer(false, G.roomId || resolveRoomCode());
 };
 $("btnCancelWait").onclick = () => {
   destroyPeer();
   $("waitingOverlay").classList.add("hidden");
+  $("roomCodeShare").classList.add("hidden");
+  $("btnCopyCode").style.display = "none";
   $("onlineLobby").classList.remove("hidden");
 };
 $("btnCopy").onclick = () => {
@@ -88,12 +149,30 @@ $("btnCopy").onclick = () => {
       .share({ title: "Hand Cricket", text: t, url: $("shareBox").textContent })
       .catch(() => {
         navigator.clipboard.writeText(t);
-        alert("Copied!");
+        toast("Invite link copied", "ok");
       });
   } else {
     navigator.clipboard.writeText(t);
-    alert("Copied!");
+    toast("Invite link copied", "ok");
   }
+};
+
+$("btnCopyCode").onclick = () => {
+  const code = G.roomId || "";
+  if (!code) return;
+  sfx("tap");
+  try {
+    navigator.clipboard.writeText(code);
+    toast("Room code " + code + " copied", "ok");
+  } catch (e) {
+    toast("Room code: " + code);
+  }
+};
+
+$("btnShowJoin").onclick = () => {
+  sfx("tap");
+  setLobbyMode(true, "");
+  $("roomCodeInput").focus();
 };
 
 function startPeer(isHost, roomId) {
@@ -120,8 +199,11 @@ function startPeer(isHost, roomId) {
       $("shareBox").textContent = u.toString();
       $("shareBox").style.display = "block";
       $("btnCopy").style.display = "block";
+      $("roomCodeText").textContent = G.roomId;
+      $("roomCodeShare").classList.remove("hidden");
+      $("btnCopyCode").style.display = "block";
       $("waitTitle").textContent = "Waiting for friend...";
-      $("waitDesc").textContent = "Share the link:";
+      $("waitDesc").textContent = "Share the code or the link:";
       connLog("Room: " + G.roomId);
       connLog("Waiting...");
     } else {
@@ -485,7 +567,7 @@ function selTeam(k) {
 }
 $("btnConfirmTeam").onclick = () => {
   if (!G.myTeam) {
-    alert("Pick a team!");
+    toast("Pick a team first", "warn");
     return;
   }
   sfx("tap");
@@ -585,7 +667,7 @@ function updatePickCount() {
 }
 $("btnSaveTeam").onclick = () => {
   if (builderPicks.length !== 11) {
-    alert("Pick exactly 11 players!");
+    toast("Pick exactly 11 players", "warn");
     return;
   }
   const name = $("teamNameInput").value.trim() || "My Team";

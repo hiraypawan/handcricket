@@ -60,6 +60,17 @@ const boot = async () => {
       try {
         window.AudioContext = class {};
       } catch {}
+      // record every fetch so API contracts can be asserted (jsdom has no fetch)
+      window.__net = [];
+      window.fetch = (url, o) => {
+        window.__net.push({ url: String(url), body: o && o.body });
+        return Promise.resolve(
+          new window.Response(
+            JSON.stringify({ ok: true, friends: [], pending: [], challenges: [], data: null }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      };
     },
   });
   await sleep(300); // let inline scripts + early timeouts settle
@@ -252,13 +263,28 @@ await sleep(500);
 const mmShown = !byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const mmStatus = byId(dom, "matchStatus")?.textContent || "";
 check("quick-match overlay opens with honest copy", mmShown && !/real player|searching/i.test(mmStatus), mmStatus);
-// pick 1v1 inside the overlay, then Start Match
+// pick 1v1 inside the overlay, then Find Opponent -> persona reveal -> Start
 ev(dom, `document.querySelector('#mmSize .team-size-btn[data-size="1"]').click()`);
+check("quick match CTA starts as 'Find Opponent'", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Find Opponent", byId(dom, "btnMMPlayBot")?.textContent.trim());
+ev(dom, `$('btnMMPlayBot').click()`);
+await sleep(2200); // the reveal is deliberately ~1.1-1.8s
+const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
+const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
+const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
+check("quick match reveals a named opponent with a city", personaShown && personaName.length > 2 && personaMeta.includes("·"), `${personaName} | ${personaMeta}`);
+check("opponent name is a clean Indian name (no gamer tags)", /^[A-Za-z]+ [A-Za-z]+$/.test(personaName.trim()), personaName);
+check("quick match CTA becomes 'Start Match' after the reveal", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Start Match", byId(dom, "btnMMPlayBot")?.textContent.trim());
+// the same player must show the same career if revealed twice
+const career1 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textContent || "";
+ev(dom, `renderMMPersona(genBotProfile(${JSON.stringify(personaName)}))`);
+const career2 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textContent || "";
+check("persona career is stable for the same name", career1 === career2, `${career1} vs ${career2}`);
 ev(dom, `$('btnMMPlayBot').click()`);
 await sleep(1500); // role-less 1v1 boots: startInnings -> nextBall at 700ms
 const qmOverlayHidden = byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const qmBooted = ev(dom, `G.mode==='offline' && G.isBot && (G.state==='waiting'||G.state==='revealing'||G.state==='processing')`);
-check("quick match starts instantly vs bot", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
+check("quick match starts vs the revealed player", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
+check("scoreboard shows the revealed player, not 'BOT'", byId(dom, "labelB")?.textContent.trim() === personaName.trim(), byId(dom, "labelB")?.textContent.trim());
 const rQ = await playOfflineMatch(dom, { teamSize: 1, alreadyStarted: true });
 check("quick match completes", rQ.status === "finished", "result=" + rQ.result);
 
@@ -357,19 +383,55 @@ check(
    "Best Win Streak","Hat-tricks","Runs Conceded","Overs Faced"].every((t) => profTxt.includes(t)),
 );
 
-// 6f. career math for the new derived stats
+// 6f. career math for the derived stats
+//   - not out yet  -> Batting Avg is the raw score, never runs/wickets-taken
+//   - economy/dots -> bowling dots come from oppHist, batting dots from myHist
 const derived = ev(dom, `(() => {
   saveStats(defaultStats());
-  updateStatsAfterMatch({won:true,myRuns:50,myBalls:30,mySixes:2,myFours:4,
-    myHist:['DOT','DOT'],oppWickets:3,oppBalls:24,oppRuns:20});
+  updateStatsAfterMatch({won:true,myRuns:50,myBalls:30,mySixes:2,myFours:4,myWickets:0,
+    myHist:['DOT','DOT'],oppWickets:3,oppBalls:24,oppRuns:20,
+    oppHist:['DOT','DOT','DOT','W',4,1]});
   const s = loadStats();
-  return JSON.stringify({eco:s.economy,dot:s.dotPct,avg:s.batAvg,ov:s.oversBowled,best:s.bestBowlWkts});
+  return JSON.stringify({eco:s.economy,dot:s.dotPct,avg:s.batAvg,ov:s.oversBowled,
+    best:s.bestBowlWkts,outs:s.outs,dotsBowled:s.dotsBowled,bowlDot:s.bowlDotPct});
 })()`);
 const D = JSON.parse(derived);
 check(
-  "derived stats compute (economy 5.00, dot 7%, avg 16.7, 4.0 ov, best 3W)",
-  D.eco === "5.00" && D.dot === 7 && D.avg === "16.7" && D.ov === "4.0" && D.best === 3,
-  derived,
+  "derived stats compute (eco 5.00, bat dot 7%, not-out avg 50.0, 4.0 ov, best 3)",
+  D.eco === "5.00" && D.dot === 7 && D.avg === "50.0" && D.ov === "4.0" && D.best === 3,
+  JSON.stringify(D),
+);
+// regression: dismissals used to be incremented by the wickets you TOOK
+const attr = ev(dom, `(() => {
+  saveStats(defaultStats());
+  updateStatsAfterMatch({won:false,lost:true,myRuns:20,myBalls:12,mySixes:1,myFours:2,
+    myWickets:0, myHist:[6,'DOT',4], oppWickets:2, oppBalls:12, oppRuns:14,
+    oppHist:['DOT','DOT','W',1]});
+  const s = loadStats();
+  return JSON.stringify({outs:s.outs,wkts:s.wicketsTaken,avg:s.batAvg,
+    battingDots:s.dots,bowlingDots:s.dotsBowled});
+})()`);
+const A = JSON.parse(attr);
+check(
+  "batting/bowling attribution: outs=0 (never out), 2 wkts taken, avg 20.0",
+  A.outs === 0 && A.wkts === 2 && A.avg === "20.0",
+  JSON.stringify(A),
+);
+check(
+  "bowling 'Dots Bowled' counts oppHist, not my batting dots",
+  A.bowlingDots === 2 && A.battingDots === 1,
+  JSON.stringify(A),
+);
+const outCase = JSON.parse(
+  ev(dom, `(() => { saveStats(defaultStats());
+    updateStatsAfterMatch({won:true,myRuns:30,myBalls:20,mySixes:1,myFours:3,myWickets:1,
+      myHist:[4],oppWickets:1,oppBalls:18,oppRuns:16,oppHist:['W']});
+    const s = loadStats(); return JSON.stringify({outs:s.outs,avg:s.batAvg}); })()`),
+);
+check(
+  "a real dismissal moves outs -> Batting Avg 30.0",
+  outCase.outs === 1 && outCase.avg === "30.0",
+  JSON.stringify(outCase),
 );
 
 // 6g. close/action bars are pinned (position:fixed) so they can't drift on scroll
@@ -426,6 +488,84 @@ check(
   "hand motion css present (desync shake, six throw, ring, reduced-motion guard)",
   /@keyframes hn27/.test(cssSrc) && /@keyframes th27x/.test(cssSrc) &&
     /@keyframes ring27/.test(cssSrc) && /prefers-reduced-motion:reduce/.test(cssSrc),
+);
+
+// ---------------------------------------------------------------- 9. v2.8 fixes
+const fs = await import("node:fs");
+const jsSrc = (f) => fs.readFileSync(join(root, "public/js", f), "utf8");
+
+// 9a. friends: the client must speak the server's protocol (add/accept/reject/remove)
+ev(dom, `localStorage.clear(); setUsername('Alice'); localStorage.setItem('hcp_friends',
+  JSON.stringify({friends:[],pending:[{name:'Bob',stats:null,since:1}]}))`);
+await sleep(50);
+ev(dom, `dom0=0; window.__net.length=0; acceptFriend('Bob')`);
+await sleep(150);
+const acceptCall = JSON.parse(
+  ev(dom, `JSON.stringify(window.__net.filter(c=>c.body).map(c=>JSON.parse(c.body)))`),
+);
+check(
+  "acceptFriend posts action:'accept' (server used to 400 on 'sync')",
+  acceptCall.some((b) => b.action === "accept" && b.target === "Bob"),
+  JSON.stringify(acceptCall).slice(0, 120),
+);
+ev(dom, `window.__net.length=0; G.oppName='Ravi'; G.isBot=false; G.oppStats=null; G.storyMatch=false;
+  showAddFriendBtn(); document.getElementById('btnAddFriend').click()`);
+await sleep(200);
+const addCall = JSON.parse(
+  ev(dom, `JSON.stringify(window.__net.filter(c=>c.body).map(c=>JSON.parse(c.body)))`),
+);
+check(
+  "Add Friend posts action:'add' with the target (reaches THEIR record)",
+  addCall.some((b) => b.action === "add" && b.target === "Ravi"),
+  JSON.stringify(addCall).slice(0, 120),
+);
+check(
+  "friend client speaks add/accept/reject/remove, never a bare 'sync'",
+  ["accept", "reject", "remove", "add"].every((a) =>
+    new RegExp('api\\("' + a + '"').test(jsSrc("20-friends.js"))),
+  "all four actions are called",
+);
+
+// 9b. profile: stable id, per-user stats, escaped opponent name
+const id1 = ev(dom, `setUsername('Alice'); showProfile(); document.querySelector('.prof-id').textContent`);
+const id2 = ev(dom, `showProfile(); document.querySelector('.prof-id').textContent`);
+check("profile id is stable across renders", id1 === id2 && /^HC-\d{6}/.test(id1), `${id1} / ${id2}`);
+const keyed = ev(dom, `setUsername('Alice'); saveStats(loadStats()); !!localStorage.getItem('hc_stats:alice')`);
+check("career stats are stored per-username", keyed === true, "hc_stats:alice");
+const isolated = ev(dom, `(() => { setUsername('Zed'); return loadStats().matches; })()`);
+check("a new username starts a fresh career", isolated === 0, "matches=" + isolated);
+ev(dom, `setUsername('Alice'); G.oppName='<img src=x onerror=1>'; G.oppStats=Object.assign(defaultStats(),{matches:4}); showOppProfile()`);
+const injected = ev(dom, `document.getElementById('profileCard').querySelectorAll('img').length`);
+check("opponent name is escaped in the profile card", injected === 0, "img nodes=" + injected);
+
+// 9c. invite flow: a typed room code works without a ?room= deep link
+check("room-code field exists in the lobby", !!byId(dom, "roomCodeInput"));
+const codeFromField = ev(dom, `document.getElementById('roomCodeInput').value='k7 qx-2m';
+  resolveRoomCode()`);
+check("room code is read + normalised from the field", codeFromField === "K7QX2M", codeFromField);
+ev(dom, `setLobbyMode(false,''); `);
+const hostMode = ev(dom, `getComputedStyle(document.getElementById('btnCreate')).display`);
+ev(dom, `setLobbyMode(true,'ABCD12')`);
+const joinMode = ev(dom, `[document.getElementById('roomCodeWrap').style.display, document.getElementById('roomCodeInput').value].join('|')`);
+check("lobby switches host/join and prefills the code", joinMode === "block|ABCD12", joinMode);
+
+// 9d. no native dialogs left in the app
+const stripComments = (t) =>
+  t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const dialogs = ["14-online.js", "16-story.js", "20-friends.js", "18-instant.js", "11-modes.js", "09-engine.js"]
+  .map((f) => [f, (stripComments(jsSrc(f)).match(/(^|[^.\w])(alert|confirm)\s*\(/g) || []).length])
+  .filter(([, n]) => n > 0);
+check("no native alert()/confirm() left in gameplay code", dialogs.length === 0, JSON.stringify(dialogs));
+check("toast() and confirmDialog() exist", ev(dom, `typeof toast`) === "function" && ev(dom, `typeof confirmDialog`) === "function");
+
+// 9e. navigation is no longer duplicated
+const tabs = [...byId(dom, "tabBar").querySelectorAll(".tab-btn")].map((b) => b.dataset.tab);
+check("dock tabs: Profile/Friends/Play/Career/Help (no duplicate Arena)",
+  JSON.stringify(tabs) === '["lounge","friends","battle","team","tournaments"]', JSON.stringify(tabs));
+const markup = fs.readFileSync(join(root, "public/index.html"), "utf8");
+check(
+  "markup contains no 'BOT' / 'Ultra Bot' label",
+  !/>\s*BOT\s*</.test(markup) && !/Ultra Bot/.test(markup),
 );
 
 dom.window.close();

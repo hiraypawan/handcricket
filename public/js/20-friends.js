@@ -31,16 +31,31 @@ function loadLocal() {
     }
   }
 
-  async function syncToServer() {
+  /* v2.8 FRIEND PROTOCOL
+     The server implements add/accept/reject/remove — and writes the request
+     into the TARGET's record, which is the only way a second device can ever
+     see it. The client used to POST {action:"sync"} for everything, which the
+     server rejected with 400 "Invalid action", so every mutation was lost and
+     friend requests never reached anyone. */
+  async function api(action, extra) {
+    const user = getUsername();
+    if (!user) return null;
     try {
-      const user = getUsername();
-      if (!user) return;
-      await fetch("/api/friends", {
+      const r = await fetch("/api/friends", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "sync", user, data: myFriends }),
+        body: JSON.stringify(Object.assign({ action, user }, extra || {})),
       });
-    } catch (e) {}
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (e) {
+      return null;
+    }
+  }
+  /* Best-effort mirror of the local list (server merges it). Offline is fine —
+     the local copy is the source of truth until the next successful call. */
+  async function syncToServer() {
+    return api("sync", { data: myFriends });
   }
   async function syncFromServer() {
     try {
@@ -108,11 +123,11 @@ function loadLocal() {
             '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
-            (f.isBot ? AV_RBT : AV_PSN) +
+            AV_PSN +
             "</div>" +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
-            (f.isBot ? '<span class="friend-bot-badge">BOT</span>' : "") +
+            "" +
             "</div>" +
             '<div class="friend-rank">' +
             (f.stats ? getRank(f.stats) : "") +
@@ -140,7 +155,7 @@ function loadLocal() {
             '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
-            (f.isBot ? AV_RBT : AV_PSN) +
+            AV_PSN +
             "</div>" +
             '<div class="friend-info"><div class="friend-name">' +
             escHtml(f.name) +
@@ -164,20 +179,20 @@ function loadLocal() {
 
   function updatePendingCount() {
     const el = $("pendingCount");
-    const count = (myFriends.pending || []).length;
+    const count = (myFriends.pending || []).length + (pendingInvite ? 1 : 0);
     if (el) {
       el.textContent = count;
       el.style.display = count > 0 ? "inline" : "none";
     }
   }
 
-  window.acceptFriend = function (name) {
+  window.acceptFriend = async function (name) {
     loadLocal();
     const idx = myFriends.pending.findIndex(
       (f) => f.name.toLowerCase() === name.toLowerCase(),
     );
     if (idx === -1) {
-      showFloatMsg("Request not found", "true");
+      toast("That request is no longer pending", "warn");
       return;
     }
     const req = myFriends.pending.splice(idx, 1)[0];
@@ -188,31 +203,35 @@ function loadLocal() {
       isBot: req.isBot || false,
     });
     saveLocal();
-    syncToServer();
+    // links BOTH sides server-side; on failure we still keep the local copy
+    const res = await api("accept", { target: name });
+    if (!res) toast("Saved locally — will sync when you are back online");
     renderFriendList();
     sfx("win");
     showFloatMsg(name + " is now your friend!", true, "joy");
+    loadFriends().then(renderFriendList);
   };
-  window.rejectFriend = function (name) {
+  window.rejectFriend = async function (name) {
     loadLocal();
     myFriends.pending = myFriends.pending.filter(
       (f) => f.name.toLowerCase() !== name.toLowerCase(),
     );
     saveLocal();
-    syncToServer();
+    await api("reject", { target: name });
     renderFriendList();
-    showFloatMsg("Request removed", "true");
+    toast("Request removed");
   };
-  window.removeFriend = function (name) {
-    if (!confirm("Remove " + name + " from friends?")) return;
+  window.removeFriend = async function (name) {
+    const ok = await confirmDialog("Remove friend?", name + " will be removed from your list.", "Remove");
+    if (!ok) return;
     loadLocal();
     myFriends.friends = myFriends.friends.filter(
       (f) => f.name.toLowerCase() !== name.toLowerCase(),
     );
     saveLocal();
-    syncToServer();
+    await api("remove", { target: name });
     renderFriendList();
-    showFloatMsg(name + " removed from friends", "true");
+    toast(name + " removed");
   };
   // C8: "Play" on a friend used to be a dead end (nothing happened). Now it
   // starts a real online host room: you get a shareable invite link and wait
@@ -223,7 +242,7 @@ function loadLocal() {
     sfx("tap");
     $("friendsOverlay").classList.add("hidden");
     if (typeof Peer === "undefined") {
-      alert("Online play needs a connection to the PeerJS server. Try again when online.");
+      toast("Online play needs a connection — check your network and retry", "warn");
       $("menuOverlay").classList.remove("hidden");
       return;
     }
@@ -246,12 +265,36 @@ function loadLocal() {
     $("waitDesc").textContent = "Share the invite link — they'll join as your opponent.";
     connLog("Creating room to challenge " + name + "...");
     startPeer(true);
+    /* v2.8: actually deliver something. The room id exists as soon as
+       startPeer() runs, so the invite can be pushed into the friend's inbox
+       (they see it the next time they open Friends — no live socket needed). */
+    (async () => {
+      try {
+        const u = new URL(location.href);
+        u.searchParams.set("room", G.roomId);
+        await fetch("/api/challenges", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user: name,
+            action: "invite",
+            from: getUsername(),
+            room: G.roomId,
+            link: u.toString(),
+            teamSize: G.teamSize,
+          }),
+        });
+      } catch (e) {}
+    })();
   };
 
   window.showFriends = async function () {
     await loadFriends();
+    pollInbox(false);
     currentTab = "list";
     renderFriendList();
+    const pr = $("profileOverlay");
+    if (pr) pr.classList.add("hidden");
     $("friendsOverlay").classList.remove("hidden");
     const tabs = document.querySelectorAll(".ftab");
     tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === "list"));
@@ -317,7 +360,7 @@ function loadLocal() {
     }
   };
 
-  $("btnAddFriend").onclick = () => {
+  $("btnAddFriend").onclick = async () => {
     const user = getUsername();
     const target = G.oppName;
     if (!user || !target) {
@@ -332,7 +375,7 @@ function loadLocal() {
       showFloatMsg("Already friends!", "true");
       return;
     }
-    const isBot = G.isBot;
+    const isBot = !!G.isBot;
     const stats = G.oppStats || null;
     if (isBot) {
       myFriends.friends.push({
@@ -348,12 +391,18 @@ function loadLocal() {
       sfx("win");
       showFloatMsg("You are friends now!", true, "joy");
     } else {
-      myFriends.pending.push({ name: target, stats: stats, since: Date.now() });
+      myFriends.pending.push({ name: target, stats: stats, since: Date.now(), sent: true });
       saveLocal();
-      syncToServer();
+      /* The request has to land in THEIR record — that is the whole point. */
+      const res = await api("add", {
+        target,
+        isBot: false,
+        targetStats: loadStats(),
+      });
       $("btnAddFriend").textContent = "Request Sent";
       $("btnAddFriend").className = "add-friend-btn already";
-      showFloatMsg("Friend request sent!", true, "joy");
+      if (res && res.sent) showFloatMsg("Request sent to " + target + "!", true, "joy");
+      else toast("Saved locally — will sync when you are back online");
     }
     loadFriends();
   };
@@ -368,7 +417,65 @@ function loadLocal() {
 
   setTimeout(() => loadFriends(), 500);
 
-  window.checkBotChallenges = function () {};
+  /* v2.8 INBOUND INVITES + REQUESTS
+     There is no realtime channel, so the inbox is polled: once shortly after
+     boot, whenever Friends is opened, and every 20s while the tab is visible.
+     An invite carries the room code, so accepting drops you straight into the
+     host's lobby. */
+  let invitePollTimer = null;
+  async function pollInbox(notify) {
+    const user = getUsername();
+    if (!user) return;
+    try {
+      const r = await fetch("/api/challenges?user=" + encodeURIComponent(user));
+      if (!r.ok) return;
+      const j = await r.json();
+      const invites = (j.challenges || []).filter(
+        (c) => c.type === "invite" && !c.resolved && c.room,
+      );
+      if (!invites.length) return;
+      const latest = invites[invites.length - 1];
+      pendingInvite = latest;
+      if (notify) {
+        showFriendNotif(latest.from + " invited you to play", "Room " + latest.room + " — join now?", [
+          {
+            label: "Join",
+            cls: "fnb-accept",
+            action: () => {
+              hideFriendNotif();
+              joinInvite(latest);
+            },
+          },
+          { label: "Not now", cls: "fnb-reject", action: () => hideFriendNotif() },
+        ]);
+      }
+      updatePendingCount();
+    } catch (e) {}
+  }
+  let pendingInvite = null;
+  async function joinInvite(inv) {
+    try {
+      await fetch("/api/challenges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: getUsername(), action: "resolve", room: inv.room }),
+      });
+    } catch (e) {}
+    pendingInvite = null;
+    document.querySelectorAll(".overlay,.friends-overlay").forEach((o) => o.classList.add("hidden"));
+    $("onlineLobby").classList.remove("hidden");
+    $("nameInput").value = getUsername() || "";
+    if (typeof setLobbyMode === "function") setLobbyMode(true, inv.room);
+    showDock();
+  }
+  window.checkBotChallenges = function () {
+    pollInbox(true);
+    if (!invitePollTimer) {
+      invitePollTimer = setInterval(() => {
+        if (!document.hidden) pollInbox(true);
+      }, 20000);
+    }
+  };
 
   window.showFriendNotif = function (title, text, buttons) {
     const n = $("friendNotif");
@@ -400,7 +507,7 @@ function loadLocal() {
     setTimeout(() => {
       showFriendNotif(
         botName + " wants to be your friend!",
-        "Accept friend request from this bot?",
+        "Accept " + botName + "'s friend request?",
         [
           {
             label: "Accept",

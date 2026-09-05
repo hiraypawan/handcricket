@@ -1,6 +1,6 @@
 {
   "name": "handcricket",
-  "version": "2.6.3",
+  "version": "2.8.0",
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev public",

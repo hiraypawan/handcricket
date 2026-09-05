@@ -9,11 +9,33 @@ function getUsername() {
 function setUsername(n) {
   localStorage.setItem("hcp_username", n);
   G.myName = n;
+  migrateLegacyStats(n);
 }
+
+/* ---- CAREER STATS ARE PER-USERNAME -------------------------------------
+   v2.8: the blob used to live at one global key ("hc_stats"), so renaming
+   yourself inherited someone else's career and two players on one device
+   shared a single record. Keys are now "hc_stats:<username>"; the legacy
+   global blob is migrated onto the first username that claims it. */
+function statsKey(name) {
+  const u = String(name || getUsername() || "").trim().toLowerCase();
+  return u ? "hc_stats:" + u : "hc_stats";
+}
+function migrateLegacyStats(name) {
+  try {
+    const legacy = localStorage.getItem("hc_stats");
+    if (!legacy || !name) return;
+    const key = statsKey(name);
+    if (!localStorage.getItem(key)) localStorage.setItem(key, legacy);
+  } catch (e) {}
+}
+
 function getRank(s) {
-  const sr = s.ballsFaced ? (s.runs / s.ballsFaced) * 100 : 0;
+  if (!s || typeof s !== "object") return "Newcomer";
+  const n = (v) => (typeof v === "number" && isFinite(v) ? v : 0);
+  const sr = n(s.ballsFaced) ? (n(s.runs) / n(s.ballsFaced)) * 100 : 0;
   const pts =
-    s.wins * 10 + s.sixes * 2 + s.fours + s.highestScore * 0.5 + sr * 0.1;
+    n(s.wins) * 10 + n(s.sixes) * 2 + n(s.fours) + n(s.highestScore) * 0.5 + sr * 0.1;
   if (pts >= 500) return "Legendary";
   if (pts >= 300) return "Master";
   if (pts >= 150) return "Champion";
@@ -21,34 +43,39 @@ function getRank(s) {
   if (pts >= 30) return "Rising Star";
   return "Newcomer";
 }
-function loadStats() {
+
+/* Every displayed number is derived in ONE place so a saved record can never
+   show a stale value (winPct used to be written with a "%" and read without). */
+function deriveStats(s) {
+  const n = (v) => (typeof v === "number" && isFinite(v) ? v : 0);
+  s.matches = n(s.matches);
+  if (s.wins > s.matches) s.wins = s.matches;
+  if (s.losses > s.matches) s.losses = s.matches;
+  s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) : "0";
+  s.strikeRate = n(s.ballsFaced) ? ((n(s.runs) / n(s.ballsFaced)) * 100).toFixed(1) : "0.0";
+  s.bowlingAvg = n(s.wicketsTaken) ? (n(s.runsConceded) / n(s.wicketsTaken)).toFixed(1) : "-";
+  s.economy = n(s.ballsBowled) ? (n(s.runsConceded) / (n(s.ballsBowled) / 6)).toFixed(2) : "-";
+  s.dotPct = n(s.ballsFaced) ? Math.round((n(s.dots) / n(s.ballsFaced)) * 100) : 0;
+  s.bowlDotPct = n(s.ballsBowled) ? Math.round((n(s.dotsBowled) / n(s.ballsBowled)) * 100) : 0;
+  s.boundaryPct = n(s.ballsFaced)
+    ? Math.round(((n(s.fours) + n(s.sixes)) / n(s.ballsFaced)) * 100)
+    : 0;
+  // not out yet -> no average, never "0.0"
+  s.batAvg = n(s.outs) ? (n(s.runs) / n(s.outs)).toFixed(1) : n(s.runs) ? n(s.runs).toFixed(1) : "-";
+  s.oversBowled = Math.floor(n(s.ballsBowled) / 6) + "." + (n(s.ballsBowled) % 6);
+  s.oversFaced = Math.floor(n(s.ballsFaced) / 6) + "." + (n(s.ballsFaced) % 6);
+  return s;
+}
+
+function loadStats(name) {
   try {
-    const s = JSON.parse(localStorage.getItem("hc_stats")) || defaultStats();
-    if (s.wins > s.matches) s.wins = s.matches;
-    if (s.losses > s.matches) s.losses = s.matches;
-    s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) : "0";
-    s.strikeRate = s.ballsFaced
-      ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
-      : "0.0";
-    s.bowlingAvg = s.wicketsTaken
-      ? (s.runsConceded / s.wicketsTaken).toFixed(1)
-      : "-";
-    // v2.7.1: richer career numbers players compare with each other
-    s.economy = s.ballsBowled
-      ? (s.runsConceded / (s.ballsBowled / 6)).toFixed(2)
-      : "-";
-    s.dotPct = s.ballsFaced
-      ? Math.round((s.dots / s.ballsFaced) * 100)
-      : 0;
-    s.boundaryPct = s.ballsFaced
-      ? Math.round(((s.fours + s.sixes) / s.ballsFaced) * 100)
-      : 0;
-    s.batAvg = s.outs ? (s.runs / s.outs).toFixed(1) : s.runs ? s.runs.toFixed(1) : "0.0";
-    s.oversBowled = Math.floor(s.ballsBowled / 6) + "." + (s.ballsBowled % 6);
-    s.oversFaced = Math.floor(s.ballsFaced / 6) + "." + (s.ballsFaced % 6);
+    const raw =
+      localStorage.getItem(statsKey(name)) ||
+      (name ? null : localStorage.getItem("hc_stats"));
+    const s = deriveStats(Object.assign(defaultStats(), raw ? JSON.parse(raw) : {}));
     return s;
   } catch (e) {
-    return defaultStats();
+    return deriveStats(defaultStats());
   }
 }
 function defaultStats() {
@@ -63,6 +90,7 @@ function defaultStats() {
     sixes: 0,
     fours: 0,
     dots: 0,
+    dotsBowled: 0,
     highestScore: 0,
     wicketsTaken: 0,
     ballsBowled: 0,
@@ -73,11 +101,55 @@ function defaultStats() {
     streak: 0,
     outs: 0,
     bestBowlWkts: 0,
+    bestBowlRuns: 0,
   };
 }
-function saveStats(s) {
-  localStorage.setItem("hc_stats", JSON.stringify(s));
+function saveStats(s, name) {
+  try {
+    localStorage.setItem(statsKey(name), JSON.stringify(s));
+    // keep the legacy key in step so an older cached tab still reads something
+    if (!name) localStorage.setItem("hc_stats", JSON.stringify(s));
+  } catch (e) {}
 }
+
+/* Stable player id: derived from the name and cached, so the profile shows the
+   SAME id on every render (it used to be re-randomised on each open). */
+function getPlayerId(name) {
+  const who = String(name || getUsername() || "").trim();
+  if (!who) return "HC-000000";
+  try {
+    const mapKey = "hcp_pid";
+    const map = JSON.parse(localStorage.getItem(mapKey) || "{}");
+    const k = who.toLowerCase();
+    if (map[k]) return map[k];
+    let h = 2166136261;
+    for (let i = 0; i < k.length; i++) {
+      h ^= k.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    const id = "HC-" + (Math.abs(h) % 1000000).toString().padStart(6, "0");
+    map[k] = id;
+    localStorage.setItem(mapKey, JSON.stringify(map));
+    return id;
+  } catch (e) {
+    return "HC-000000";
+  }
+}
+
+/* Publish my career so friends' lists and the profile endpoint show real
+   numbers instead of the snapshot taken when the request was sent. */
+function publishProfile() {
+  try {
+    const user = getUsername();
+    if (!user) return;
+    fetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user, stats: loadStats() }),
+    }).catch(() => {});
+  } catch (e) {}
+}
+
 function updateStatsAfterMatch(result) {
   const s = loadStats();
   s.matches++;
@@ -102,40 +174,51 @@ function updateStatsAfterMatch(result) {
     ? result.myHist.filter((h) => h === "DOT").length
     : 0;
   s.dots += matchDots;
+  /* BATTING dismissals come from MY wickets. This used to add the wickets I
+     TOOK (result.oppWickets), so Batting Avg was runs / wickets-taken. */
+  s.outs = (s.outs || 0) + (result.myWickets || 0);
+  /* BOWLING: wickets, balls, runs conceded and dots bowled all come from the
+     innings the OPPONENT batted (opp.hist). Dots bowled were never tracked, so
+     the bowling tab was showing my batting dots. */
   s.wicketsTaken += result.oppWickets;
   s.ballsBowled += result.oppBalls;
   s.runsConceded += result.oppRuns;
-  s.outs = (s.outs || 0) + result.oppWickets;
-  s.bestBowlWkts = Math.max(s.bestBowlWkts || 0, result.oppWickets);
+  s.dotsBowled =
+    (s.dotsBowled || 0) +
+    (result.oppHist ? result.oppHist.filter((h) => h === "DOT").length : 0);
+  if ((result.oppWickets || 0) > (s.bestBowlWkts || 0)) {
+    s.bestBowlWkts = result.oppWickets || 0;
+    s.bestBowlRuns = result.oppRuns || 0;
+  }
   if (result.myHatTrick) s.hatricks++;
-  s.strikeRate = s.ballsFaced
-    ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
-    : "0.0";
-  s.bowlingAvg = s.wicketsTaken
-    ? (s.runsConceded / s.wicketsTaken).toFixed(1)
-    : "-";
-  s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) + "%" : "0%";
+  deriveStats(s);
   saveStats(s);
+  publishProfile();
 }
 
 function escHtml(x){return String(x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
-function showProfile(name, stats) {
-  const s = stats || loadStats();
+function showProfile(name, stats, meta) {
+  const s = deriveStats(Object.assign(defaultStats(), stats || loadStats()));
   const card = $("profileCard");
   const rank = getRank(s);
-  // C12: viewing an OPPONENT's profile must show the OPPONENT's name, not ours.
-  const displayName = name || G.myName || "Player";
-  $("profileTitle").textContent = name ? name + "'s Profile" : "My Profile";
+  // C12: viewing an OPPONENT'S profile must show the OPPONENT's name, not ours.
+  // v2.8: on online matches the name arrives over the wire, so it is escaped
+  // before it is interpolated into innerHTML.
+  const rawName = name || G.myName || "Player";
+  const displayName = escHtml(rawName);
+  const city = meta && meta.city ? escHtml(meta.city) : "";
+  $("profileTitle").textContent = name ? rawName + "'s Profile" : "My Profile";
   card.innerHTML =
     // Header strip
     '<div class="prof-header">' +
     (name ? "OPPONENT PROFILE" : "MY PROFILE") +
     "</div>" +
     // Avatar + name row
-    '<div class="prof-row"><div class="prof-avatar av-initials">' + escHtml((displayName || "?").trim().charAt(0).toUpperCase()) + '</div><div class="prof-info"><div class="prof-name">' +
+    '<div class="prof-row"><div class="prof-avatar av-initials">' + escHtml((rawName || "?").trim().charAt(0).toUpperCase()) + '</div><div class="prof-info"><div class="prof-name">' +
     displayName +
-    '</div><div class="prof-id" style="font-size:9px;color:rgba(148,163,184,.45)">' +
-    ("G" + Math.floor(100000 + Math.random() * 900000)) +
+    '</div><div class="prof-id">' +
+    getPlayerId(rawName) +
+    (city ? '<span class="prof-city">' + city + "</span>" : "") +
     "</div></div></div>" +
     // Rank card
     '<div class="prof-rank"><div class="prof-rank-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6.1 6.6.8-4.9 4.5 1.3 6.4L12 17.2l-5.9 3.2 1.3-6.4-4.9-4.5 6.6-.8z" fill="currentColor"/></svg></div><div class="prof-rank-text"><div class="prof-rank-name">' +
@@ -202,8 +285,8 @@ function showProfile(name, stats) {
     s.bowlingAvg +
     '</div><div class="prof-stat-lbl">Bowling Avg</div></div>' +
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6" opacity=".55"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/></svg></div><div class="prof-stat-val">' +
-    s.dots +
-    '</div><div class="prof-stat-lbl">Dot Balls</div></div>' +
+    (s.dotsBowled || 0) +
+    '</div><div class="prof-stat-lbl">Dots Bowled</div></div>' +
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
     s.ballsBowled +
     '</div><div class="prof-stat-lbl">Balls Bowled</div></div>' +
@@ -214,12 +297,16 @@ function showProfile(name, stats) {
     s.oversBowled +
     '</div><div class="prof-stat-lbl">Overs Bowled</div></div>' +
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 5v11M12 5v11M15.5 5v11M7 5h10"/></svg></div><div class="prof-stat-val">' +
-    (s.bestBowlWkts || 0) + "W" +
+    (s.bestBowlWkts ? s.bestBowlWkts + "/" + (s.bestBowlRuns || 0) : "-") +
     '</div><div class="prof-stat-lbl">Best Bowling</div></div>' +
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v9M8.5 10L12 13.5 15.5 10M5 19h14"/></svg></div><div class="prof-stat-val">' +
     s.runsConceded +
     '</div><div class="prof-stat-lbl">Runs Conceded</div></div>' +
     "</div>";
+  // v2.8: these two sheets used to be able to sit open at the same time with
+  // z-index:auto, so stacking depended on DOM order. Open one, close the other.
+  const fr = $("friendsOverlay");
+  if (fr) fr.classList.add("hidden");
   $("profileOverlay").classList.remove("hidden");
 }
 const ProfileTabs = {
@@ -241,7 +328,7 @@ function showOppProfile() {
   if (!G.oppStats) {
     return;
   }
-  showProfile(G.oppName, G.oppStats);
+  showProfile(G.oppName, G.oppStats, G.botProfile || null);
 }
 
 /* ================================================================

@@ -33,7 +33,7 @@ function offlineToss(call) {
   btnCall.classList.add("sel");
   $("btnHeads").disabled = true;
   $("btnTails").disabled = true;
-  const botName = (G.oppStats && G.oppStats.name) || "Ultra Bot";
+  const botName = (G.oppStats && G.oppStats.name) || G.oppName || genBotName();
   const res = Math.random() < 0.5 ? "heads" : "tails";
   const resChip = () => tossChipHTML(res);
 
@@ -180,42 +180,12 @@ function startOffline() {
   const botName = G.oppStats ? G.oppStats.name : genBotName();
   G.oppName = botName;
   G.isBot = true;
-  G.botProfile = genBotProfile();
-  G.botProfile.name = botName;
-  if (!G.oppStats) {
-    const bM2 = Math.floor(Math.random() * 50) + 10;
-    const bW2 = Math.min(Math.floor(Math.random() * 25) + 5, bM2);
-    G.oppStats = {
-      name: botName,
-      matches: bM2,
-      wins: bW2,
-      losses: Math.max(0, bM2 - bW2 - Math.floor(Math.random() * 3)),
-      ties: Math.floor(Math.random() * 3),
-      runs: Math.floor(Math.random() * 500) + 50,
-      ballsFaced: Math.floor(Math.random() * 400) + 40,
-      sixes: Math.floor(Math.random() * 30) + 2,
-      fours: Math.floor(Math.random() * 40) + 5,
-      dots: Math.floor(Math.random() * 100) + 10,
-      highestScore: Math.floor(Math.random() * 80) + 10,
-      wicketsTaken: Math.floor(Math.random() * 40) + 3,
-      ballsBowled: Math.floor(Math.random() * 300) + 30,
-      runsConceded: Math.floor(Math.random() * 400) + 40,
-      hatricks: Math.floor(Math.random() * 3),
-      winStreak: 0,
-      bestWinStreak: Math.floor(Math.random() * 8) + 1,
-      streak: 0,
-    };
-    const bs = G.oppStats;
-    bs.winPct = bs.matches
-      ? ((bs.wins / bs.matches) * 100).toFixed(0) + "%"
-      : "0%";
-    bs.strikeRate = bs.ballsFaced
-      ? ((bs.runs / bs.ballsFaced) * 100).toFixed(1)
-      : "0.0";
-    bs.bowlingAvg = bs.wicketsTaken
-      ? (bs.runsConceded / bs.wicketsTaken).toFixed(1)
-      : "-";
-  }
+  /* v2.8 OPPONENT PERSONA: the opponent is a player with a name, a home city,
+     a style and a career — all derived deterministically from the NAME, so the
+     same opponent always shows the same record (it used to be re-rolled with
+     Math.random() on every match). */
+  G.botProfile = genBotProfile(botName);
+  if (!G.oppStats) G.oppStats = personaStats(G.botProfile);
   if (G.teamSize === 1) {
     G.myPlayers = [{ name: "You", role: "all" }];
     G.oppPlayers = [{ name: botName, role: "all" }];

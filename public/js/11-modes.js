@@ -1,6 +1,6 @@
 /* ============================================================================
  FILE: public/js/11-modes.js
- ROLE: HOME MODE ENTRY — ensureUsername() gate + Offline/Online/Instant/Story mode button wiring, bot pre-match stat card (Ultra Bot), btnProfile. Depends on: offline (13)/online (14)/instant (18)/story (16) entry functions at call-time.
+ ROLE: HOME MODE ENTRY — ensureUsername() gate + Offline/Online/Instant/Story mode button wiring, opponent persona pre-match stat card, btnProfile. Depends on: offline (13)/online (14)/instant (18)/story (16) entry functions at call-time.
 ============================================================================ */
 
 function ensureUsername(cb) {
@@ -117,42 +117,27 @@ $("modeOffline").onclick = () => {
   haptic();
   ensureUsername(() => {
     G.mode = "offline";
-    const bMatches = Math.floor(Math.random() * 80) + 20;
-    const bWins = Math.min(Math.floor(Math.random() * 45) + 10, bMatches);
-    G.oppStats = {
-      name: "Ultra Bot",
-      matches: bMatches,
-      wins: bWins,
-      losses: Math.max(0, bMatches - bWins - Math.floor(Math.random() * 5)),
-      ties: Math.floor(Math.random() * 5),
-      runs: Math.floor(Math.random() * 800) + 100,
-      ballsFaced: Math.floor(Math.random() * 600) + 80,
-      sixes: Math.floor(Math.random() * 50) + 5,
-      fours: Math.floor(Math.random() * 70) + 10,
-      dots: Math.floor(Math.random() * 150) + 20,
-      highestScore: Math.floor(Math.random() * 100) + 15,
-      wicketsTaken: Math.floor(Math.random() * 60) + 8,
-      ballsBowled: Math.floor(Math.random() * 500) + 50,
-      runsConceded: Math.floor(Math.random() * 600) + 60,
-      hatricks: Math.floor(Math.random() * 5),
-      winStreak: 0,
-      bestWinStreak: Math.floor(Math.random() * 12) + 2,
-      streak: 0,
-    };
-    const s = G.oppStats;
-    s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) + "%" : "0%";
-    s.strikeRate = s.ballsFaced
-      ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
-      : "0.0";
-    s.bowlingAvg = s.wicketsTaken
-      ? (s.runsConceded / s.wicketsTaken).toFixed(1)
-      : "-";
+    /* v2.8: the offline opponent is a player, not "Ultra Bot" — name, city,
+       style and a career derived from the name (stable across matches). */
+    G.botProfile = genBotProfile();
+    const s = personaStats(G.botProfile);
+    G.oppStats = s;
+    G.oppName = s.name;
+    const t = $("offlineTitle");
+    if (t) t.textContent = "vs " + s.name;
+    const sub = $("offlineSubtitle");
+    if (sub) sub.textContent = G.botProfile.city + " \u00b7 " + G.botProfile.style;
     const sb = $("offlineBotStats");
     sb.style.display = "block";
     sb.innerHTML =
-      '<div class="pre-stats-box"><div class="pre-stats-title">Ultra Bot <span class="pre-rank">' +
+      '<div class="pre-stats-box"><div class="pre-stats-title">' +
+      escHtml(s.name) +
+      ' <span class="pre-rank">' +
       getRank(s) +
       "</span></div>" +
+      '<div class="pre-stats-meta">' +
+      escHtml(G.botProfile.city) + " \u00b7 " + escHtml(G.botProfile.style) +
+      "</div>" +
       '<div class="pre-stats-section"><div class="pre-section-label">Career</div>' +
       '<div class="pre-stat-row"><span>Matches</span><b>' +
       s.matches +
@@ -162,7 +147,7 @@ $("modeOffline").onclick = () => {
       "</b></div>" +
       '<div class="pre-stat-row"><span>Win Rate</span><b>' +
       s.winPct +
-      "</b></div>" +
+      "%</b></div>" +
       "</div>" +
       '<div class="pre-stats-section"><div class="pre-section-label">Batting</div>' +
       '<div class="pre-stat-row"><span>Runs</span><b>' +
@@ -179,8 +164,8 @@ $("modeOffline").onclick = () => {
       '<div class="pre-stat-row"><span>Wkts</span><b>' +
       s.wicketsTaken +
       "</b></div>" +
-      '<div class="pre-stat-row"><span>Avg</span><b>' +
-      s.bowlingAvg +
+      '<div class="pre-stat-row"><span>Econ</span><b>' +
+      s.economy +
       "</b></div>" +
       "</div></div>";
     $("menuOverlay").classList.add("hidden");
@@ -201,7 +186,8 @@ $("modeOnline").onclick = () => {
     $("onlineLobby").classList.remove("hidden");
     $("nameInput").value = getUsername();
     const rid = new URLSearchParams(location.search).get("room");
-    if (rid) {
+    if (typeof setLobbyMode === "function") setLobbyMode(!!rid, rid || "");
+    else if (rid) {
       $("btnJoin").style.display = "block";
       $("btnCreate").style.display = "none";
       $("hostFormat").style.display = "none";
