@@ -1014,6 +1014,30 @@ input,select,textarea{font-size:16px}
 .toss-win-sub{margin-bottom:3px}
 #tossCallBox>*,#tossDecision>*{max-width:100%}
 
+/* ---- match screen: full stats card, no inner scroller ---- */
+#preMatchStats .pre-stats-box{max-width:min(100%,340px);max-height:none;overflow:visible;
+  padding:13px 15px}
+#preMatchStats .pre-stats-title{font-size:15px}
+#preMatchStats .pre-stat-row{font-size:12px;padding:3.5px 0}
+#mcOverlay{gap:2px}
+#mcPlayers{margin:2px 0 6px}
+/* smaller countdown leaves room for the full card on phones */
+@media(max-height:760px){
+  .mc-num{font-size:clamp(56px,11vh,84px)}
+  #mcOverlay h1{font-size:clamp(19px,2.8vh,26px)}
+  #preMatchStats .pre-stats-box{padding:10px 12px;margin:6px auto}
+  #preMatchStats .pre-stat-row{font-size:11.5px;padding:2.5px 0}
+  #preMatchStats .pre-stats-section{margin:5px 0;padding:5px 0 0}
+}
+/* ---- toss overlay: keep call buttons on screen with the stats card ---- */
+@media(max-height:760px){
+  #tossOverlay .coin-container,#tossOverlay .coin-container#onlineCoinBox{
+    width:clamp(72px,10vh,92px);height:clamp(72px,10vh,92px);margin:2px auto}
+  #tossOverlay .pre-stats-box{max-height:30vh;padding:10px 12px;margin:6px auto}
+  #tossOverlay h1{font-size:clamp(19px,2.8vh,26px)}
+  .toss-call-btns,.toss-choice-btns{gap:8px}
+}
+
 /* ---- bottom dock: menu overlay must let taps reach it */
 #menuOverlay{pointer-events:none}
 #menuOverlay>*{pointer-events:auto}
@@ -1411,6 +1435,18 @@ input,select,textarea{font-size:16px}
 @media(max-height:560px){
   .coin-container{width:70px;height:70px}
   #tossPreStats{display:none!important}
+}
+
+/* ---- match screen: full stats, no inner scroller ---- */
+#preMatchStats .pre-stats-box{max-width:min(100%,330px);max-height:none;overflow:visible}
+#mcOverlay .mc-num{font-size:clamp(60px,13vh,110px)}
+@media(max-height:740px){
+  #mcOverlay .mc-num{font-size:clamp(48px,9vh,72px);margin:0}
+  #mcOverlay h1{font-size:clamp(19px,2.8vh,26px)}
+  #preMatchStats .pre-stats-box{padding:9px 12px;margin:6px auto}
+  #preMatchStats .pre-stat-row{font-size:10.5px;padding:2px 0}
+  #preMatchStats .pre-stats-section{margin:5px 0;padding:5px 0 0}
+  #mcPlayers{margin:0 0 4px}
 }
 
 /* ---- role restriction: say WHY a number is locked ---- */

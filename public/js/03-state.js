@@ -106,9 +106,16 @@ function clearSnap() {
     sessionStorage.removeItem("hc_snap_" + G.roomId);
   } catch (e) {}
 }
+function clearCurrent() {
+  try {
+    sessionStorage.removeItem("hc_current");
+  } catch (e) {}
+}
 function makeSnap() {
   return {
     stage: G.stage,
+    isHost: G.isHost,
+    roomId: G.roomId || null,
     teamSize: G.teamSize,
     innings: G.innings,
     iBatHost: G.isHost ? G.iBat : !G.iBat,
@@ -127,6 +134,8 @@ function makeSnap() {
     isBot: G.isBot,
     botProfile: G.botProfile,
     mode: G.mode,
+    storyMatch: G.storyMatch || false,
+    storyDifficulty: G.storyDifficulty || 0,
   };
 }
 function restore(s, iAmHost) {
@@ -149,9 +158,17 @@ function restore(s, iAmHost) {
   G.isBot = s.isBot || false;
   G.botProfile = s.botProfile || null;
   G.mode = s.mode || (G.isBot ? "offline" : "online");
+  G.storyMatch = s.storyMatch || false;
+  G.storyDifficulty = s.storyDifficulty || 0;
 }
 function persist() {
   if (G.isHost && G.roomId) saveSnap(makeSnap());
+  /* Live-match snapshot for refresh-resume (all modes, incl. bot games).
+     Only while a match is actually in progress. */
+  try {
+    if (G.stage === "playing" || G.stage === "break")
+      sessionStorage.setItem("hc_current", JSON.stringify(makeSnap()));
+  } catch (e) {}
 }
 function setStage(s) {
   G.stage = s;

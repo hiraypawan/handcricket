@@ -118,6 +118,12 @@ $("leaveBtn").onclick = () => {
 };
 $("btnYesLeave").onclick = () => {
   $("leaveOverlay").classList.add("hidden");
+  try {
+    sendMsg({ type: "leave" });
+  } catch (e) {}
+  try {
+    clearCurrent();
+  } catch (e) {}
   destroyPeer();
   clearWD();
   stopTimer();
@@ -647,6 +653,9 @@ function endInnings() {
   }
 }
 function finishMatch() {
+  try {
+    clearCurrent();
+  } catch (e) {}
   const my = G.me.score,
     op = G.opp.score;
   let t, m;

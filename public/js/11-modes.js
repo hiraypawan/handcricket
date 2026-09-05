@@ -102,6 +102,11 @@ $("btnSaveUsername").onclick = () => {
 $("usernameInput").onkeydown = (e) => {
   if (e.key === "Enter") $("btnSaveUsername").click();
 };
+$("btnUsernameBack").onclick = () => {
+  sfx("tap");
+  window._pendingCbs = null;
+  $("usernameOverlay").classList.add("hidden");
+};
 $("btnEditName").onclick = () => {
   sfx("tap");
   $("usernameOverlay").classList.remove("hidden");

@@ -277,12 +277,14 @@
 <div id="onlineTossDec" style="display:none"><div class="toss-win-ttl"><svg class="uic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.6l2.8 6 6.2.7-4.6 4.3 1.2 6.1L12 16.8l-5.6 2.9 1.2-6.1L3 9.3l6.2-.7z"/></svg><span class="ttl-adj">You won the toss!</span></div><div class="toss-win-sub">What will you do first?</div><div class="toss-choice-btns">
 <button id="btnOBat" class="toss-choice bat"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z"/><path d="m9.6 10.4 4 4"/></svg><span><b>Bat first</b><small>Set the target</small></span></button>
 <button id="btnOBowl" class="toss-choice bowl"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0"/></svg><span><b>Bowl first</b><small>Chase it down</small></span></button>
-</div></div></div>
+</div></div>
+<button id="btnTossBack" class="secondary small back-btn" style="margin-top:10px">Back</button></div>
 
 <div class="overlay hidden" id="mcOverlay"><h1 id="mcTitle">Ready!</h1><div class="mc-num" id="mcNum">3</div><p id="mcPlayers" style="font-size:16px;font-weight:700"></p>
 <div id="preMatchStats" style="display:none"></div>
 <div id="mcHost" style="display:none"><button id="btnStart">Start</button></div>
-<div id="mcWait" style="display:none"><p style="font-size:12px;opacity:.7">Waiting for host...</p></div></div>
+<div id="mcWait" style="display:none"><p style="font-size:12px;opacity:.7">Waiting for host...</p></div>
+<button id="btnMcBack" class="secondary small back-btn" style="margin-top:10px">Back</button></div>
 
 <div class="overlay hidden" id="inningsOverlay"><h1 id="innTitle">End of Innings</h1><p id="innMsg"></p><button id="btnNextInn">2nd Innings</button></div>
 <div class="overlay hidden" id="resultOverlay">
@@ -319,7 +321,7 @@
 </div>
 <div class="overlay hidden" id="usernameOverlay"><h1>Welcome!</h1><p style="font-size:13px;opacity:.8;margin-bottom:12px">What should we call you?</p>
 <input type="text" id="usernameInput" placeholder="Your Name" maxlength="16" autocomplete="off" style="text-align:center;font-size:18px;padding:12px;width:220px"/>
-<button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button><div class="rename-hint" id="renameHint"></div><div class="google-btn-slot" id="googleBtnName" style="margin-top:10px;display:flex;justify-content:center"></div><div class="save-note">Guest progress lives on this device — sign in with Google to keep it on all devices.</div></div>
+<button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button><button id="btnUsernameBack" class="secondary small back-btn" style="margin-top:8px">Back</button><div class="rename-hint" id="renameHint"></div><div class="google-btn-slot" id="googleBtnName" style="margin-top:10px;display:flex;justify-content:center"></div><div class="save-note">Guest progress lives on this device — sign in with Google to keep it on all devices.</div></div>
 
 <div class="role-reveal-banner" id="roleRevealBanner"></div>
 

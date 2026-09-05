@@ -60,6 +60,21 @@ const boot = async () => {
       try {
         window.AudioContext = class {};
       } catch {}
+      // minimal Response: this jsdom has fetch but no Response constructor,
+      // so every stubbed body parses instead of throwing inside try/catch.
+      window.Response = class {
+        constructor(body, init) {
+          this._body = body;
+          this.status = (init && init.status) || 200;
+          this.ok = this.status >= 200 && this.status < 300;
+        }
+        async json() {
+          return JSON.parse(this._body);
+        }
+        async text() {
+          return String(this._body);
+        }
+      };
       // record every fetch so API contracts can be asserted (jsdom has no fetch)
       window.__net = [];
       window.fetch = (url, o) => {
@@ -1094,6 +1109,93 @@ check("playback advances over time", rpChips2 > rpChips, rpChips + " -> " + rpCh
 check("boundaries are visually distinct", /rp-four/.test(byId(dom, "replayStrip").innerHTML));
 ev(dom, `hcStopReplay()`);
 check("Watch Replay button exists on the result screen", !!byId(dom, "btnWatchReplay"));
+
+// toss overlay: call buttons live INSIDE it (were siblings under a fixed overlay = dead taps)
+{
+  const t = byId(dom, "tossOverlay");
+  check(
+    "toss buttons are inside the toss overlay",
+    !!(t && t.contains(byId(dom, "onlineTossBtns")) && t.contains(byId(dom, "onlineTossDec"))),
+  );
+}
+// toss Back aborts a live bot-toss chain (no late onDone, menu returns)
+ev(dom, `window.__tossFired=false; startLiveToss({caller:'opp',meName:'T',oppName:'B',hi:false,onDone:()=>{window.__tossFired=true}});`);
+await sleep(200);
+ev(dom, `$('btnTossBack').click();`);
+await sleep(2200);
+check(
+  "toss Back cancels the flip chain",
+  ev(dom, `window.__tossFired`) === false &&
+    byId(dom, "tossOverlay").classList.contains("hidden") &&
+    !byId(dom, "menuOverlay").classList.contains("hidden"),
+);
+// mc Back + username Back
+ev(dom, `$('mcOverlay').classList.remove('hidden'); $('btnMcBack').click();`);
+check(
+  "match-screen Back returns to menu",
+  byId(dom, "mcOverlay").classList.contains("hidden") &&
+    !byId(dom, "menuOverlay").classList.contains("hidden"),
+);
+ev(dom, `window._pendingCbs=[()=>{}]; $('usernameOverlay').classList.remove('hidden'); $('btnUsernameBack').click();`);
+check(
+  "username Back hides overlay and drops queued callbacks",
+  byId(dom, "usernameOverlay").classList.contains("hidden") &&
+    ev(dom, `window._pendingCbs`) === null,
+);
+// sender auto-accept: server-side accepted friend leaves pending with a toast
+ev(dom, `localStorage.setItem('hcp_friends', JSON.stringify({friends:[],pending:[{name:"SmokePal",sent:true,since:1}]}));`);
+{
+  ev(dom, `
+    window.__realFetch2 = window.fetch;
+    window.fetch = (url, o) => {
+      if (String(url).includes("/api/friends?user="))
+        return Promise.resolve(
+          new window.Response(
+            JSON.stringify({ friends: [{ name: "SmokePal", stats: null, since: 2 }], pending: [] }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      return window.__realFetch2(url, o);
+    };
+  `);
+  await ev(dom, `showFriends()`);
+  await sleep(150);
+  ev(dom, `window.fetch = window.__realFetch2;`);
+}
+check(
+  "accepted request auto-leaves pending for friends",
+  ev(dom, `JSON.parse(localStorage.getItem('hcp_friends')).pending.length`) === 0 &&
+    ev(dom, `JSON.parse(localStorage.getItem('hcp_friends')).friends.length`) === 1,
+);
+// bot friend row opens a generated career, never "no public career"
+ev(dom, `localStorage.setItem('hcp_friends', JSON.stringify({friends:[{name:"SmokeBot",stats:null,since:1,isBot:true}],pending:[]}));`);
+await ev(dom, `showFriends()`);
+await sleep(150);
+ev(dom, `showFriendProfile(0)`);
+await sleep(150);
+check(
+  "bot friend profile renders generated stats",
+  !byId(dom, "profileOverlay").classList.contains("hidden") &&
+    /SmokeBot/.test(byId(dom, "profileCard").textContent),
+);
+// refresh-resume: live stage persists, clearCurrent wipes
+ev(dom, `G.stage='playing'; G.mode='offline'; G.isBot=true; G.isHost=true; persist();`);
+check(
+  "live match persists a resume snapshot",
+  (() => {
+    try {
+      const s = JSON.parse(ev(dom, `sessionStorage.getItem('hc_current')`));
+      return s && s.stage === "playing";
+    } catch (e) {
+      return false;
+    }
+  })(),
+);
+ev(dom, `clearCurrent(); G.stage='idle';`);
+check(
+  "clearCurrent wipes the resume snapshot",
+  ev(dom, `sessionStorage.getItem('hc_current')`) === null,
+);
 
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);

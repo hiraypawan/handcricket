@@ -184,7 +184,22 @@ $("btnWaitBot").onclick = () => {
     toast("Couldn't start a bot match — back to menu", "warn");
   }
 };
+$("btnMcBack").onclick = () => {
+  sfx("tap");
+  try {
+    sendMsg({ type: "leave" });
+  } catch (e) {}
+  try {
+    destroyPeer();
+  } catch (e) {}
+  $("mcOverlay").classList.add("hidden");
+  $("menuOverlay").classList.remove("hidden");
+  if (typeof showDock === "function") showDock();
+};
 $("btnCancelWait").onclick = () => {
+  try {
+    sendMsg({ type: "leave" });
+  } catch (e) {}
   destroyPeer();
   $("waitingOverlay").classList.add("hidden");
   $("roomCodeShare").classList.add("hidden");
@@ -336,6 +351,11 @@ function joinHost() {
   joinAttempts++;
   const gen = connGen;
   connLog("Attempt " + joinAttempts + "/" + JOIN_BACKOFF.length + "...");
+  try {
+    $("waitTitle").textContent = "Joining...";
+    $("waitDesc").textContent =
+      "Contacting host... (attempt " + joinAttempts + "/" + JOIN_BACKOFF.length + ")";
+  } catch (e) {}
   /* Fire-and-forget early warning: if the host's presence is stale, say so
      instead of burning a minute of blind retries. Never blocks the join. */
   if (joinAttempts === 1 && G.oppName) {
@@ -467,6 +487,33 @@ function sendHello(att) {
   } else setTimeout(() => sendHello(att + 1), 500);
 }
 
+/* The other side left on purpose (their Leave button) — tell the player
+   right away instead of letting them stare at a frozen game. */
+function onOppLeft() {
+  try {
+    stopTimer();
+  } catch (e) {}
+  try {
+    clearWD();
+  } catch (e) {}
+  try {
+    G.state = "idle";
+  } catch (e) {}
+  try {
+    setBtns(false);
+  } catch (e) {}
+  try {
+    showLeave(false);
+  } catch (e) {}
+  const who = (typeof G !== "undefined" && G.oppName) || "Opponent";
+  try {
+    toast(who + " left the match", "warn");
+  } catch (e) {}
+  try {
+    $("status").innerHTML =
+      '<span class="hl">' + who + " left — match over.</span>";
+  } catch (e) {}
+}
 function handleNet(d) {
   if (!d || !d.type) return;
   if (d.type === "hello") {
@@ -547,6 +594,8 @@ function handleNet(d) {
     doRematch();
   } else if (d.type === "start_match") {
     showMC(false);
+  } else if (d.type === "leave") {
+    onOppLeft();
   } else if (d.type === "emoji") {
     if (typeof showFloatEmoji === "function") showFloatEmoji(d.emoji, true);
   } else if (d.type === "quickmsg") {
@@ -1097,12 +1146,15 @@ function showPreMC() {
       '<div class="pre-stat-row"><span>Best Streak</span><b>' +
       s.bestWinStreak +
       "</b></div>" +
+      '<div class="pre-stat-row"><span>Losses</span><b>' +
+      s.losses +
+      "</b></div>" +
       "</div>" +
       '<div class="pre-stats-section"><div class="pre-section-label">Batting</div>' +
       '<div class="pre-stat-row"><span>Runs</span><b>' +
       s.runs +
       "</b></div>" +
-      '<div class="pre-stat-row"><span>Strike Rate</span><b>' +
+      '<div class="pre-stat-row"><span>SR</span><b>' +
       s.strikeRate +
       "</b></div>" +
       '<div class="pre-stat-row"><span>Best Score</span><b>' +
@@ -1114,16 +1166,22 @@ function showPreMC() {
       '<div class="pre-stat-row"><span>Fours</span><b>' +
       s.fours +
       "</b></div>" +
-      "</div>" +
-      '<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>' +
-      '<div class="pre-stat-row"><span>Wickets</span><b>' +
-      s.wicketsTaken +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>Bowling Avg</span><b>' +
-      s.bowlingAvg +
-      "</b></div>" +
       '<div class="pre-stat-row"><span>Dots</span><b>' +
       s.dots +
+      "</b></div>" +
+      "</div>" +
+      '<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>' +
+      '<div class="pre-stat-row"><span>Wkts</span><b>' +
+      s.wicketsTaken +
+      "</b></div>" +
+      '<div class="pre-stat-row"><span>Avg</span><b>' +
+      s.bowlingAvg +
+      "</b></div>" +
+      '<div class="pre-stat-row"><span>Economy</span><b>' +
+      s.economy +
+      "</b></div>" +
+      '<div class="pre-stat-row"><span>Dots Bowled</span><b>' +
+      s.dotsBowled +
       "</b></div>" +
       "</div></div>";
   } else {
@@ -1141,6 +1199,18 @@ $("btnStart").onclick = () => {
   sfx("tap");
   sendMsg({ type: "start_match" });
   showMC(true);
+};
+$("btnMcBack").onclick = () => {
+  sfx("tap");
+  try {
+    sendMsg({ type: "leave" });
+  } catch (e) {}
+  try {
+    destroyPeer();
+  } catch (e) {}
+  $("mcOverlay").classList.add("hidden");
+  $("menuOverlay").classList.remove("hidden");
+  if (typeof showDock === "function") showDock();
 };
 function showMC() {
   $("mcHost").style.display = "none";

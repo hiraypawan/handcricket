@@ -445,6 +445,20 @@ function botTossDecide(choice, T) {
     if (typeof T.onDone === "function") T.onDone(iBat);
   }, 1800);
 }
+$("btnTossBack").onclick = () => {
+  sfx("tap");
+  window.__toss = null; // pending bot-chain timeouts abort via gen guards
+  try {
+    if (typeof destroyPeer === "function") destroyPeer();
+  } catch (e) {}
+  try {
+    endLiveToss();
+  } catch (e) {
+    $("tossOverlay").classList.add("hidden");
+  }
+  $("menuOverlay").classList.remove("hidden");
+  if (typeof showDock === "function") showDock();
+};
 function endLiveToss() {
   window.__toss = null;
   $("tossOverlay").classList.add("hidden");

@@ -410,6 +410,11 @@ document.addEventListener(
 ["touchstart", "click"].forEach((ev) =>
   document.addEventListener(ev, () => ensureAudio(), { passive: true }),
 );
+window.addEventListener("beforeunload", () => {
+  try {
+    persist();
+  } catch (e) {}
+});
 updScore();
 renderBalls();
 updHomeUsername();
@@ -505,6 +510,98 @@ try {
     };
     if (getUsername()) openLobby();
     else ensureUsername(openLobby);
+  }
+})();
+/* Refresh-resume: a live-match snapshot survives reload (sessionStorage).
+   Bot games offer one-tap continue; online games rejoin when the room and
+   role are known. Anything else is discarded silently. */
+(function () {
+  let snap = null;
+  try {
+    if (new URLSearchParams(location.search).get("room")) return;
+    const raw = sessionStorage.getItem("hc_current");
+    if (!raw) return;
+    snap = JSON.parse(raw);
+    if (!snap || (snap.stage !== "playing" && snap.stage !== "break"))
+      throw new Error("stale");
+  } catch (e) {
+    try {
+      sessionStorage.removeItem("hc_current");
+    } catch (e2) {}
+    return;
+  }
+  try {
+    const iAmHost = snap.isHost !== false;
+    const me = iAmHost ? snap.host : snap.joiner;
+    const op = iAmHost ? snap.joiner : snap.host;
+    const myN = iAmHost ? snap.hostName : snap.joinName;
+    const opN = iAmHost ? snap.joinName : snap.hostName;
+    const resumeBot = () => {
+      restore(snap, iAmHost);
+      G.roomId = null;
+      G.specRoom = null;
+      $("menuOverlay").classList.add("hidden");
+      try {
+        if (typeof hideDock === "function") hideDock();
+      } catch (e) {}
+      showLeave(true);
+      updAllNames();
+      updScore();
+      renderBalls();
+      updFH();
+      if (snap.stage === "break" && typeof showInningsBreak === "function") {
+        showInningsBreak();
+      } else {
+        nextBall();
+      }
+    };
+    if (snap.isBot || snap.mode === "offline") {
+      confirmDialog(
+        "Resume match?",
+        (myN || "You") +
+          " " +
+          (me ? me.score + "/" + me.wkts : "") +
+          " vs " +
+          (opN || "Opponent") +
+          " " +
+          (op ? op.score + "/" + op.wkts : ""),
+        "Resume",
+      ).then((ok) => {
+        if (ok) resumeBot();
+        else {
+          try {
+            sessionStorage.removeItem("hc_current");
+          } catch (e) {}
+        }
+      });
+      return;
+    }
+    if (snap.mode === "online" && snap.roomId) {
+      restore(snap, iAmHost);
+      G.roomId = snap.roomId;
+      G.wantRejoin = true;
+      try {
+        saveSession({
+          role: iAmHost ? "host" : "join",
+          room: snap.roomId,
+          name: G.myName,
+        });
+      } catch (e) {}
+      $("menuOverlay").classList.add("hidden");
+      $("waitingOverlay").classList.remove("hidden");
+      $("connLog").innerHTML = "";
+      connLog("Restoring match — reconnecting...");
+      showLeave(true);
+      updAllNames();
+      updScore();
+      renderBalls();
+      updFH();
+      startPeer(iAmHost, snap.roomId);
+    }
+  } catch (e) {
+    try {
+      sessionStorage.removeItem("hc_current");
+    } catch (e2) {}
   }
 })();
 if (typeof checkBotChallenges === "function")

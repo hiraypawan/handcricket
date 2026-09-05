@@ -70,6 +70,15 @@ function loadLocal() {
       if (!resp.ok) return;
       const data = await resp.json();
       if (data && data.friends) {
+        // snapshot pre-merge sent requests so we can spot acceptances below
+        const prevFriends = new Set(
+          (myFriends.friends || []).map((f) => f.name.toLowerCase()),
+        );
+        const prevSent = new Set(
+          (myFriends.pending || [])
+            .filter((f) => f.sent)
+            .map((f) => f.name.toLowerCase()),
+        );
         const merged = { friends: [], pending: [] };
         const allNames = new Set();
         (data.friends || []).forEach((f) => {
@@ -101,6 +110,34 @@ function loadLocal() {
             pendNames.add(k);
           }
         });
+        // auto-accept sync: sent requests now sitting in friends (the other
+        // side accepted) leave pending for good + notify once each.
+        try {
+          const acceptedNow = [];
+          merged.pending = merged.pending.filter((f) => {
+            const k = f.name.toLowerCase();
+            if (
+              f.sent &&
+              prevSent.has(k) &&
+              merged.friends.some((g) => g.name.toLowerCase() === k)
+            ) {
+              acceptedNow.push(f.name);
+              return false;
+            }
+            return true;
+          });
+          acceptedNow.forEach((n) => {
+            const key = "__accepted_" + n.toLowerCase();
+            try {
+              if (!sessionStorage.getItem(key)) {
+                sessionStorage.setItem(key, "1");
+                toast(n + " accepted your friend request!");
+              }
+            } catch (e) {
+              toast(n + " accepted your friend request!");
+            }
+          });
+        } catch (e) {}
         myFriends = merged;
         saveLocal();
       }
@@ -245,12 +282,11 @@ function loadLocal() {
           '<div class="lb-empty">No friends yet.<br>Play a match and add your opponent, or share an invite from the Leaderboard.</div>';
         return;
       }
+      window.__friendRows = (myFriends.friends || []).slice();
       list.innerHTML = myFriends.friends
         .map(
-          (f) =>
-            '<div class="friend-item' + (f.isBot ? " isBot" : "") + '" onclick="showUserProfile(\'' +
-            escAttr(f.name) +
-            '\')">' +
+          (f, i) =>
+            '<div class="friend-item' + (f.isBot ? " isBot" : "") + '" onclick="showFriendProfile(' + i + ')">' +
             (typeof avatarHtml === "function" ? avatarHtml(f.name || "?", 40, "friend-avatar") : '<div class="friend-avatar"><span class="av-letter">' +
             escHtml(((f.name || "?").trim().charAt(0) || "?").toUpperCase()) +
             "</span>" +
@@ -328,6 +364,46 @@ function loadLocal() {
     }
   }
 
+  /* Row taps pass the list snapshot straight in — no map-lookup race, so
+     bot careers always render even with zero server data. */
+  window.showFriendProfile = function (i) {
+    const f = ((window.__friendRows || [])[i] || null);
+    if (!f || !f.name) return;
+    try {
+      let fb = f.stats || null;
+      if (!fb && f.isBot && typeof botCareerFor === "function") {
+        try {
+          fb = botCareerFor(f.name);
+        } catch (e) {
+          fb = null;
+        }
+      }
+      showUserProfile(f.name, fb);
+    } catch (e) {
+      try {
+        showUserProfile(f.name);
+      } catch (e2) {}
+    }
+  };
+  window.showFriendProfile = function (i) {
+    const f = ((window.__friendRows || [])[i] || null);
+    if (!f || !f.name) return;
+    try {
+      let fb = f.stats || null;
+      if (!fb && f.isBot && typeof botCareerFor === "function") {
+        try {
+          fb = botCareerFor(f.name);
+        } catch (e) {
+          fb = null;
+        }
+      }
+      showUserProfile(f.name, fb);
+    } catch (e) {
+      try {
+        showUserProfile(f.name);
+      } catch (e2) {}
+    }
+  };
   window.acceptFriend = async function (name) {
     loadLocal();
     const idx = myFriends.pending.findIndex(
@@ -662,11 +738,42 @@ function loadLocal() {
     if (typeof setLobbyMode === "function") setLobbyMode(true, inv.room);
     showDock();
   }
+  /* Friend requests have no realtime channel either — poll the friends
+     record alongside invites and notify on genuinely new arrivals. */
+  async function pollFriendRequests() {
+    try {
+      const user = getUsername();
+      if (!user) return;
+      const before = new Set(
+        (myFriends.pending || []).map((f) => f.name.toLowerCase()),
+      );
+      await loadFriends();
+      const fresh = (myFriends.pending || []).filter(
+        (f) => !f.sent && !before.has(f.name.toLowerCase()),
+      );
+      if (fresh.length) {
+        renderFriendList();
+        const n = fresh[0].name;
+        toast(
+          fresh.length === 1
+            ? n + " sent you a friend request!"
+            : fresh.length + " new friend requests!",
+        );
+      }
+    } catch (e) {}
+  }
   window.checkBotChallenges = function () {
     pollInbox(true);
+    pollFriendRequests();
     if (!invitePollTimer) {
+      try {
+        pollFriendRequests();
+      } catch (e) {}
       invitePollTimer = setInterval(() => {
-        if (!document.hidden) pollInbox(true);
+        if (!document.hidden) {
+          pollInbox(true);
+          pollFriendRequests();
+        }
       }, 20000);
     }
   };
