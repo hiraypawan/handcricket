@@ -418,6 +418,16 @@ function showProfile(name, stats, meta) {
   try {
     if (typeof renderGoogleButtons === "function") renderGoogleButtons();
   } catch (e) {}
+  try {
+    const mx = $("btnMyXI");
+    if (mx && !mx.__wired) {
+      mx.__wired = true;
+      mx.onclick = () => {
+        sfx("tap");
+        if (typeof openMyXI === "function") openMyXI();
+      };
+    }
+  } catch (e) {}
 }
 const ProfileTabs = {
   switch(tab, btn) {

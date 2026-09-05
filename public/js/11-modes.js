@@ -73,8 +73,23 @@ $("btnSaveUsername").onclick = () => {
         publishProfile();
     }
   } catch (e) {}
+  const isFresh = !prev;
   $("usernameOverlay").classList.add("hidden");
   updHomeUsername();
+  /* First name ever: invite them to type their XI once. Delayed so any
+     pending mode screen opens first; Back in the editor reveals it. */
+  if (isFresh) {
+    try {
+      const hasXI =
+        typeof loadMyXI === "function" ? !!loadMyXI() : true;
+      if (!hasXI)
+        setTimeout(() => {
+          try {
+            if (typeof openMyXI === "function") openMyXI();
+          } catch (e) {}
+        }, 900);
+    } catch (e) {}
+  }
   if (window._pendingCbs && window._pendingCbs.length) {
     window._pendingCbs.forEach((cb) => {
       try {

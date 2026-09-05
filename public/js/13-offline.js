@@ -9,10 +9,8 @@
 /* NOTE: the offline coin-toss UI (btnHeads/btnTails/btnBatFirst/btnBowlFirst)
    was removed with the Offline menu — bot matches now toss randomly inside
    startQuickBotMatch. */
-// Builds the placeholder XI (Player 1..n / Bot 1..n) for team formats BEFORE
-// the role screen. Previously rosters were only created inside startOffline(),
-// which runs AFTER role assignment — so offline 2v2+ matches reached the role
-// screen with an empty list and could never start.
+// Builds rosters for team formats BEFORE the role screen: MY side comes from
+// the profile XI (or placeholders), the bot side is generated.
 function ensureOfflineRosters() {
   const n = G.teamSize || 1;
   if (n <= 1) return;
@@ -22,8 +20,11 @@ function ensureOfflineRosters() {
       name: prefix + (i + 1),
       role: i < n / 2 ? "batter" : "all",
     }));
-  if (!G.myPlayers || G.myPlayers.length !== n || !G.myPlayers[0].name)
-    G.myPlayers = fresh("Player ");
+  if (!G.myPlayers || G.myPlayers.length !== n || !G.myPlayers[0].name) {
+    const xi =
+      typeof mySquad === "function" ? mySquad(n) : null;
+    G.myPlayers = xi && xi.length === n ? xi : fresh("Player ");
+  }
   if (!G.oppPlayers || G.oppPlayers.length !== n || !G.oppPlayers[0].name) {
     G.oppPlayers = fresh("Bot ");
     G.oppPlayers[0].name = botName;

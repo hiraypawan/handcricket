@@ -256,20 +256,13 @@
 <button id="btnWaitBot" class="secondary" style="display:none">Play Bot Instead</button>
 <button id="btnCancelWait" class="secondary">Cancel</button></div>
 
-<div class="overlay hidden" id="teamOverlay"><h1>Select Team</h1>
-<div class="connected-badge"><span class="dot"></span><span id="teamVs">vs</span></div>
-<div class="team-select" id="teamSelect"></div>
-<div class="player-list" id="playerList"></div>
-<button id="btnConfirmTeam">Confirm</button>
-<div id="teamWait" style="display:none"><p style="font-size:12px;opacity:.7">Waiting...</p></div></div>
-
-<div class="overlay hidden" id="teamBuilderOverlay"><h1>Create Team</h1>
-<input type="text" id="teamNameInput" placeholder="Team Name" maxlength="16" autocomplete="off"/>
+<div class="overlay hidden" id="teamBuilderOverlay"><h1>My XI</h1>
+<input type="text" id="teamNameInput" placeholder="Team Name" maxlength="16" autocomplete="off" style="display:none"/>
 <div class="tb-mode-row"><button class="ftab active" id="btnTbPick" type="button">Pick from pool</button><button class="ftab" id="btnTbType" type="button">Type my XI</button></div>
 <h2 id="tbPickTitle">Pick 11 Players <span id="pickCount">0/11</span></h2>
 <div class="pool-grid" id="playerPool"></div>
 <div class="tb-type-grid hidden" id="tbTypeGrid"></div>
-<button id="btnSaveTeam">Save Team</button>
+<button id="btnSaveTeam">Save My XI</button>
 <button id="btnBackTB" class="secondary small" style="margin-top:8px">Back</button></div>
 
 <div class="overlay hidden" id="tossOverlay"><h1>Toss</h1>
@@ -312,6 +305,7 @@
 <div class="profile-card" id="profileCard"></div>
 <div class="google-btn-slot" id="googleBtnProfile" style="margin-top:10px;display:flex;justify-content:center"></div>
 <div class="save-note">Sign in with Google to save your profile, friends and leaderboard across devices.</div>
+<button id="btnMyXI" class="secondary small">My XI — My 11 Players</button>
 <button id="btnCloseProfile" class="secondary small">Close</button></div>
 <div class="friends-overlay hidden" id="friendsOverlay"><h1>Friends</h1>
 <div class="ptr-row"><button class="ptr-btn" id="btnFriendsRefresh" type="button">Refresh</button></div>

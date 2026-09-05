@@ -509,7 +509,6 @@ function handleNet(d) {
     G.state = "idle";
     setTimeout(resumeFromStage, 600);
   } else if (d.type === "team") {
-    G.oppTeam = d.team;
     G.oppPlayers = (d.players || []).map(function (p) {
       return Object.assign({}, p, { bowlingStyle: undefined });
     });
@@ -568,7 +567,7 @@ function normalHello() {
   if (!G.isHost) saveSession({ role: "join", room: G.roomId, name: G.myName });
   setTimeout(() => {
     $("waitingOverlay").classList.add("hidden");
-    showTeamSel();
+    exchangeRosters();
   }, 1500);
 }
 
@@ -602,102 +601,50 @@ function resumeFromStage() {
     }
   } else if (G.stage === "over") {
     finishMatch();
-  } else showTeamSel();
+  } else exchangeRosters();
 }
 
-function showTeamSel() {
+/* Teamless online flow: no IPL select screen. Each side brings its profile
+   XI (or placeholders) sized to the MATCHED format, exchanges it over the
+   existing team message, then roles/toss. `team: "xi"` keeps the gate shape
+   older peers expect. */
+function exchangeRosters() {
   setStage("teams");
-  $("teamOverlay").classList.remove("hidden");
-  $("teamVs").textContent = "vs " + G.oppName;
-  $("teamWait").style.display = "none";
-  $("btnConfirmTeam").disabled = false;
-  const ts = $("teamSelect");
-  ts.innerHTML = "";
-  const addTeam = (k, isCustom) => {
-    const b = document.createElement("div");
-    b.className = "team-btn";
-    b.dataset.team = k;
-    if (isCustom) {
-      b.innerHTML =
-        '<div style="font-size:14px;font-weight:800">' +
-        TEAMS[k].name +
-        '</div><div style="font-size:9px;opacity:.8">Custom</div>';
-    } else {
-      b.innerHTML =
-        '<div style="font-size:14px;font-weight:800">' +
-        k.toUpperCase() +
-        '</div><div style="font-size:9px;opacity:.8">' +
-        TEAMS[k].name +
-        "</div>";
-    }
-    b.onclick = () => selTeam(k);
-    ts.appendChild(b);
-  };
-  Object.keys(TEAMS).forEach((k) => addTeam(k, false));
-  const custom = getCustomTeams();
-  custom.forEach((t) => {
-    TEAMS["_custom_" + t.id] = t;
-    addTeam("_custom_" + t.id, true);
-  });
-  const createBtn = document.createElement("div");
-  createBtn.className = "team-btn";
-  createBtn.innerHTML =
-    '<div style="font-size:14px;font-weight:800">+</div><div style="font-size:9px;opacity:.8">Create Team</div>';
-  createBtn.onclick = () => {
-    $("teamOverlay").classList.add("hidden");
-    $("teamBuilderOverlay").classList.remove("hidden");
-    initTeamBuilder();
-  };
-  ts.appendChild(createBtn);
-}
-function selTeam(k) {
-  sfx("tap");
-  document
-    .querySelectorAll(".team-btn")
-    .forEach((b) => b.classList.remove("active"));
-  document
-    .querySelector('.team-btn[data-team="' + k + '"]')
-    .classList.add("active");
-  G.myTeam = k;
-  G.myPlayers = TEAMS[k].players.slice();
-  const pl = $("playerList");
-  pl.innerHTML = "";
-  G.myPlayers.forEach((p, i) => {
-    const d = document.createElement("div");
-    d.className = "player-item";
-    d.innerHTML =
-      "<span>" +
-      (i + 1) +
-      ". " +
-      p.name +
-      '</span><span style="font-size:9px;opacity:.7">' +
-      p.role +
-      "</span>";
-    pl.appendChild(d);
-  });
-}
-$("btnConfirmTeam").onclick = () => {
-  if (!G.myTeam) {
-    toast("Pick a team first", "warn");
-    return;
-  }
-  sfx("tap");
-  sendMsg({
-    type: "team",
-    team: G.myTeam,
-    players: G.myPlayers.map(function (p) {
-      return Object.assign({}, p, { bowlingStyle: undefined });
-    }),
-  });
-  $("teamWait").style.display = "block";
-  $("btnConfirmTeam").disabled = true;
+  const n = G.teamSize || 1;
+  G.myPlayers =
+    typeof mySquad === "function" && mySquad(n).length === n
+      ? mySquad(n)
+      : Array.from({ length: n }, (_, i) => ({
+          name: "Player " + (i + 1),
+          role: i < n / 2 ? "batter" : "all",
+        }));
+  try {
+    sendMsg({
+      type: "team",
+      team: "xi",
+      players: G.myPlayers.map(function (p) {
+        return Object.assign({}, p, { bowlingStyle: undefined });
+      }),
+    });
+  } catch (e) {}
+  $("menuOverlay").classList.add("hidden");
+  $("waitingOverlay").classList.remove("hidden");
+  $("waitTitle").textContent = "Opponent connected!";
+  $("waitDesc").textContent =
+    "Exchanging squads... Format: " + n + "v" + n;
+  const sb = $("shareBox");
+  if (sb) sb.style.display = "none";
+  const bc = $("btnCopy");
+  if (bc) bc.style.display = "none";
   checkTeams();
-};
+}
 function checkTeams() {
-  if (G.myTeam && G.oppTeam) {
-    $("teamOverlay").classList.add("hidden");
-    $("btnConfirmTeam").disabled = false;
-    if (G.myPlayers.length > 1) {
+  const n = G.teamSize || 1;
+  if (G.myPlayers.length >= n && G.oppPlayers.length >= n) {
+    G.myPlayers = G.myPlayers.slice(0, n);
+    G.oppPlayers = G.oppPlayers.slice(0, n);
+    $("waitingOverlay").classList.add("hidden");
+    if (n > 1) {
       G.myPlayers.forEach((p) => {
         if (!p.battingStyle) p.battingStyle = "balanced";
         if (!p.bowlingStyle) p.bowlingStyle = "balanced";
@@ -732,15 +679,68 @@ function checkTeams() {
   }
 }
 
-function getCustomTeams() {
+/* MY XI — the player's own 11, typed once in the profile and used as their
+   squad in every mode (quick, online, role screens). Shape matches roster
+   entries: [{name, role}] with styles assigned later by role screens. */
+function loadMyXI() {
   try {
-    return JSON.parse(localStorage.getItem("hc_custom_teams")) || [];
-  } catch (e) {
-    return [];
-  }
+    const raw = localStorage.getItem("hcp_my_xi");
+    const arr = raw ? JSON.parse(raw) : null;
+    if (
+      Array.isArray(arr) &&
+      arr.length === 11 &&
+      arr.every((p) => p && String(p.name || "").trim())
+    )
+      return arr.map((p) => ({
+        name: String(p.name).slice(0, 16),
+        role: p.role || "all",
+      }));
+  } catch (e) {}
+  return null;
 }
-function saveCustomTeams(t) {
-  localStorage.setItem("hc_custom_teams", JSON.stringify(t));
+function saveMyXI(players) {
+  try {
+    localStorage.setItem("hcp_my_xi", JSON.stringify(players));
+  } catch (e) {}
+}
+/* Squad of size n for MY side: profile XI sliced, else placeholders. */
+function mySquad(n) {
+  const xi = typeof loadMyXI === "function" ? loadMyXI() : null;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    if (xi && xi[i] && xi[i].name)
+      out.push({
+        name: String(xi[i].name).slice(0, 16),
+        role: xi[i].role || "all",
+      });
+    else
+      out.push({
+        name: "Player " + (i + 1),
+        role: i < n / 2 ? "batter" : "all",
+      });
+  }
+  return out;
+}
+/* Opens the team builder as the My XI editor (pool-pick or type-11),
+   pre-filled with the saved XI when one exists. */
+function openMyXI() {
+  try {
+    if (typeof initTeamBuilder === "function") initTeamBuilder();
+  } catch (e) {}
+  try {
+    window.__tbDraft = null;
+    const xi = loadMyXI();
+    if (xi)
+      window.__tbDraft = xi.map((p) => ({ name: p.name, role: p.role }));
+    setTbMode("type");
+  } catch (e) {
+    try {
+      setTbMode("type");
+    } catch (e2) {}
+  }
+  const ni = $("teamNameInput");
+  if (ni) ni.style.display = "none";
+  $("teamBuilderOverlay").classList.remove("hidden");
 }
 let builderPicks = [];
 function initTeamBuilder() {
@@ -863,7 +863,6 @@ function updatePickCount() {
   $("pickCount").textContent = builderPicks.length + "/11";
 }
 $("btnSaveTeam").onclick = () => {
-  const name = $("teamNameInput").value.trim() || "My Team";
   let players;
   if (tbMode === "type") {
     const t = readTbTypedXI();
@@ -872,26 +871,30 @@ $("btnSaveTeam").onclick = () => {
       return;
     }
     players = t.players;
-    window.__tbDraft = t.players.map((p) => ({ name: p.name, role: p.role }));
   } else {
     if (builderPicks.length !== 11) {
       toast("Pick exactly 11 players", "warn");
       return;
     }
-    players = builderPicks.map((i) => ALL_PLAYERS[i]);
+    players = builderPicks.map((i) => ({
+      name: ALL_PLAYERS[i].name,
+      role: ALL_PLAYERS[i].role,
+    }));
   }
-  const id = Date.now().toString(36);
-  const teams = getCustomTeams();
-  teams.push({ id, name, players });
-  saveCustomTeams(teams);
-  TEAMS["_custom_" + id] = { name: name, players: players };
+  saveMyXI(players);
+  window.__tbDraft = null;
   sfx("tap");
+  toast("My XI saved", "ok");
   $("teamBuilderOverlay").classList.add("hidden");
-  showTeamSel();
+  if (typeof showProfile === "function") showProfile();
+  else if (typeof showMenu === "function") showMenu();
 };
 $("btnBackTB").onclick = () => {
+  sfx("tap");
+  window.__tbDraft = null;
   $("teamBuilderOverlay").classList.add("hidden");
-  showTeamSel();
+  if (typeof showProfile === "function") showProfile();
+  else if (typeof showMenu === "function") showMenu();
 };
 
 function startOnlineToss() {

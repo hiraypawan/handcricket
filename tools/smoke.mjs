@@ -345,19 +345,35 @@ check(
 );
 check("turn flips back after bot toss", dom.window.localStorage.getItem("hcp_toss_turn") === "me", dom.window.localStorage.getItem("hcp_toss_turn"));
 
-// ---------------------------------------------------------------- 5b. custom XI typing + fictional presets
-ev(dom, `initTeamBuilder(); setTbMode('type');`);
+// ---------------------------------------------------------------- 5b. My XI editor + fictional presets
+ev(dom, `openMyXI();`);
 await sleep(200);
 const typeRows = byId(dom, "tbTypeGrid")?.querySelectorAll(".tb-type-row").length || 0;
-check("team builder type-my-XI renders 11 rows", typeRows === 11, "rows=" + typeRows);
+check("My XI editor renders 11 rows", typeRows === 11, "rows=" + typeRows);
 ev(dom, `
   document.querySelectorAll('#tbTypeGrid .tb-type-row input').forEach((inp, i) => { inp.value = 'Hero' + (i + 1); });
-  $('teamNameInput').value = 'Smoke XI';
   $('btnSaveTeam').click();
 `);
 await sleep(300);
-const xiSaved = ev(dom, `getCustomTeams().some(t => t.name === 'Smoke XI' && t.players.length === 11 && t.players[0].name === 'Hero1')`);
-check("typed XI saves as a custom team", xiSaved === true, "");
+const xiSaved = ev(dom, `JSON.stringify(loadMyXI())`);
+check(
+  "typed XI saves to profile XI",
+  (() => {
+    try {
+      const arr = JSON.parse(xiSaved);
+      return Array.isArray(arr) && arr.length === 11 && arr[0].name === "Hero1";
+    } catch (e) {
+      return false;
+    }
+  })(),
+  "",
+);
+const squad5 = ev(dom, `JSON.stringify(mySquad(5).map((p) => p.name))`);
+check(
+  "online/bot rosters draw from My XI",
+  squad5 === JSON.stringify(["Hero1", "Hero2", "Hero3", "Hero4", "Hero5"]),
+  squad5,
+);
 const presetHit = ev(dom, `Object.values(TEAMS).flatMap(t => t.players.map(p => p.name)).some(n => ['Kohli','Rohit','Dhoni','Bumrah','Pant','Buttler','Warner','Maxwell','Starc','Kuldeep','Chahal','Hardik','Jadeja','Pant'].includes(n))`);
 check("preset squads carry no real-famous names", presetHit === false, "");
 const fs5b = await import("node:fs");

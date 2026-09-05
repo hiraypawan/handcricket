@@ -120,6 +120,18 @@ store.clear();
 const blank = await post({ action: "seek", user: "   ", cid: "bx", teamSize: 1 });
 check("blank username rejected", blank.error === "Missing user", JSON.stringify(blank));
 
+// 6b. STRICT formats: 1v1 never pairs 5v5 (no silent T20 for a 1v1 pick)
+store.clear();
+await post({ action: "seek", user: "OneA", cid: "o1a", teamSize: 1 });
+await post({ action: "seek", user: "FiveB", cid: "f5b", teamSize: 5 });
+const r1 = await post({ action: "poll", user: "OneA", cid: "o1a", teamSize: 1 });
+const r5 = await post({ action: "poll", user: "FiveB", cid: "f5b", teamSize: 5 });
+check(
+  "cross-format seekers never pair",
+  r1.status === "waiting" && r5.status === "waiting",
+  `1v1=${r1.status} 5v5=${r5.status}`,
+);
+
 // 7. memory backend (Durable Object shape): same convergence, no store lag
 mem.clear();
 await postMem({ action: "seek", user: "MemA", cid: "ma", teamSize: 1 });
