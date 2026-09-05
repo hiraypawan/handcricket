@@ -350,9 +350,14 @@ check(
   "",
 );
 check(
+  "seekers carry a device id so same-name guests still pair",
+  /hcp_cid/.test(repoSrc("public/js/18-instant.js")),
+  "",
+);
+check(
   "matchmaking converges concurrent seekers (deterministic room + adopt)",
   /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
-    /readMatch\(KV, cand\.user\)/.test(repoSrc("functions/api/quickmatch.js")),
+    /readMatch\(KV, sidOf\(cand\)\)/.test(repoSrc("functions/api/quickmatch.js")),
   "",
 );
 check(

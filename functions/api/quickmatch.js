@@ -1,16 +1,41 @@
 import { cors, json } from '../../lib/api/shared.js';
 
 /* QUICK MATCHMAKING — real players first, bot fallback after.
-   POST {action:'seek'|'poll'|'leave', user, teamSize}
+   POST {action:'seek'|'poll'|'leave'|'joined', user, teamSize, cid}
    - seek: (re)registers the seeker for 20s and tries an immediate match.
    - poll: keep-alive + check whether a match was made for me.
    - leave: drop out of the pool.
+   - joined: matched pair entered P2P (ops signal).
+   IDENTITY IS THE CLIENT ID (cid), never the display name: two guests both
+   called "Player" (or two users who picked the same name) must still see
+   each other. Old clients without cid fall back to name identity.
    Matching prefers the same teamSize; a seeker waiting >6s accepts any
    size (and adopts the other side's format). The earlier seeker hosts.
    Matches are one-shot reads: the first poll that sees one consumes it. */
 const POOL_KEY = 'quick:pool';
-const matchKey = (u) => 'quick:match:' + String(u || '').toLowerCase().trim().slice(0, 24);
+const EVENTS_KEY = 'quick:events';
+const matchKey = (id) => 'quick:match:' + String(id || '').toLowerCase().slice(0, 40);
 const SEEK_TTL_MS = 20000;
+/* Stable session id: per-device client id when present, else the name. */
+const sidOf = (s) =>
+  String((s && s.cid) || ('name:' + ((s && s.user) || '')))
+    .toLowerCase()
+    .slice(0, 40);
+
+/* Anonymous ops log (NO usernames — counts and outcomes only) so real
+   pairing health can be inspected with:
+     wrangler kv:key get --namespace-id <id> quick:events
+   Ring buffer, capped, 1h TTL. */
+async function logEvent(KV, evt, extra) {
+  try {
+    const raw = await KV.get(EVENTS_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(Object.assign({ t: Date.now(), evt }, extra || {}));
+    await KV.put(EVENTS_KEY, JSON.stringify(arr.slice(-80)), {
+      expirationTtl: 3600,
+    });
+  } catch (e) { /* diagnostics never break matching */ }
+}
 
 async function readPool(KV) {
   try {
@@ -66,14 +91,15 @@ async function readMatch(KV, user) {
   }
 }
 
-async function tryMatch(KV, pool, me) {
+async function tryMatch(KV, pool, me, myCid) {
   const now = Date.now();
-  const mine = pool.find((s) => s.user.toLowerCase() === me.toLowerCase());
+  const mySid = myCid || 'name:' + me.toLowerCase();
+  const mine = pool.find((s) => sidOf(s) === mySid);
   if (!mine) return null;
   const waited = now - (mine.ts || now);
   const relaxed = waited > 6000;
   const others = pool
-    .filter((s) => s.user.toLowerCase() !== me.toLowerCase())
+    .filter((s) => sidOf(s) !== mySid)
     .sort((a, b) => (a.ts || 0) - (b.ts || 0));
   /* With 3+ seekers racing, a candidate may already hold a fresh match
      record: adopt it when it's for ME, skip them otherwise (never steal a
@@ -83,8 +109,11 @@ async function tryMatch(KV, pool, me) {
     const sameSize = Number(cand.teamSize) === Number(mine.teamSize);
     if (!sameSize && !relaxed) continue;
     if (!sameSize && relaxed && peer) continue;
-    const rec = await readMatch(KV, cand.user);
-    if (rec && rec.opp && rec.opp.toLowerCase() === me.toLowerCase()) {
+    const rec = await readMatch(KV, sidOf(cand));
+    const forMe = myCid
+      ? rec && rec.oppCid === myCid
+      : rec && rec.opp && rec.opp.toLowerCase() === me.toLowerCase();
+    if (forMe) {
       if (now - (rec.ts || 0) < 30000) {
         const mineIsHost = rec.role !== 'host';
         return {
@@ -105,10 +134,13 @@ async function tryMatch(KV, pool, me) {
   }
   if (!peer) return null;
   const hostFirst = (peer.ts || 0) <= (mine.ts || 0);
-  const room = roomFor(mine.user, peer.user, mine.ts || 0, peer.ts || 0);
+  const room = roomFor(sidOf(mine), sidOf(peer), mine.ts || 0, peer.ts || 0);
+  const hostSid = hostFirst ? sidOf(peer) : mySid;
+  const guestSid = hostFirst ? mySid : sidOf(peer);
   const hostRec = {
     room,
     opp: hostFirst ? mine.user : peer.user,
+    oppCid: hostFirst ? mine.cid || null : peer.cid || null,
     role: 'host',
     teamSize: Number(hostFirst ? peer.teamSize : mine.teamSize) || 1,
     ts: now,
@@ -116,20 +148,19 @@ async function tryMatch(KV, pool, me) {
   const guestRec = {
     room,
     opp: hostFirst ? peer.user : mine.user,
+    oppCid: hostFirst ? peer.cid || null : mine.cid || null,
     role: 'guest',
     teamSize: hostRec.teamSize,
     ts: now,
   };
   const rest = pool.filter(
-    (s) =>
-      s.user.toLowerCase() !== me.toLowerCase() &&
-      s.user.toLowerCase() !== peer.user.toLowerCase(),
+    (s) => sidOf(s) !== mySid && sidOf(s) !== sidOf(peer),
   );
   await KV.put(POOL_KEY, JSON.stringify(rest));
-  await KV.put(matchKey(hostFirst ? peer.user : mine.user), JSON.stringify(hostRec), {
+  await KV.put(matchKey(hostSid), JSON.stringify(hostRec), {
     expirationTtl: 120,
   });
-  await KV.put(matchKey(hostFirst ? mine.user : peer.user), JSON.stringify(guestRec), {
+  await KV.put(matchKey(guestSid), JSON.stringify(guestRec), {
     expirationTtl: 120,
   });
   return hostFirst ? guestRec : hostRec;
@@ -144,34 +175,65 @@ export const onRequestPost = async (ctx) => {
     if (!user || !action) return json({ error: 'Missing params' }, 400);
     const KV = ctx.env.KV;
     const me = String(user).trim().slice(0, 24);
+    const cid = body.cid
+      ? String(body.cid).toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 32) || null
+      : null;
+    const mySid = (cid || 'name:' + me).toLowerCase().slice(0, 40);
 
     if (action === 'leave') {
       const pool = prune(await readPool(KV)).filter(
-        (s) => s.user.toLowerCase() !== me.toLowerCase(),
+        (s) => sidOf(s) !== mySid,
       );
-      await KV.put(POOL_KEY, JSON.stringify(pool));
+      await KV.put(POOL_KEY, JSON.stringify(pool.slice(-50)));
+      return json({ ok: true });
+    }
+
+    /* A matched player confirming they entered the room. Tells ops whether
+       pairs only form on paper or actually launch into P2P. */
+    if (action === 'joined') {
+      const pool = prune(await readPool(KV)).filter(
+        (s) => sidOf(s) !== mySid,
+      );
+      await KV.put(POOL_KEY, JSON.stringify(pool.slice(-50)));
+      await logEvent(KV, 'joined', { size: Number(teamSize) || 0 });
       return json({ ok: true });
     }
 
     if (action === 'seek' || action === 'poll') {
       // collect a consumed match first (one-shot read)
       try {
-        const raw = await KV.get(matchKey(me));
+        const raw = await KV.get(matchKey(mySid));
         if (raw) {
-          await KV.delete(matchKey(me));
+          await KV.delete(matchKey(mySid));
           const m = JSON.parse(raw);
-          if (m && m.room) return json({ status: 'matched', room: m.room, opp: m.opp, role: m.role, teamSize: m.teamSize });
+          if (m && m.room) {
+            await logEvent(KV, 'consumed', { role: m.role || '?' });
+            return json({ status: 'matched', room: m.room, opp: m.opp, role: m.role, teamSize: m.teamSize });
+          }
         }
       } catch (e) { /* fall through to pool */ }
       let pool = prune(await readPool(KV));
-      const ix = pool.findIndex((s) => s.user.toLowerCase() === me.toLowerCase());
-      const rec = { user: me, teamSize: Number(teamSize) || 1, ts: Date.now() };
+      const ix = pool.findIndex((s) => sidOf(s) === mySid);
+      const rec = { user: me, cid: cid || null, teamSize: Number(teamSize) || 1, ts: Date.now() };
       if (ix >= 0) pool[ix] = rec;
       else pool.push(rec);
       await KV.put(POOL_KEY, JSON.stringify(pool.slice(-50)));
-      const m = await tryMatch(KV, pool, me);
-      if (m) return json({ status: 'matched', room: m.room, opp: m.opp, role: m.role, teamSize: m.teamSize });
-      return json({ status: 'waiting' });
+      if (action === 'seek') {
+        await logEvent(KV, 'seek', {
+          size: Number(teamSize) || 0,
+          pool: pool.length,
+        });
+      }
+      const m = await tryMatch(KV, pool, me, cid);
+      if (m) {
+        await logEvent(KV, 'matched', {
+          role: m.role || '?',
+          size: m.teamSize || 0,
+          pool: pool.length,
+        });
+        return json({ status: 'matched', room: m.room, opp: m.opp, role: m.role, teamSize: m.teamSize });
+      }
+      return json({ status: 'waiting', seekers: pool.length });
     }
 
     return json({ error: 'Unknown action' }, 400);

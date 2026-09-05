@@ -23,6 +23,21 @@ function stopQmSearch() {
   } catch (e) {}
   mmSearch = null;
 }
+/* Per-device matchmaking id: two guests both called "Player" (or two users
+   with the same name) must still pair — identity is this id, names are
+   display-only. */
+function qmCid() {
+  try {
+    let c = localStorage.getItem("hcp_cid");
+    if (!c) {
+      c = (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)).slice(0, 16);
+      localStorage.setItem("hcp_cid", c);
+    }
+    return c;
+  } catch (e) {
+    return "";
+  }
+}
 function resetMatchmakingUI() {
   stopQmSearch();
   try {
@@ -30,7 +45,7 @@ function resetMatchmakingUI() {
     fetch("/api/quickmatch", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "leave", user: me }),
+      body: JSON.stringify({ action: "leave", user: me, cid: qmCid() }),
     }).catch(() => {});
   } catch (e) {}
   mmSearching = false;
@@ -112,13 +127,21 @@ function findOpponent() {
       const r = await fetch("/api/quickmatch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, user: me, teamSize }),
+        body: JSON.stringify({ action, user: me, teamSize, cid: qmCid() }),
       });
       if (!r.ok) return null;
       return await r.json();
     } catch (e) {
       return null;
     }
+  };
+  /* Backgrounded mobile browsers throttle intervals to ~1/min — a user who
+     flips to chat to coordinate "click now" would miss the whole window.
+     Poll the moment the tab is visible again. */
+  S.pollNow = async () => {
+    if (S.cancelled) return;
+    const j = await qmPost("poll");
+    if (j && j.status === "matched") goReal(j);
   };
   const goReal = (m) => {
     if (S.cancelled) return;
@@ -133,7 +156,7 @@ function findOpponent() {
       fetch("/api/quickmatch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "joined", user: me }),
+        body: JSON.stringify({ action: "joined", user: me, cid: qmCid() }),
       }).catch(() => {});
     } catch (e) {}
     joinRealMatch(m);
@@ -225,6 +248,13 @@ $("btnMMCancel").onclick = () => {
   $("matchmakingOverlay").classList.add("hidden");
   $("menuOverlay").classList.remove("hidden");
 };
+document.addEventListener("visibilitychange", () => {
+  try {
+    if (!document.hidden && mmSearch && !mmSearch.cancelled && mmSearching) {
+      if (typeof mmSearch.pollNow === "function") mmSearch.pollNow();
+    }
+  } catch (e) {}
+});
 $("btnMMPlayBot").onclick = () => {
   if (!mmPersona) {
     findOpponent();

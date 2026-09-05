@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler pages dev public",
     "deploy": "wrangler pages deploy public --project-name handscricket",
-    "test": "node tools/smoke.mjs"
+    "test": "node tools/qm-sim.mjs && node tools/smoke.mjs"
   },
   "devDependencies": {
     "wrangler": "latest",
