@@ -10,23 +10,26 @@ function oversStr(b) {
   const ov = Math.floor(G.totalBalls / 6);
   return Math.floor(b / 6) + "." + (b % 6) + " / " + ov + " ov";
 }
+/* SIDES ARE LOCKED: scoreboard LEFT (A) is always the OPPONENT, RIGHT (B)
+   is always YOU (highlighted .you) — matching the arena (opp hand left,
+   your hand right). Only indicators change with G.iBat; sides never swap. */
 function updScore() {
-  $("scoreA").textContent = G.me.score;
-  $("wicketsA").textContent = G.me.wkts;
-  $("ballsA").textContent = oversStr(G.me.balls);
-  $("scoreB").textContent = G.opp.score;
-  $("wicketsB").textContent = G.opp.wkts;
-  $("ballsB").textContent = oversStr(G.opp.balls);
-  $("batA").style.display = G.iBat ? "inline-block" : "none";
-  $("batB").style.display = G.iBat ? "none" : "inline-block";
+  $("scoreA").textContent = G.opp.score;
+  $("wicketsA").textContent = G.opp.wkts;
+  $("ballsA").textContent = oversStr(G.opp.balls);
+  $("scoreB").textContent = G.me.score;
+  $("wicketsB").textContent = G.me.wkts;
+  $("ballsB").textContent = oversStr(G.me.balls);
+  $("batA").style.display = G.iBat ? "none" : "inline-block";
+  $("batB").style.display = G.iBat ? "inline-block" : "none";
   updatePlayerDisplay();
-  // Update player cards
-  if ($("pcScoreA")) $("pcScoreA").textContent = G.me.score;
-  if ($("pcWktsA")) $("pcWktsA").textContent = G.me.wkts;
-  if ($("pcBallsA")) $("pcBallsA").textContent = G.me.balls + " balls";
-  if ($("pcScoreB")) $("pcScoreB").textContent = G.opp.score;
-  if ($("pcWktsB")) $("pcWktsB").textContent = G.opp.wkts;
-  if ($("pcBallsB")) $("pcBallsB").textContent = G.opp.balls + " balls";
+  // Update player cards (pcLeft = opponent, pcRight = you)
+  if ($("pcScoreA")) $("pcScoreA").textContent = G.opp.score;
+  if ($("pcWktsA")) $("pcWktsA").textContent = G.opp.wkts;
+  if ($("pcBallsA")) $("pcBallsA").textContent = G.opp.balls + " balls";
+  if ($("pcScoreB")) $("pcScoreB").textContent = G.me.score;
+  if ($("pcWktsB")) $("pcWktsB").textContent = G.me.wkts;
+  if ($("pcBallsB")) $("pcBallsB").textContent = G.me.balls + " balls";
   if ($("pcBadgeA")) $("pcBadgeA").textContent = G.iBat ? "BATTING" : "BOWLING";
   if ($("pcBadgeB")) $("pcBadgeB").textContent = G.iBat ? "BOWLING" : "BATTING";
   // Update center card
@@ -49,14 +52,17 @@ function updCenterCard() {
   if ($("ccBalls")) $("ccBalls").textContent = ballsLeft;
 }
 function updAllNames() {
-  const a = G.myName || "YOU",
-    b = G.oppName || "Opponent";
-  if ($("labelA")) $("labelA").textContent = a;
-  if ($("labelB")) $("labelB").textContent = b;
-  if ($("nameA")) $("nameA").textContent = a;
-  if ($("nameB")) $("nameB").textContent = b;
-  if ($("pcNameA")) $("pcNameA").textContent = a;
-  if ($("pcNameB")) $("pcNameB").textContent = b;
+  const me = G.myName || "YOU",
+    op = G.oppName || "Opponent";
+  if ($("labelA")) $("labelA").textContent = op;
+  if ($("labelB")) $("labelB").textContent = me;
+  if ($("nameA")) $("nameA").textContent = op;
+  if ($("nameB")) $("nameB").textContent = me;
+  if ($("pcNameA")) $("pcNameA").textContent = op;
+  if ($("pcNameB")) $("pcNameB").textContent = me;
+  /* persistent YOU highlight on the right side */
+  if ($("teamA")) $("teamA").classList.remove("you");
+  if ($("teamB")) $("teamB").classList.add("you");
 }
 function popScore(s) {
   const el = s === "A" ? $("scoreBoxA") : $("scoreBoxB");

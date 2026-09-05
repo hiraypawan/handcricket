@@ -78,11 +78,6 @@ if (howToBtn) {
     openTutorial();
   };
 }
-$("btnBack1").onclick = () => {
-  $("offlineSetup").classList.add("hidden");
-  $("menuOverlay").classList.remove("hidden");
-};
-$("btnBack1").className = "back-btn";
 $("btnBack2").onclick = () => {
   $("onlineLobby").classList.add("hidden");
   $("menuOverlay").classList.remove("hidden");

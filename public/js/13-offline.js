@@ -1,121 +1,14 @@
 /* ============================================================================
  FILE: public/js/13-offline.js
- ROLE: OFFLINE vs BOT FLOW — roster builder, coin toss (offlineToss/resetOffline), showRoleForOffline() (role UI for team sizes), startOffline() (match bootstrap + bot profile gen). Depends on: engine (09), roles (15), bot-ai (02).
+  ROLE: BOT-MATCH BOOTSTRAP (ex-OFFLINE) — roster builder, showRoleForOffline() (role UI for team sizes), startOffline() (match bootstrap + bot profile gen). The Offline menu + coin-toss screen were removed; Quick Match and Story are the only bot entries now. Depends on: engine (09), roles (15), bot-ai (02).
 ============================================================================ */
 
-function resetOffline() {
-  const box = $("coinBox");
-  if (box) {
-    box.style.display = "none";
-    box.classList.remove("spinning", "win", "lose");
-  }
-  const r = $("tossResult");
-  if (r) r.innerHTML = "";
-  const d = $("tossDecision");
-  if (d) d.style.display = "none";
-  document.querySelectorAll(".toss-btn").forEach((b) => {
-    b.disabled = false;
-    b.classList.remove("sel");
-  });
-  const c = $("coin");
-  if (c) {
-    c.classList.remove("flipping", "landing");
-    c.style.transform = "";
-    c.style.removeProperty("--coin-total");
-  }
-}
-$("btnHeads").onclick = () => offlineToss("heads");
-$("btnTails").onclick = () => offlineToss("tails");
-function offlineToss(call) {
-  sfx("coin");
-  haptic(20);
-  const btnCall = call === "heads" ? $("btnHeads") : $("btnTails");
-  btnCall.classList.add("sel");
-  $("btnHeads").disabled = true;
-  $("btnTails").disabled = true;
-  const botName = (G.oppStats && G.oppStats.name) || G.oppName || genBotName();
-  const res = Math.random() < 0.5 ? "heads" : "tails";
-  const resChip = () => tossChipHTML(res);
-
-  // Phase 1 — flip (ends ON the winning face, see tossSpin in 07-display.js)
-  const box = $("coinBox");
-  box.style.display = "block";
-  box.classList.add("spinning");
-  $("tossResult").innerHTML =
-    '<span class="toss-msg">Flipping the coin' + tossDotsHTML() + "</span>";
-  tossSpin($("coin"), res === "heads");
-
-  setTimeout(() => {
-    // Phase 2 — coin bounces to rest
-    box.classList.remove("spinning");
-    tossLand($("coin"), res === "heads");
-
-    setTimeout(() => {
-      tossSettle($("coin"), res === "heads");
-      if (res === call) {
-        // Phase 3a — YOU won: show result + decision cards
-        box.classList.add("win");
-        sfx("win");
-        haptic(30);
-        confetti(26);
-        $("tossResult").innerHTML =
-          resChip() +
-          '<span class="toss-msg pop">You won the toss!</span>' +
-          '<span class="toss-msg sub">You called ' +
-          call +
-          "</span>";
-        $("tossDecision").style.display = "flex";
-      } else {
-        // Phase 3b — bot won: reveal, then let the bot "decide"
-        box.classList.add("lose");
-        sfx("lose");
-        haptic(15);
-        $("tossResult").innerHTML =
-          resChip() +
-          '<span class="toss-msg pop"><span class="bot-nm">' +
-          botName +
-          "</span> won the toss</span>";
-        setTimeout(() => {
-          $("tossResult").innerHTML +=
-            '<span class="toss-msg sub pop">' +
-            botName +
-            " is deciding" +
-            tossDotsHTML() +
-            "</span>";
-          setTimeout(() => {
-            const bc = Math.random() < 0.5 ? "bat" : "bowl";
-            G.iBat = bc === "bowl";
-            sfx("go");
-            $("tossResult").innerHTML =
-              resChip() +
-              '<span class="toss-msg pop"><span class="bot-nm">' +
-              botName +
-              "</span> chose to <b>" +
-              (bc === "bat" ? "BAT first</b> <svg class=\"uic bats\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.8 3.8 20.2 9.2a2 2 0 0 1 0 2.8l-5.9 5.9a3.6 3.6 0 0 1-5 0l-.8-.8a3.6 3.6 0 0 1 0-5l5.9-5.9a2 2 0 0 1 2.8 0z\"/><path d=\"m9.6 10.4 4 4\"/></svg>" : "BOWL first</b> <svg class=\"uic\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 3v18\"/><path d=\"M5.2 8.4c4.5 2 9.1 2 13.6 0M5.2 15.6c4.5-2 9.1-2 13.6 0\"/></svg>") +
-              "</span>";
-            // Even when the bot wins the toss you still assign YOUR team's roles
-            // (team formats) — showRoleForOffline handles 1v1 by starting directly.
-            setTimeout(showRoleForOffline, 1600);
-          }, 900);
-        }, 1000);
-      }
-    }, 600);
-  }, 2300);
-}
-$("btnBatFirst").onclick = () => {
-  sfx("tap");
-  G.iBat = true;
-  $("btnBatFirst").disabled = true;
-  $("btnBowlFirst").disabled = true;
-  showRoleForOffline();
-};
-$("btnBowlFirst").onclick = () => {
-  sfx("tap");
-  G.iBat = false;
-  $("btnBatFirst").disabled = true;
-  $("btnBowlFirst").disabled = true;
-  showRoleForOffline();
-};
+/* Offline menu + coin-toss setup screen were removed — bot matches now start
+   from Quick Match (persona reveal, random toss) or Story. What remains here
+   is the shared bot-match bootstrap: rosters, role screen, startOffline. */
+/* NOTE: the offline coin-toss UI (btnHeads/btnTails/btnBatFirst/btnBowlFirst)
+   was removed with the Offline menu — bot matches now toss randomly inside
+   startQuickBotMatch. */
 // Builds the placeholder XI (Player 1..n / Bot 1..n) for team formats BEFORE
 // the role screen. Previously rosters were only created inside startOffline(),
 // which runs AFTER role assignment — so offline 2v2+ matches reached the role
@@ -163,7 +56,6 @@ function showRoleForOffline() {
 }
 
 function startOffline() {
-  $("offlineSetup").classList.add("hidden");
   // Trust a roster that was already built for this match (role screen, quick
   // match): the globally-active size button may belong to a different screen.
   G.teamSize =

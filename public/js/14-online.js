@@ -668,7 +668,13 @@ function saveCustomTeams(t) {
 let builderPicks = [];
 function initTeamBuilder() {
   builderPicks = [];
+  tbMode = "pick";
   $("teamNameInput").value = "";
+  if ($("btnTbPick")) $("btnTbPick").classList.add("active");
+  if ($("btnTbType")) $("btnTbType").classList.remove("active");
+  if ($("playerPool")) $("playerPool").classList.remove("hidden");
+  if ($("tbPickTitle")) $("tbPickTitle").style.display = "";
+  if ($("tbTypeGrid")) $("tbTypeGrid").classList.add("hidden");
   updatePickCount();
   const pool = $("playerPool");
   pool.innerHTML = "";
@@ -690,6 +696,82 @@ function initTeamBuilder() {
     pool.appendChild(d);
   });
 }
+/* TYPE-MY-XI mode: type 11 favourite names instead of picking from the pool.
+   Saved shape {id,name,players:[{name,role}]} is identical, so team select +
+   online sync work unchanged. */
+let tbMode = "pick";
+const TB_ROLES = ["batter", "all", "bowler"];
+function setTbMode(m) {
+  if (tbMode === "type" && m !== "type") {
+    try {
+      const cur = readTbTypedXI();
+      window.__tbDraft = cur.players.map((p) => ({ name: p.name, role: p.role }));
+    } catch (e) {}
+  }
+  tbMode = m;
+  $("btnTbPick").classList.toggle("active", m === "pick");
+  $("btnTbType").classList.toggle("active", m === "type");
+  $("playerPool").classList.toggle("hidden", m !== "pick");
+  $("tbPickTitle").style.display = m === "pick" ? "" : "none";
+  $("tbTypeGrid").classList.toggle("hidden", m !== "type");
+  if (m === "type") renderTbTypeGrid();
+}
+function renderTbTypeGrid() {
+  const g = $("tbTypeGrid");
+  g.innerHTML = "";
+  for (let i = 0; i < 11; i++) {
+    const row = document.createElement("div");
+    row.className = "tb-type-row";
+    row.innerHTML =
+      '<span class="num">' +
+      (i + 1) +
+      '</span>' +
+      '<input type="text" maxlength="16" placeholder="Player ' +
+      (i + 1) +
+      '" autocomplete="off"/>' +
+      '<button type="button">ALL</button>';
+    g.appendChild(row);
+  }
+  const draft = window.__tbDraft || [];
+  g.querySelectorAll(".tb-type-row").forEach((row, i) => {
+    const inp = row.querySelector("input");
+    const btn = row.querySelector("button");
+    let role = (draft[i] && draft[i].role) || "all";
+    if (draft[i] && draft[i].name && draft[i].name.indexOf("Player ") !== 0)
+      inp.value = draft[i].name;
+    const paint = () => {
+      btn.textContent = role === "batter" ? "BAT" : role === "bowler" ? "BOWL" : "ALL";
+      btn.dataset.role = role;
+    };
+    paint();
+    btn.onclick = () => {
+      sfx("tap");
+      role = TB_ROLES[(TB_ROLES.indexOf(role) + 1) % TB_ROLES.length];
+      paint();
+    };
+  });
+}
+function readTbTypedXI() {
+  const players = [];
+  let empty = 0;
+  $("tbTypeGrid")
+    .querySelectorAll(".tb-type-row")
+    .forEach((row, i) => {
+      const nm = row.querySelector("input").value.trim().slice(0, 16);
+      const role = row.querySelector("button").dataset.role || "all";
+      if (!nm) empty++;
+      players.push({ name: nm || "Player " + (i + 1), role });
+    });
+  return { players, empty };
+}
+$("btnTbPick").onclick = () => {
+  sfx("tap");
+  setTbMode("pick");
+};
+$("btnTbType").onclick = () => {
+  sfx("tap");
+  setTbMode("type");
+};
 function togglePoolPick(idx, el) {
   if (builderPicks.includes(idx)) {
     builderPicks = builderPicks.filter((i) => i !== idx);
@@ -704,12 +786,23 @@ function updatePickCount() {
   $("pickCount").textContent = builderPicks.length + "/11";
 }
 $("btnSaveTeam").onclick = () => {
-  if (builderPicks.length !== 11) {
-    toast("Pick exactly 11 players", "warn");
-    return;
-  }
   const name = $("teamNameInput").value.trim() || "My Team";
-  const players = builderPicks.map((i) => ALL_PLAYERS[i]);
+  let players;
+  if (tbMode === "type") {
+    const t = readTbTypedXI();
+    if (t.empty > 0) {
+      toast("Name all 11 players (" + t.empty + " missing)", "warn");
+      return;
+    }
+    players = t.players;
+    window.__tbDraft = t.players.map((p) => ({ name: p.name, role: p.role }));
+  } else {
+    if (builderPicks.length !== 11) {
+      toast("Pick exactly 11 players", "warn");
+      return;
+    }
+    players = builderPicks.map((i) => ALL_PLAYERS[i]);
+  }
   const id = Date.now().toString(36);
   const teams = getCustomTeams();
   teams.push({ id, name, players });

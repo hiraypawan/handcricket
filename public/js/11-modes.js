@@ -111,68 +111,6 @@ function updHomeTrophies() {
   }
 }
 
-$("modeOffline").onclick = () => {
-  ensureAudio();
-  sfx("tap");
-  haptic();
-  ensureUsername(() => {
-    G.mode = "offline";
-    /* v2.8: the offline opponent is a player, not "Ultra Bot" — name, city,
-       style and a career derived from the name (stable across matches). */
-    G.botProfile = genBotProfile();
-    const s = personaStats(G.botProfile);
-    G.oppStats = s;
-    G.oppName = s.name;
-    const t = $("offlineTitle");
-    if (t) t.textContent = "vs " + s.name;
-    const sub = $("offlineSubtitle");
-    if (sub) sub.textContent = G.botProfile.city + " \u00b7 " + G.botProfile.style;
-    const sb = $("offlineBotStats");
-    sb.style.display = "block";
-    sb.innerHTML =
-      '<div class="pre-stats-box"><div class="pre-stats-title">' +
-      escHtml(s.name) +
-      ' <span class="pre-rank">' +
-      getRank(s) +
-      "</span></div>" +
-      '<div class="pre-stats-meta">' +
-      escHtml(G.botProfile.city) + " \u00b7 " + escHtml(G.botProfile.style) +
-      "</div>" +
-      '<div class="pre-stats-section"><div class="pre-section-label">Career</div>' +
-      '<div class="pre-stat-row"><span>Matches</span><b>' +
-      s.matches +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>Wins</span><b>' +
-      s.wins +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>Win Rate</span><b>' +
-      s.winPct +
-      "%</b></div>" +
-      "</div>" +
-      '<div class="pre-stats-section"><div class="pre-section-label">Batting</div>' +
-      '<div class="pre-stat-row"><span>Runs</span><b>' +
-      s.runs +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>SR</span><b>' +
-      s.strikeRate +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>Sixes</span><b>' +
-      s.sixes +
-      "</b></div>" +
-      "</div>" +
-      '<div class="pre-stats-section"><div class="pre-section-label">Bowling</div>' +
-      '<div class="pre-stat-row"><span>Wkts</span><b>' +
-      s.wicketsTaken +
-      "</b></div>" +
-      '<div class="pre-stat-row"><span>Econ</span><b>' +
-      s.economy +
-      "</b></div>" +
-      "</div></div>";
-    $("menuOverlay").classList.add("hidden");
-    $("offlineSetup").classList.remove("hidden");
-    resetOffline();
-  });
-};
 $("modeOnline").onclick = () => {
   ensureAudio();
   sfx("tap");
