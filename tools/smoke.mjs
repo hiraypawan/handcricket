@@ -345,7 +345,7 @@ const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
 check(
   "matchmaking converges concurrent seekers (deterministic room + adopt)",
   /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
-    /peerRec/.test(repoSrc("functions/api/quickmatch.js")),
+    /readMatch\(KV, cand\.user\)/.test(repoSrc("functions/api/quickmatch.js")),
   "",
 );
 check(
@@ -354,6 +354,16 @@ check(
     /scheduleJoinRetry/.test(repoSrc("public/js/14-online.js")),
   "",
 );
+const flavorOk = ev(
+  dom,
+  `Array.from({length:30}, () => genFlavorName()).every((n) => typeof n === "string" && n.length > 0)`,
+);
+check("flavor bot names generate (anime/heroes/tags)", flavorOk === true, "");
+const girlOk = ev(
+  dom,
+  `typeof BOT_FIRST_F !== "undefined" && BOT_FIRST_F.length >= 30 && BOT_FIRST_F.includes("Ananya")`,
+);
+check("female bot name pool present", girlOk === true, "");
 // bot skill tiers + progressive careers + pseudo-presence are pure/deterministic
 const tierNew = ev(dom, `BotAI.skillFor({matches:0,wins:0}).key`);
 const tierPro = ev(dom, `BotAI.skillFor({matches:10,wins:4}).key`);

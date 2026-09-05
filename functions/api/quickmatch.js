@@ -75,27 +75,35 @@ async function tryMatch(KV, pool, me) {
   const others = pool
     .filter((s) => s.user.toLowerCase() !== me.toLowerCase())
     .sort((a, b) => (a.ts || 0) - (b.ts || 0));
-  const peer =
-    others.find((s) => Number(s.teamSize) === Number(mine.teamSize)) ||
-    (relaxed ? others[0] : null);
-  if (!peer) return null;
-  /* Adopt, don't duplicate: if either side already holds a match record for
-     THIS pair, return my side of it instead of minting a second room. */
-  const peerRec = await readMatch(KV, peer.user);
-  if (
-    peerRec &&
-    peerRec.opp &&
-    peerRec.opp.toLowerCase() === me.toLowerCase() &&
-    now - (peerRec.ts || 0) < 30000
-  ) {
-    const mineIsHost = peerRec.role !== 'host';
-    return {
-      room: peerRec.room,
-      opp: peer.user,
-      role: mineIsHost ? 'host' : 'guest',
-      teamSize: peerRec.teamSize || mine.teamSize,
-    };
+  /* With 3+ seekers racing, a candidate may already hold a fresh match
+     record: adopt it when it's for ME, skip them otherwise (never steal a
+     paired seeker into a second room — that strands everyone). */
+  let peer = null;
+  for (const cand of others) {
+    const sameSize = Number(cand.teamSize) === Number(mine.teamSize);
+    if (!sameSize && !relaxed) continue;
+    if (!sameSize && relaxed && peer) continue;
+    const rec = await readMatch(KV, cand.user);
+    if (rec && rec.opp && rec.opp.toLowerCase() === me.toLowerCase()) {
+      if (now - (rec.ts || 0) < 30000) {
+        const mineIsHost = rec.role !== 'host';
+        return {
+          room: rec.room,
+          opp: cand.user,
+          role: mineIsHost ? 'host' : 'guest',
+          teamSize: rec.teamSize || mine.teamSize,
+        };
+      }
+      continue; // stale record, but they're mid-flow — don't steal
+    }
+    if (rec && now - (rec.ts || 0) < 30000) continue; // paired elsewhere
+    if (sameSize) {
+      peer = cand;
+      break;
+    }
+    if (!peer) peer = cand; // relaxed fallback: first unpaired seeker
   }
+  if (!peer) return null;
   const hostFirst = (peer.ts || 0) <= (mine.ts || 0);
   const room = roomFor(mine.user, peer.user, mine.ts || 0, peer.ts || 0);
   const hostRec = {

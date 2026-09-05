@@ -242,6 +242,42 @@ const BOT_FIRST = [
   "Varun",
   "Wasim",
 ];
+const BOT_FIRST_F = [
+  "Aadhya",
+  "Aishwarya",
+  "Amara",
+  "Ananya",
+  "Avni",
+  "Diya",
+  "Divya",
+  "Ira",
+  "Ishita",
+  "Kajal",
+  "Kavya",
+  "Kiara",
+  "Meera",
+  "Myra",
+  "Naina",
+  "Nandini",
+  "Navya",
+  "Pari",
+  "Pihu",
+  "Pooja",
+  "Poonam",
+  "Priya",
+  "Ritu",
+  "Riya",
+  "Ruhi",
+  "Saanvi",
+  "Sara",
+  "Shalini",
+  "Shreya",
+  "Sneha",
+  "Tara",
+  "Tanvi",
+  "Veda",
+  "Zara",
+];
 const BOT_LAST = [
   "Sharma",
   "Verma",
@@ -368,6 +404,38 @@ const BOT_SUFFIX = [
    (BOT_PREFIX / BOT_SUFFIX gamer tags are intentionally no longer applied —
    they read as handles, not people.)
 ============================================================================ */
+/* FUN NAMES — fictional heroes/villains for tournament draws and the
+   play-bot fallback. Personas (quick-match reveals) stay clean Indian names
+   and gamer tags stay OFF them (they must read as people, not handles), but
+   cups and fallbacks get full flavor: anime, capes, detective noir and
+   gamer tags. Real persons (players, actors, idols) are NEVER used. */
+const BOT_FUN = [
+  "Goku", "Vegeta", "Naruto", "Sasuke", "Luffy", "Zoro", "Sanji", "Ichigo",
+  "Deku", "Bakugo", "Eren", "Mikasa", "Levi", "Gojo", "Itadori", "Tanjiro",
+  "Gon", "Killua", "Kurapika", "Natsu", "Gray", "Erza", "Meliodas", "Ban",
+  "Asta", "Denji", "Saitama", "Genos", "Light", "Kaneki", "Edward", "Kirito",
+  "Asuna", "Spike", "Kenshin", "Inuyasha", "Stark", "Rogers", "Banner",
+  "Strange", "Parker", "Wayne", "Kent", "Allen", "Queen", "Murdock", "Logan",
+  "Wade", "Heisenberg", "Saul", "Sherlock", "Watson", "Tyrion", "Arya",
+  "Jon", "Eleven", "Hopper", "Wednesday", "Sheldon", "Leonard", "Penny",
+  "Howard", "Walter", "Jesse",
+];
+function genFlavorName() {
+  const first = BOT_FUN[(Math.random() * BOT_FUN.length) | 0];
+  const r = Math.random();
+  if (r < 0.3) {
+    const pre = BOT_PREFIX[(Math.random() * BOT_PREFIX.length) | 0];
+    return (pre.endsWith("_") ? pre : pre + "_") + first;
+  }
+  if (r < 0.55) {
+    const suf = BOT_SUFFIX[(Math.random() * BOT_SUFFIX.length) | 0];
+    return first + (suf[0] === "_" ? suf : "_" + suf);
+  }
+  if (r < 0.8) {
+    return first + " " + BOT_LAST[(Math.random() * BOT_LAST.length) | 0];
+  }
+  return first;
+}
 const BOT_CITY = [
   "Mumbai", "Delhi", "Bengaluru", "Hyderabad", "Chennai", "Pune", "Kolkata",
   "Ahmedabad", "Jaipur", "Lucknow", "Indore", "Nagpur", "Surat", "Kanpur",
@@ -435,7 +503,11 @@ function botPresence(name) {
 }
 
 function genBotName() {
-  const f = BOT_FIRST[Math.floor(Math.random() * BOT_FIRST.length)];
+  const pool =
+    typeof BOT_FIRST_F !== "undefined" && Math.random() < 0.5
+      ? BOT_FIRST_F
+      : BOT_FIRST;
+  const f = pool[Math.floor(Math.random() * pool.length)];
   const l = BOT_LAST[Math.floor(Math.random() * BOT_LAST.length)];
   return f + " " + l;
 }

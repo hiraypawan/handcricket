@@ -56,12 +56,36 @@ function hcGoogleToken() {
 /* Render the Sign in with Google button into every .google-btn-slot on this
    screen. Silent no-op when no Client ID is configured. Save-progress notes
    hide once an account is linked. */
+function hcEsc(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 async function renderGoogleButtons() {
   try {
-    const linked = !!hcGoogleStored();
+    const g = hcGoogleStored();
+    const linked = !!g;
     document.querySelectorAll(".save-note").forEach((el) => {
       el.style.display = linked ? "none" : "";
     });
+    /* Linked: show who is linked + an unlink action instead of a dead
+       sign-in button, so the account never looks logged out. */
+    if (linked) {
+      document.querySelectorAll(".google-btn-slot").forEach((el) => {
+        el.dataset.done = "1";
+        el.innerHTML =
+          '<div class="g-linked"><span class="pdot on"></span><span>Linked: ' +
+          hcEsc((g && g.name) || "Google") +
+          '</span><button type="button" class="g-unlink" id="gUnlinkBtn">Unlink</button></div>';
+      });
+      document.querySelectorAll(".g-unlink").forEach((b) => {
+        b.onclick = () => {
+          hcGoogleSignOut();
+        };
+      });
+      return;
+    }
     const id = await hcGoogleClientId();
     if (!id) return;
     const ok = await hcGoogleLoad();
@@ -222,6 +246,10 @@ function hcGoogleSignOut() {
     localStorage.removeItem("hcp_google_token");
     if (window.google && window.google.accounts)
       window.google.accounts.id.disableAutoSelect();
+    document.querySelectorAll(".google-btn-slot").forEach((el) => {
+      delete el.dataset.done;
+      el.innerHTML = "";
+    });
   } catch (e) {}
   toast("Google unlinked on this device");
   renderGoogleButtons();

@@ -21,12 +21,45 @@ function ensureUsername(cb) {
 }
 $("btnSaveUsername").onclick = () => {
   sfx("tap");
-  const v = $("usernameInput").value.trim();
+  const v = $("usernameInput").value.trim().slice(0, 24);
   if (!v) {
     $("usernameInput").focus();
     return;
   }
+  /* Rename (not just first set): carry the old career over explicitly so the
+     new name never starts empty while the old record — and the Google link,
+     which re-publishes below under the new name — stays intact. */
+  const prev =
+    typeof getUsername === "function" ? getUsername() || "" : "";
+  const prevStats =
+    typeof loadStats === "function" ? loadStats() : null;
   setUsername(v);
+  try {
+    if (
+      prev &&
+      prev.toLowerCase() !== v.toLowerCase() &&
+      prevStats &&
+      (prevStats.matches || 0) > 0
+    ) {
+      const cur =
+        typeof loadStats === "function" ? loadStats() : null;
+      if (!cur || (cur.matches || 0) === 0) {
+        const base =
+          typeof defaultStats === "function" ? defaultStats() : {};
+        const merged = Object.assign({}, base, prevStats, { name: v });
+        if (typeof saveStats === "function") saveStats(merged);
+        else localStorage.setItem("hcp_stats", JSON.stringify(merged));
+      }
+      /* Re-link Google + push everything under the new name immediately so
+         the account never looks logged out. */
+      if (
+        typeof hcGoogleToken === "function" &&
+        hcGoogleToken() &&
+        typeof publishProfile === "function"
+      )
+        publishProfile();
+    }
+  } catch (e) {}
   $("usernameOverlay").classList.add("hidden");
   updHomeUsername();
   if (window._pendingCbs && window._pendingCbs.length) {

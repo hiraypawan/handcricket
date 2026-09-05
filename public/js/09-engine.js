@@ -132,8 +132,22 @@ $("btnNoLeave").onclick = () => {
 };
 function startInnings(n) {
   if (typeof hideDock === "function") hideDock(); // dock never overlays live play
+  /* Bot matches get their own spectate code so friends can watch them live
+     (presented exactly like a real player's game). Online keeps its room. */
+  if (n === 1) {
+    if (G.roomId) {
+      G.specRoom = null;
+    } else {
+      try {
+        G.specRoom =
+          "SP" + Math.random().toString(36).slice(2, 6).toUpperCase();
+      } catch (e) {
+        G.specRoom = null;
+      }
+    }
+  }
   if (typeof window.hcPresenceSet === "function")
-    window.hcPresenceSet("playing", G.roomId || null);
+    window.hcPresenceSet("playing", G.roomId || G.specRoom || null);
   /* v2.9: the crowd only moves while a match is on. Off the field the stadium
      stays still — motion you cannot turn off is noise, not polish. */
   const ar = document.querySelector(".arena");

@@ -199,13 +199,24 @@ function loadLocal() {
     if (!list) return;
     /* snapshots for profile fallback + bot flags for presence */
     try {
+      window.__friendNames = {};
       (myFriends.friends || []).concat(myFriends.pending || []).forEach((f) => {
         const k = String(f.name || "").toLowerCase();
         if (!k) return;
+        window.__friendNames[k] = true;
         if (f.stats) window.__friendStats[k] = f.stats;
         if (f.isBot) window.__friendIsBot[k] = true;
       });
     } catch (e) {}
+  window.hcFriendBotNames = function () {
+    try {
+      return (myFriends.friends || [])
+        .filter((f) => f.isBot && f.name)
+        .map((f) => f.name);
+    } catch (e) {
+      return [];
+    }
+  };
     if (currentTab === "list") {
       if (!myFriends.friends || myFriends.friends.length === 0) {
         list.innerHTML =

@@ -46,7 +46,10 @@
     // Guard against a name collision producing two identical slots.
     let guard = 0;
     while (names.length < n - 1 && guard++ < 200) {
-      const p = genBotProfile();
+      const p =
+        typeof genFlavorName === "function" && Math.random() < 0.5
+          ? genBotProfile(genFlavorName())
+          : genBotProfile();
       if (!p || seen[p.name]) continue;
       seen[p.name] = 1;
       names.push(p.name);

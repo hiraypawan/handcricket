@@ -242,6 +242,8 @@ function startQuickBotMatch(persona) {
   G.mode = "offline";
   G.isHost = true;
   G.isBot = true;
+  G.roomId = null;
+  G.specRoom = null;
   // carry the revealed player into the match so the scoreboard, the profile
   // card and the result screen all show the same opponent
   G.botProfile = persona || null;

@@ -1618,6 +1618,10 @@ input,select,textarea{font-size:16px}
 .home-btn-row button{width:auto;flex:0 1 auto;margin-top:0;white-space:nowrap}
 /* save-progress nudge under Google buttons */
 .save-note{font-size:10.5px;color:var(--ink-faint);text-align:center;max-width:280px;margin:8px auto 0;line-height:1.5}
+/* linked-account chip (replaces the sign-in button once linked) */
+.g-linked{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;color:var(--ink-soft);background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.25);border-radius:99px;padding:7px 8px 7px 12px}
+.g-linked .pdot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 6px rgba(52,211,153,.7)}
+.g-unlink{border:none;background:rgba(255,255,255,.08);color:var(--ink-soft);font-size:10px;font-weight:800;border-radius:99px;padding:4px 10px;cursor:pointer}
 /* presence (online / last-seen) on friend rows */
 .friend-presence{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--ink-faint);margin-top:2px}
 .friend-presence .pdot{width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0}

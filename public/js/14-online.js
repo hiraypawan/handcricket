@@ -155,12 +155,34 @@ $("btnJoin").onclick = () => {
 $("btnRetry").onclick = () => {
   sfx("tap");
   $("btnRetry").style.display = "none";
+  const wb0 = $("btnWaitBot");
+  if (wb0) wb0.style.display = "none";
   $("connLog").innerHTML = "";
   $("connBadge").style.display = "none";
   connLog("Retrying...");
   destroyPeer();
   if (G.isHost) startPeer(true, G.roomId);
   else startPeer(false, G.roomId || resolveRoomCode());
+};
+/* Dead-end escape hatch: no host coming — drop into an instant bot match
+   with a real-looking persona instead of staring at retries. */
+$("btnWaitBot").onclick = () => {
+  sfx("tap");
+  destroyPeer();
+  $("waitingOverlay").classList.add("hidden");
+  const wb0 = $("btnWaitBot");
+  if (wb0) wb0.style.display = "none";
+  $("btnRetry").style.display = "none";
+  if (typeof genBotProfile === "function")
+    startQuickBotMatch(
+      genBotProfile(
+        typeof genFlavorName === "function" ? genFlavorName() : undefined,
+      ),
+    );
+  else {
+    $("menuOverlay").classList.remove("hidden");
+    toast("Couldn't start a bot match — back to menu", "warn");
+  }
 };
 $("btnCancelWait").onclick = () => {
   destroyPeer();
@@ -208,6 +230,9 @@ function startPeer(isHost, roomId) {
   connGen = 0;
   joinAttempts = 0;
   readyGen = -1;
+  lastRetryAt = 0;
+  const wb0 = $("btnWaitBot");
+  if (wb0) wb0.style.display = "none";
   const pid = isHost ? "hcp_" + G.roomId : "hcp_c_" + genId();
   connLog("Peer: " + pid);
   if (isHost) saveSession({ role: "host", room: G.roomId, name: G.myName });
@@ -292,6 +317,8 @@ function scheduleJoinRetry() {
   if (joinAttempts >= JOIN_BACKOFF.length) {
     connLog("Room not found — ask the host to keep their room open, then tap Retry", true);
     $("btnRetry").style.display = "block";
+    const wb = $("btnWaitBot");
+    if (wb) wb.style.display = "block";
     return;
   }
   const wait = JOIN_BACKOFF[joinAttempts];

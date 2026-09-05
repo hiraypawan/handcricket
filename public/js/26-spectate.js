@@ -159,22 +159,43 @@ function spectateSnap() {
     msg: ($("status") && $("status").textContent) || "",
   };
 }
+/* Friends-only rule: the sheet, the eye count and the comment stream show
+   ONLY people from your friend list (real friends + friend-list bots, who
+   look exactly like real players). Strangers with a link stay invisible. */
+function specKnows(name) {
+  try {
+    const k = String(name || "").toLowerCase();
+    return !!(window.__friendNames && window.__friendNames[k]);
+  } catch (e) {
+    return false;
+  }
+}
+function specFriendBotPick() {
+  try {
+    const fb =
+      (typeof window.hcFriendBotNames === "function" &&
+        window.hcFriendBotNames()) ||
+      [];
+    if (fb.length) return fb[(Math.random() * fb.length) | 0];
+  } catch (e) {}
+  return null;
+}
 /* Called once per ball from nextBall(): publishes (throttled), refreshes the
    eye count (throttled), and runs the bot-spectator simulation. */
 window.spectateTick = function () {
   const now = Date.now();
-  /* bot spectators join ANY live match (online or bot games) */
+  const room = G.roomId || G.specRoom || null;
+  /* bot spectators join ANY live match — but ONLY from your friend list,
+     so every face in the sheet is someone you know (or think you know). */
   try {
     const sim = window.__specSim;
     const balls = (G.me ? G.me.balls : 0) + (G.opp ? G.opp.balls : 0);
-    if (
-      sim.bots.length < 3 &&
-      balls < 12 &&
-      Math.random() < 0.12 &&
-      typeof genBotName === "function"
-    ) {
-      sim.bots.push(genBotName());
-      specRenderEye(sim.bots.length + (window.__specReal || 0));
+    if (sim.bots.length < 3 && balls < 12 && Math.random() < 0.12) {
+      const pick = specFriendBotPick();
+      if (pick && sim.bots.indexOf(pick) === -1) {
+        sim.bots.push(pick);
+        specRenderEye(sim.bots.length + (window.__specReal || 0));
+      }
     }
     if (
       sim.bots.length &&
@@ -189,29 +210,37 @@ window.spectateTick = function () {
       void who;
     }
   } catch (e) {}
-  /* real relay only matters for online rooms */
-  if (G.mode !== "online" || !G.roomId) return;
+  /* real relay: online rooms AND bot matches (specRoom) so friends can
+     watch any live game as if the bot side were real players too */
+  if (!room) return;
   if (now - specPubLast > 3000) {
     specPubLast = now;
-    specApi("publish", { room: G.roomId, snap: spectateSnap() });
+    specApi("publish", { room, snap: spectateSnap() });
   }
   if (now - specEyeLast > 10000) {
     specEyeLast = now;
     (async () => {
       try {
         const r = await fetch(
-          "/api/spectate?room=" + encodeURIComponent(G.roomId),
+          "/api/spectate?room=" + encodeURIComponent(room),
         );
         if (!r.ok) return;
         const d = await r.json();
+        const me =
+          typeof getUsername === "function" ? getUsername() : "";
         const real = (d.watchers || []).filter(
-          (n) => n !== (typeof getUsername === "function" ? getUsername() : ""),
+          (n) =>
+            n !== me && specKnows(n),
         );
         window.__specReal = real.length;
         window.__specRealNames = real;
-        /* surface spectator comments as float bubbles */
+        /* surface spectator comments as float bubbles (friends only) */
         (d.comments || []).forEach((c) => {
-          if (c.ts > specSeenChat && typeof showFloatMsg === "function") {
+          if (
+            c.ts > specSeenChat &&
+            specKnows(c.name) &&
+            typeof showFloatMsg === "function"
+          ) {
             showFloatMsg(c.name + ": " + c.text, true);
           }
         });
@@ -244,6 +273,9 @@ window.specResetHost = function () {
   specPubLast = 0;
   specEyeLast = 0;
   specSeenChat = 0;
+  try {
+    if (typeof G !== "undefined") G.specRoom = null;
+  } catch (e) {}
   specRenderEye(0);
 };
 $("watchEye").onclick = () => {
