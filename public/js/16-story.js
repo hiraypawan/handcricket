@@ -281,7 +281,6 @@ function startStoryMatchPlay() {
   G.storyMatch = true;
   BotAI.reset();
   $("menuOverlay").classList.add("hidden");
-  $("offlineSetup").classList.add("hidden");
   $("storyHome").classList.add("hidden");
   updScore();
   renderBalls();

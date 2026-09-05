@@ -333,9 +333,11 @@
     const maxAgg = lim ? lim.maxAgg : players.length;
     const maxDef = lim ? lim.maxDef : players.length;
     const minBal = lim ? lim.minBal : 0;
+    const maxBal = lim && lim.maxBal != null ? lim.maxBal : players.length;
 
     let agg = 0;
     let def = 0;
+    let nBal = 0;
     const out = players.map(function (p) {
       return Object.assign({}, p);
     });
@@ -350,8 +352,13 @@
 
       if (want === "aggressive" && agg >= maxAgg) want = "balanced";
       if (want === "defensive" && def >= maxDef) want = "balanced";
+      if (want === "balanced" && nBal >= maxBal) {
+        if (agg < maxAgg) want = "aggressive";
+        else if (def < maxDef) want = "defensive";
+      }
       if (want === "aggressive") agg++;
-      if (want === "defensive") def++;
+      else if (want === "defensive") def++;
+      else nBal++;
       p.battingStyle = want;
       if (!p.bowlingStyle) p.bowlingStyle = "balanced";
     });

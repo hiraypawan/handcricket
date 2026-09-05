@@ -267,14 +267,16 @@ function renderRoleGrid() {
 
 function getRoleLimits(ts) {
   if (ts <= 1) return null;
-  if (ts === 2) return { maxAgg: 1, maxDef: 1, minBal: 1 };
-  if (ts === 3) return { maxAgg: 1, maxDef: 1, minBal: 1 };
-  if (ts === 5) return { maxAgg: 2, maxDef: 2, minBal: 1 };
-  return { maxAgg: 4, maxDef: 4, minBal: 3 };
+  if (ts === 2) return { maxAgg: 1, maxDef: 1, minBal: 1, maxBal: 1 };
+  if (ts === 3) return { maxAgg: 1, maxDef: 1, minBal: 1, maxBal: 2 };
+  if (ts === 5) return { maxAgg: 2, maxDef: 2, minBal: 1, maxBal: 3 };
+  return { maxAgg: 4, maxDef: 4, minBal: 3, maxBal: 7 };
 }
 function validateRoles() {
-  const ts = G.teamSize || 11;
-  const lim = getRoleLimits(ts);
+  /* Validate the squad actually on screen — not G.teamSize, which can be
+     stale (or belong to another mode) when this overlay opens. */
+  const n = (roleAssignPlayers && roleAssignPlayers.length) || G.teamSize || 11;
+  const lim = getRoleLimits(n);
   if (!lim) {
     $("roleConstraints").textContent = "Single player — no roles needed";
     $("roleConstraints").style.color = "rgba(148,163,184,.75)";
@@ -286,7 +288,10 @@ function validateRoles() {
   const defCount = bats.filter((s) => s === "defensive").length;
   const balCount = bats.filter((s) => s === "balanced").length;
   const ok =
-    aggCount <= lim.maxAgg && defCount <= lim.maxDef && balCount >= lim.minBal;
+    aggCount <= lim.maxAgg &&
+    defCount <= lim.maxDef &&
+    balCount >= lim.minBal &&
+    balCount <= lim.maxBal;
   $("roleConstraints").textContent =
     "Aggressive: " +
     aggCount +
@@ -299,9 +304,11 @@ function validateRoles() {
     " | Balanced: " +
     balCount +
     "/" +
-    ts +
-    " (min " +
+    n +
+    " (" +
     lim.minBal +
+    "-" +
+    lim.maxBal +
     ")";
   $("roleConstraints").style.color = ok ? "var(--teal)" : "#c1121f";
   $("btnRoleStart").disabled = !ok;
@@ -330,6 +337,7 @@ $("btnRoleRandom").onclick = () => {
     const maxAgg = lim ? lim.maxAgg : 4;
     const maxDef = lim ? lim.maxDef : 4;
     const minBal = lim ? lim.minBal : 1;
+    const maxBal = lim ? lim.maxBal : n;
     const remaining = n - aggCount - defCount - balCount;
     const needBal = minBal - balCount;
     if (remaining <= needBal) {
@@ -338,8 +346,10 @@ $("btnRoleRandom").onclick = () => {
       const avail = [];
       if (aggCount < maxAgg) avail.push("aggressive");
       if (defCount < maxDef) avail.push("defensive");
-      avail.push("balanced");
-      style = avail[Math.floor(Math.random() * avail.length)];
+      if (balCount < maxBal) avail.push("balanced");
+      style = avail.length
+        ? avail[Math.floor(Math.random() * avail.length)]
+        : "balanced";
     }
     p.battingStyle = style;
     p.bowlingStyle = styles[Math.floor(Math.random() * 3)];

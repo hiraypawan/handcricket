@@ -8,9 +8,9 @@
  *   1. Page loads with NO uncaught JS errors (would catch the old
  *      nameA/nameB init crash automatically).
  *   2. Core init ran: mode buttons, toss buttons, gesture grid, role buttons wired.
- *   3. Offline 1v1 match completes end-to-end (batting + bowling innings,
+ *   3. Quick 1v1 bot match completes end-to-end (batting + bowling innings,
  *      innings break, result, stats recorded).
- *   4. Offline 5v5 match: rosters exist, role-assign overlay lists 5 players,
+ *   4. Quick 5v5 match: rosters exist, role-assign overlay lists 5 players,
  *      roles validate, Start works, match boots into 1st innings.
  *   5. Story mode: story home renders after entering (data + progress bar).
  */
@@ -145,13 +145,14 @@ async function playOfflineMatch(dom, opts = {}) {
 const { dom, errors } = await boot();
 check("page boots with zero JS errors", errors.length === 0, errors.slice(0, 3).join(" | "));
 
-// nameA/nameB crash marker: if init died, most handlers are missing
+// Offline mode was removed: Play with Friend / Quick Match / Story only.
+// init-death marker: if init died, most handlers are missing.
 const wired = {
-  modeOffline: !!byId(dom, "modeOffline")?.onclick,
   modeOnline: !!byId(dom, "modeOnline")?.onclick,
   modeInstant: !!byId(dom, "modeInstant")?.onclick,
-  btnHeads: !!byId(dom, "btnHeads")?.onclick,
   btnCreate: !!byId(dom, "btnCreate")?.onclick,
+  btnMMPlayBot: !!byId(dom, "btnMMPlayBot")?.onclick,
+  btnTbType: !!byId(dom, "btnTbType")?.onclick,
   gestureGrid: (() => {
     const g = byId(dom, "gestureGrid");
     return !!(g && g.onclick);
@@ -177,66 +178,67 @@ check("all critical UI handlers wired (init completed)", allWired, JSON.stringif
 check("G state object exists", typeof ev(dom, `typeof G === "object" && G.totalBalls === 6`) === "boolean");
 check("tutorial auto-open not erroring", true);
 
-// ---------------------------------------------------------------- 2. offline 1v1
+// ---------------------------------------------------------------- 2. quick 1v1 (bot)
 dom.window.localStorage.setItem("hcp_username", "SmokeTester");
 dom.window.localStorage.removeItem("hc_stats");
 const r1 = await playOfflineMatch(dom, { teamSize: 1 });
-check("offline 1v1 match completes", r1.status === "finished", "result=" + r1.result);
+check("quick 1v1 match completes", r1.status === "finished", "result=" + r1.result);
 const stats = JSON.parse(dom.window.localStorage.getItem("hc_stats") || "{}");
 check("career stats recorded after match", stats.matches >= 1, JSON.stringify({ m: stats.matches, w: stats.wins }));
 
-// ---------------------------------------------------------------- 2b. offline toss (redesign)
-// Deterministic: force heads; call heads → we win the toss → decision cards.
-ev(dom, `resetGame(); window.__mr = Math.random; Math.random = () => 0.01;`);
-ev(dom, `G.mode='offline'; G.teamSize=1; resetOffline();`);
-byId(dom, "btnHeads").click();
-await sleep(900);
-const tossSel = byId(dom, "btnHeads").classList.contains("sel");
-const tossMidSpin = byId(dom, "coinBox").classList.contains("spinning"); // mid-flip
-await sleep(3300); // flip 2300ms + bounce ~600ms + reveal
-const tossEndSpin = byId(dom, "coinBox").classList.contains("spinning");
-const tossChip = /HEADS/.test(byId(dom, "tossResult").textContent || "");
-const tossDec = byId(dom, "tossDecision").style.display === "flex";
+// ---------------------------------------------------------------- 2b. sides locked: YOU right, opponent left
+ev(dom, `resetGame(); G.teamSize=1; G.iBat=true; G.mode='offline'; G.isBot=true; G.isHost=true; G.myPlayers=[]; G.oppPlayers=[]; startOffline();`);
+await sleep(1200);
+const sideB = byId(dom, "labelB")?.textContent || "";
+const sideA = byId(dom, "labelA")?.textContent || "";
+const youLit = byId(dom, "teamB")?.classList.contains("you") === true;
+const oppLit = byId(dom, "teamA")?.classList.contains("you") === false;
+const scoreSync = ev(dom, `$('scoreB').textContent == String(G.me.score) && $('scoreA').textContent == String(G.opp.score)`);
 check(
-  "toss: call → flip → win reveal + decision cards",
-  tossSel && tossMidSpin && !tossEndSpin && tossChip && tossDec,
-  `sel=${tossSel} midSpin=${tossMidSpin} chip=${tossChip} decision=${tossDec}`,
+  "sides locked: B=me highlighted, A=opponent",
+  sideB === "YOU" && sideA !== "YOU" && youLit && oppLit && scoreSync,
+  `A=${sideA} B=${sideB} you=${youLit} sync=${scoreSync}`,
 );
-ev(dom, `$('btnBatFirst').click()`);
-await sleep(1700);
-const batChosen = ev(dom, `G.iBat === true && (G.state === 'waiting' || G.state === 'revealing' || G.state === 'processing')`);
-ev(dom, `Math.random = window.__mr;`);
-check("toss: bat-first choice boots the innings", batChosen, `state=${ev(dom, `G.state`)}`);
 
-// ---------------------------------------------------------------- 3. offline 5v5 (team + roles)
+// ---------------------------------------------------------------- 3. quick 5v5 (team + roles)
 dom.window.localStorage.removeItem("hc_stats");
 ev(dom, `resetGame()`);
 await sleep(400);
 // 5v5 role flow with NO pre-seeded rosters: showRoleForOffline() must build
 // them (regression: the role screen used to open empty and could never start)
-ev(dom, `document.querySelector('#offlineSize .team-size-btn[data-size="5"]').click()`);
+ev(dom, `G.teamSize=5;`);
 ev(dom, `G.myPlayers=[]; G.oppPlayers=[];`);
 ev(dom, `showRoleForOffline()`);
 await sleep(400);
 const roleRows = byId(dom, "roleAssignGrid")?.querySelectorAll(".role-row").length || 0;
 check("5v5 role grid auto-builds 5 players", roleRows === 5, "rows=" + roleRows);
+// all-balanced defaults must now be REJECTED (maxBal cap on balanced)
+const allBalDisabled = byId(dom, "btnRoleStart")?.disabled;
+check("5v5 all-balanced squad is rejected", allBalDisabled === true, "disabled=" + allBalDisabled);
+// set a legal 2 AGG / 2 DEF / 1 BAL squad through the real grid buttons
+ev(dom, `
+  G.myPlayers.forEach((p, i) => {
+    p.battingStyle = i < 2 ? 'aggressive' : (i < 4 ? 'defensive' : 'balanced');
+    p.bowlingStyle = 'balanced';
+  });
+  renderRoleGrid();
+`);
+await sleep(200);
 const startDisabled = byId(dom, "btnRoleStart")?.disabled;
 check("5v5 role start enabled with valid roles", startDisabled === false, "disabled=" + startDisabled);
-// assign roles + start through the actual callback flow -> match must boot
-ev(dom, `$('btnRoleAllBal').click()`);
-await sleep(200);
+// start through the actual callback flow -> match must boot
 ev(dom, `$('btnRoleStart').click()`);
 await sleep(900);
 const bootStatus = byId(dom, "status")?.textContent || "";
 const rosterLen = ev(dom, `G.myPlayers.length`);
-const stylesKept = ev(dom, `G.myPlayers.every(p=>p.battingStyle==='balanced')`);
+const stylesMixed = ev(dom, `G.myPlayers.filter(p=>p.battingStyle==='aggressive').length===2 && G.myPlayers.filter(p=>p.battingStyle==='defensive').length===2`);
 check(
   "5v5 role-screen flow boots a match",
-  rosterLen === 5 && stylesKept && (bootStatus.includes("BAT") || bootStatus.includes("BOWL") || bootStatus.includes("Innings")),
-  `roster=${rosterLen} styled=${stylesKept} status=${bootStatus.slice(0, 25)}`,
+  rosterLen === 5 && stylesMixed && (bootStatus.includes("BAT") || bootStatus.includes("BOWL") || bootStatus.includes("Innings")),
+  `roster=${rosterLen} mixed=${stylesMixed} status=${bootStatus.slice(0, 25)}`,
 );
 const r2 = await playOfflineMatch(dom, { teamSize: 5 });
-check("offline 5v5 match completes", r2.status === "finished", "result=" + r2.result);
+check("quick 5v5 match completes", r2.status === "finished", "result=" + r2.result);
 
 // ---------------------------------------------------------------- 4. story boot
 ev(dom, `resetGame()`);
@@ -256,7 +258,7 @@ const st = byId(dom, "status")?.textContent || "";
 check("story match boots (status shows innings)", st.includes("Innings") || st.includes("BAT") || st.includes("BOWL"), st);
 
 // ---------------------------------------------------------------- 5. Quick Match (C7)
-// Instant = honest bot game: no fake "searching for a real player" phase.
+// Staged honest bot search: visible beats (~3s), never claims real players.
 ev(dom, `resetGame()`);
 ev(dom, `$('modeInstant').click()`);
 await sleep(500);
@@ -267,7 +269,7 @@ check("quick-match overlay opens with honest copy", mmShown && !/real player|sea
 ev(dom, `document.querySelector('#mmSize .team-size-btn[data-size="1"]').click()`);
 check("quick match CTA starts as 'Find Opponent'", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Find Opponent", byId(dom, "btnMMPlayBot")?.textContent.trim());
 ev(dom, `$('btnMMPlayBot').click()`);
-await sleep(2200); // the reveal is deliberately ~1.1-1.8s
+await sleep(4200); // staged search is deliberately ~2.6-3.6s
 const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
 const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
 const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
@@ -284,9 +286,25 @@ await sleep(1500); // role-less 1v1 boots: startInnings -> nextBall at 700ms
 const qmOverlayHidden = byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const qmBooted = ev(dom, `G.mode==='offline' && G.isBot && (G.state==='waiting'||G.state==='revealing'||G.state==='processing')`);
 check("quick match starts vs the revealed player", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
-check("scoreboard shows the revealed player, not 'BOT'", byId(dom, "labelB")?.textContent.trim() === personaName.trim(), byId(dom, "labelB")?.textContent.trim());
+check("scoreboard shows the revealed player, not 'BOT'", byId(dom, "labelA")?.textContent.trim() === personaName.trim(), byId(dom, "labelA")?.textContent.trim());
 const rQ = await playOfflineMatch(dom, { teamSize: 1, alreadyStarted: true });
 check("quick match completes", rQ.status === "finished", "result=" + rQ.result);
+
+// ---------------------------------------------------------------- 5b. custom XI typing + fictional presets
+ev(dom, `initTeamBuilder(); setTbMode('type');`);
+await sleep(200);
+const typeRows = byId(dom, "tbTypeGrid")?.querySelectorAll(".tb-type-row").length || 0;
+check("team builder type-my-XI renders 11 rows", typeRows === 11, "rows=" + typeRows);
+ev(dom, `
+  document.querySelectorAll('#tbTypeGrid .tb-type-row input').forEach((inp, i) => { inp.value = 'Hero' + (i + 1); });
+  $('teamNameInput').value = 'Smoke XI';
+  $('btnSaveTeam').click();
+`);
+await sleep(300);
+const xiSaved = ev(dom, `getCustomTeams().some(t => t.name === 'Smoke XI' && t.players.length === 11 && t.players[0].name === 'Hero1')`);
+check("typed XI saves as a custom team", xiSaved === true, "");
+const presetHit = ev(dom, `Object.values(TEAMS).flatMap(t => t.players.map(p => p.name)).some(n => ['Kohli','Rohit','Dhoni','Bumrah','Pant','Buttler','Warner','Maxwell','Starc','Kuldeep','Chahal','Hardik','Jadeja','Pant'].includes(n))`);
+check("preset squads carry no real-famous names", presetHit === false, "");
 
 // ---------------------------------------------------------------- 6. story/casual isolation (C5/C6)
 // A casual offline match played AFTER story mode must not touch the story
@@ -434,10 +452,11 @@ check(
   JSON.stringify(outCase),
 );
 
-// 6g. close/action bars are pinned (position:fixed) so they can't drift on scroll
+// 6g. close buttons are in-flow sticky (fixed+backdrop-filter hung taps on
+// iOS); result actions stay fixed (that screen never reported a hang).
 check(
-  "profile/friends close + result actions are position:fixed",
-  /#btnCloseProfile,#btnCloseFriends\{position:fixed/.test(cssSrc) &&
+  "profile/friends close sticky + result actions position:fixed",
+  /#btnCloseProfile,#btnCloseFriends\{position:sticky/.test(cssSrc) &&
     /#resultActions\{position:fixed/.test(cssSrc),
 );
 

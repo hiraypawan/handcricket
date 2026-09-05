@@ -75,6 +75,10 @@ input,textarea,select{font-family:inherit;user-select:text;-webkit-user-select:t
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .team{flex:1;text-align:center;min-width:0;padding:5px 6px;border-radius:14px;position:relative;transition:background .3s}
 .team.batting-side{background:rgba(45,212,191,.09);box-shadow:inset 0 0 0 1px rgba(45,212,191,.22)}
+/* locked YOU side (right): persistent highlight so the player never wonders
+   which side is theirs — indicators still track who bats. */
+.team.you{box-shadow:inset 0 0 0 1.5px rgba(251,191,36,.55),0 0 14px rgba(251,191,36,.15)}
+.team.you .label{color:var(--amber)}
 .team .label{font-size:clamp(9px,1.2vh,11px);color:var(--ink-soft);letter-spacing:2px;font-weight:800;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .team .score{font-size:clamp(27px,4.4vh,38px);font-weight:900;color:#fff;line-height:1.05;
   font-family:var(--font-title);letter-spacing:1px;
@@ -606,6 +610,19 @@ input,textarea,select{font-family:inherit;user-select:text;-webkit-user-select:t
 .role-assign-btns .ra-primary{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#221503;box-shadow:0 4px 0 rgba(146,84,10,.5)}
 .role-assign-btns .ra-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.16)}
 .role-assign-btns .ra-accent{background:rgba(167,139,250,.16);color:#ddd6fe;border:1px solid rgba(167,139,250,.4)}
+.role-assign-btns button:disabled{opacity:.4;pointer-events:none}
+/* story-home is NOT .overlay, so .overlay button rules never matched here —
+   Restart rendered as a browser-default button next to the pill Back button.
+   (.back-btn keeps its own pill style via :not.) */
+.story-home button:not(.back-btn){margin-top:10px;border:none;cursor:pointer;padding:12px 24px;width:100%;max-width:280px;
+  font-size:13px;font-weight:900;letter-spacing:.4px;border-radius:16px;
+  color:#221503;background:linear-gradient(135deg,#fbbf24,#f59e0b);
+  box-shadow:0 5px 0 rgba(146,84,10,.55),0 10px 26px rgba(245,158,11,.22);
+  transition:transform .12s,box-shadow .12s,filter .2s;pointer-events:auto;position:relative;z-index:2}
+.story-home button:not(.back-btn):active{transform:translateY(3px);box-shadow:0 2px 0 rgba(146,84,10,.55)}
+.story-home button.secondary:not(.back-btn){background:rgba(255,255,255,.08);color:#fff;box-shadow:none;border:1.5px solid rgba(255,255,255,.2)}
+.story-home button.small:not(.back-btn){padding:10px 20px;font-size:13px;max-width:220px}
+.story-home button:disabled{opacity:.4;pointer-events:none}
 
 /* ==========================================================================
    STORY MODE
@@ -1174,9 +1191,16 @@ input,select,textarea{font-size:16px}
       scroll (sticky inside a backdrop-filtered scroller was unreliable).
       .overlay has backdrop-filter, which makes it the containing block,
       and .overlay is inset:0 — so "fixed" here == pinned to the viewport. */
-#btnCloseProfile,#btnCloseFriends{position:fixed;left:50%;transform:translateX(-50%);
-  bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;margin:0;
-  width:min(calc(100vw - 40px),360px)}
+/* position:sticky (in-flow) instead of fixed: fixed inside a backdrop-filter
+   overlay is positioned against the overlay on desktop but hit-tests
+   unreliably on iOS Safari — taps on Close did nothing ("hung"). Sticky
+   keeps it pinned to the viewport bottom while content scrolls underneath,
+   with normal hit-testing on every engine. */
+#btnCloseProfile,#btnCloseFriends{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:5;
+  width:min(100%,360px);max-width:360px;margin-top:14px;padding:12px;flex-shrink:0;
+  border-radius:18px;background:rgba(9,15,27,.9);border:1px solid rgba(255,255,255,.16);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px rgba(0,0,0,.45)}
 #resultActions{position:fixed;left:50%;transform:translateX(-50%);
   bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;margin:0;
   width:min(calc(100vw - 40px),420px)}
@@ -1588,3 +1612,49 @@ input,select,textarea{font-size:16px}
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rp-sc{font-family:"Rubik",sans-serif;font-size:11.5px;color:var(--ink-soft);white-space:nowrap}
 .rp-when{font-family:"Rubik",sans-serif;font-size:11px;color:var(--ink-faint)}
+/* team-builder type-my-XI rows */
+.tb-mode-row{display:flex;gap:8px;width:min(100%,380px);margin:8px auto 4px}
+.tb-mode-row .ftab{flex:1;margin-top:0}
+.tb-type-grid{display:flex;flex-direction:column;gap:6px;width:min(100%,380px);margin:8px auto;max-height:38vh;overflow-y:auto;padding:2px}
+.tb-type-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:6px 8px}
+.tb-type-row .num{font-size:12px;font-weight:900;color:var(--amber);text-align:center;font-family:var(--font-title)}
+.tb-type-row input{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.16);color:#fff;padding:8px 10px;border-radius:10px;font-size:14px;font-weight:700;width:100%;min-width:0;outline:none;font-family:inherit}
+.tb-type-row input:focus{border-color:var(--teal)}
+.tb-type-row button{padding:7px 10px;border-radius:9px;font-size:10px;font-weight:900;border:1.5px solid rgba(45,212,191,.4);background:rgba(45,212,191,.12);color:#99f6e4;cursor:pointer;pointer-events:auto;min-width:46px;margin:0;max-width:none;width:auto}
+
+/* ======================================================== v2.9.1 one-page fit ==
+   Phones/tablets must show each screen on ONE page — no page scroll, nothing
+   escaping the viewport (Android Chrome, iOS Safari, desktop). Overlays keep
+   overflow-y:auto purely as a last-resort safety net for long lists
+   (11-row role grids, 20-row leaderboards); everything below compacts the
+   common screens so the net is rarely needed. Later rules win. */
+/* stat tiles can never escape their card: truncate, don't overflow */
+.prof-stats-grid,.stat-grid{min-width:0}
+.prof-stat-card,.stat-item{min-width:0;overflow:hidden}
+.prof-stat-val,.stat-item .val{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+/* leaderboard rows are buttons: undo the generic .overlay button sizing so
+   rows fill the list instead of capping at 280px with double gaps */
+.overlay button.lb-row{max-width:380px;margin-top:0}
+/* compact cards + rows so How-to-Play / leaderboard / profile fit */
+.tutorial{padding:16px 16px 12px}
+.tutorial .tut-body{font-size:12px;line-height:1.55;margin-bottom:10px}
+.tutorial .tut-dots{margin-bottom:10px}
+.lb-row{grid-template-columns:26px 28px minmax(0,1fr) auto auto;gap:8px;padding:8px 10px}
+.lb-wins{font-size:16px}
+@media (max-height:700px){
+  .tutorial{padding:13px 13px 10px}
+  .tutorial .tut-body{font-size:11.5px;line-height:1.5;margin-bottom:8px}
+  .tutorial .tut-dots{margin-bottom:8px}
+  .tutorial .tut-next{padding:9px 20px}
+  .overlay h1{font-size:clamp(18px,2.8vh,24px)}
+}
+/* narrow phones: hide the least-important column, shrink stat values */
+@media (max-width:360px){
+  .lb-meta{display:none}
+  .lb-row{gap:6px;padding:8px}
+  .prof-stat-val{font-size:14px}
+  .prof-stats-grid{gap:6px;padding:10px}
+  .stat-grid{gap:6px}
+  .stat-item{padding:8px 4px}
+  .role-row{grid-template-columns:24px minmax(0,1fr) auto auto;gap:6px;padding:7px 8px}
+}

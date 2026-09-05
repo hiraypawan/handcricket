@@ -52,12 +52,12 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | 11 | `10-profiles.js` | Username, career stats (`hc_stats`), profile-card UI |
 | 12 | `11-modes.js` | Home mode buttons (Offline/Online/Quick/Story entry), career strip |
 | 13 | `12-tutorial.js` | How-to-play slides + team-size pickers. v2.5: NEVER auto-opens; only the home "How to Play" button opens it (`btnHowTo`) |
-| 14 | `13-offline.js` | Offline vs bot: rosters, toss, role screen, `startOffline()` |
+| 14 | `13-offline.js` | Bot-match bootstrap (ex-Offline menu): rosters, role screen, `startOffline()`. Offline menu + coin-toss screen removed — Quick/Story only; `G.mode='offline'` still means vs-bot internally |
 | 15 | `14-online.js` | PeerJS P2P: host/join, protocol `handleNet`, team builder, toss |
 | 16 | `15-roles.js` | Role styles (AGG/DEF/BAL), gesture restrictions, role overlay |
 | 17 | `16-story.js` | Story career: tiers, dialogue, team builder, cloud save, **story→engine hooks** |
 | 18 | `17-selection.js` | Batter/bowler rotation pickers + innings-break scorecard |
-| 19 | `18-instant.js` | **Quick Match** (honest instant bot game) + boot-time init (loads last) |
+| 19 | `18-instant.js` | **Quick Match** (honest bot game, staged ~3s search, random toss) + boot-time init (loads last) |
 | 20 | `19-chat.js` | Quick-chat + bot banter — float bubbles are TEXT + inline-SVG face chips (`faceSVG`, mood tokens). Legacy emoji tokens map via `LEGACY_EMOJI_TO_MOOD` (never rendered as emoji) |
 | 21 | `20-friends.js` | Friend lists/sync, friend requests, challenge invite |
 
@@ -231,6 +231,19 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
   bowl**. The bot obeys them too via `botPickWithRole()` in `09-engine.js`
   (clamps `BotAI.bat()/bowl()` into the bot's allowed set). My own auto-pick
   on timeout uses `pickAllowedGesture()`. Never let any picker bypass these.
+- **Squad composition caps (`getRoleLimits` in `15-roles.js`):** batting
+  styles are capped BOTH ways — e.g. 5v5 = max 2 AGG / max 2 DEF / 1–3 BAL,
+  11v11 = max 4 / max 4 / 3–7 BAL. All-balanced squads are REJECTED (Start
+  stays disabled). `validateRoles()` measures `roleAssignPlayers.length`,
+  never the possibly-stale `G.teamSize`. Random + auto-pick respect the caps.
+- **Sides are LOCKED:** scoreboard LEFT (A) = opponent, RIGHT (B) = you
+  (`.you` highlight), matching the arena (opp hand left, your hand right).
+  `updScore`/`updAllNames`/`updatePlayerDisplay`/`popScore` all assume this —
+  never swap sides by innings again.
+- **Preset squads are fictional** (`TEAMS` in `01-config.js`) — no real
+  cricketer names. Players type their own XI in the team builder
+  ("Type my XI" mode → same `{id,name,players}` shape as pool picks).
+  Story `playerPool` keeps authored names (narratives reference them).
 - **Banter direction rule (`19-chat.js`):** every bot line is ABOUT THE OTHER
   SIDE. When the bot bats it roasts the player's bowling; when it bowls it
   reacts to the player's batting. No self-praise, no self-pity. Pools:
@@ -238,11 +251,14 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
   and dot/over/free-hit/one-to-win/big-chase have `...Bowling` / `...Batting`
   variants keyed on `G.iBat`. `window.BOT_CHAT_POOLS` + `window.botChatPick`
   exist for the smoke suite; keep them.
-- **Close / action bars are `position:fixed`, not sticky** (`#btnCloseProfile`,
-  `#btnCloseFriends`, `#resultActions`). Sticky inside a backdrop-filtered
-  scroller drifted on real devices. `.overlay` has `backdrop-filter`, which
-  makes it the containing block, and it is `inset:0` — so fixed == pinned to
-  the viewport. Overlays reserve bottom padding so content clears the bar.
+- **Close / action bars:** `#resultActions` is `position:fixed`, but
+  `#btnCloseProfile` / `#btnCloseFriends` are `position:sticky` (in-flow).
+  Fixed was tried for all three, but fixed inside a backdrop-filtered
+  overlay hung taps on iOS Safari — Close did nothing. Sticky keeps the
+  buttons pinned to the viewport bottom while scrolling, with normal
+  hit-testing everywhere. `.overlay` has `backdrop-filter`, which makes it
+  the containing block, and it is `inset:0` — so fixed == pinned to the
+  viewport. Overlays reserve bottom padding so content clears the bar.
 - **Glass balance:** surfaces/borders/muted text were raised in the v2.7.1
   block at the end of `app.css` (`--card:.13`, `--card-border:.26`,
   `--ink-soft:.82`). If a panel reads washed out, raise it THERE.

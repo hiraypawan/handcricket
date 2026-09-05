@@ -45,16 +45,31 @@ function renderMMPersona(p) {
   $("mmPersona").classList.remove("hidden");
 }
 
+/* Staged search: a real-feeling beat (~3s) instead of an instant reveal.
+   Still an honest bot game (see header) — the stages describe rating
+   matching, never "real players". One chained timer id so Cancel clears it. */
+const MM_SEARCH_STAGES = [
+  "Finding you an opponent...",
+  "Comparing ratings...",
+  "Confirming opponent...",
+];
 function findOpponent() {
   mmSearching = true;
   $("searchSpinner").style.display = "block";
   $("mmPersona").classList.add("hidden");
-  $("matchStatus").textContent = "Finding you an opponent...";
   const btn = $("btnMMPlayBot");
   btn.disabled = true;
-  btn.textContent = "Searching...";
-  mmFindTimer = setTimeout(() => {
+  let stage = 0;
+  const runStage = () => {
     mmFindTimer = null;
+    if (!mmSearching) return;
+    if (stage < MM_SEARCH_STAGES.length) {
+      $("matchStatus").textContent = MM_SEARCH_STAGES[stage];
+      btn.textContent = "Searching...";
+      stage++;
+      mmFindTimer = setTimeout(runStage, 850 + Math.random() * 350);
+      return;
+    }
     mmPersona = genBotProfile();
     renderMMPersona(mmPersona);
     mmSearching = false;
@@ -63,7 +78,8 @@ function findOpponent() {
     btn.disabled = false;
     btn.textContent = "Start Match";
     sfx("tap");
-  }, 1100 + Math.random() * 700);
+  };
+  runStage();
 }
 
 $("btnMMCancel").onclick = () => {
@@ -121,7 +137,6 @@ function startQuickBotMatch(persona) {
   // never inherit a previous match's roster (e.g. a story XI)
   G.myPlayers = [];
   G.oppPlayers = [];
-  $("offlineSetup").classList.add("hidden");
   showRoleForOffline();
 }
 

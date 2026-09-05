@@ -432,6 +432,9 @@ async function showLeaderboard(forceRefresh) {
     const r = await fetch(
       "/api/leaderboard?limit=20&me=" + encodeURIComponent(getUsername() || "") +
         (forceRefresh ? "&refresh=1" : ""),
+      /* The board must reflect the match that just ended — never serve it
+         from the browser HTTP cache. */
+      { cache: "no-store" },
     );
     if (r.ok) data = await r.json();
   } catch (e) {}
