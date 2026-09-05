@@ -1201,11 +1201,12 @@ input,select,textarea{font-size:16px}
   border-radius:18px;background:rgba(9,15,27,.9);border:1px solid rgba(255,255,255,.16);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   box-shadow:0 10px 30px rgba(0,0,0,.45)}
-#resultActions{position:fixed;left:50%;transform:translateX(-50%);
-  bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;margin:0;
-  width:min(calc(100vw - 40px),420px)}
+/* sticky like the close buttons: the fixed bar rendered mid-screen over the
+   stats on iOS (backdrop-filter + fixed), hiding half the result card. */
+#resultActions{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:5;
+  width:min(100%,420px);margin:14px auto 0;flex-shrink:0}
 #profileOverlay,#friendsOverlay{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
-#resultOverlay{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+#resultOverlay{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 
 /* 3) One-page game: tighten vertical rhythm so toss / profile / stats fit
       a 640px-tall phone without scrolling; lists keep their own scroll. */

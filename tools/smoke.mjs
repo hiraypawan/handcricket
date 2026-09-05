@@ -185,6 +185,8 @@ const r1 = await playOfflineMatch(dom, { teamSize: 1 });
 check("quick 1v1 match completes", r1.status === "finished", "result=" + r1.result);
 const stats = JSON.parse(dom.window.localStorage.getItem("hc_stats") || "{}");
 check("career stats recorded after match", stats.matches >= 1, JSON.stringify({ m: stats.matches, w: stats.wins }));
+const resTiles = byId(dom, "matchStatsBox")?.querySelectorAll(".stat-item").length || 0;
+check("result screen renders the full stats card", resTiles >= 10, "tiles=" + resTiles);
 
 // ---------------------------------------------------------------- 2b. sides locked: YOU right, opponent left
 ev(dom, `resetGame(); G.teamSize=1; G.iBat=true; G.mode='offline'; G.isBot=true; G.isHost=true; G.myPlayers=[]; G.oppPlayers=[]; startOffline();`);
@@ -452,12 +454,12 @@ check(
   JSON.stringify(outCase),
 );
 
-// 6g. close buttons are in-flow sticky (fixed+backdrop-filter hung taps on
-// iOS); result actions stay fixed (that screen never reported a hang).
+// 6g. action bars are in-flow sticky (fixed+backdrop-filter hung taps and
+// pinned mid-screen bars over the stats on iOS).
 check(
-  "profile/friends close sticky + result actions position:fixed",
+  "profile/friends close + result actions are sticky",
   /#btnCloseProfile,#btnCloseFriends\{position:sticky/.test(cssSrc) &&
-    /#resultActions\{position:fixed/.test(cssSrc),
+    /#resultActions\{position:sticky/.test(cssSrc),
 );
 
 // 6h. glass rebalance tokens actually raised (surfaces >= .10 alpha)

@@ -251,14 +251,13 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
   and dot/over/free-hit/one-to-win/big-chase have `...Bowling` / `...Batting`
   variants keyed on `G.iBat`. `window.BOT_CHAT_POOLS` + `window.botChatPick`
   exist for the smoke suite; keep them.
-- **Close / action bars:** `#resultActions` is `position:fixed`, but
-  `#btnCloseProfile` / `#btnCloseFriends` are `position:sticky` (in-flow).
-  Fixed was tried for all three, but fixed inside a backdrop-filtered
-  overlay hung taps on iOS Safari — Close did nothing. Sticky keeps the
-  buttons pinned to the viewport bottom while scrolling, with normal
-  hit-testing everywhere. `.overlay` has `backdrop-filter`, which makes it
-  the containing block, and it is `inset:0` — so fixed == pinned to the
-  viewport. Overlays reserve bottom padding so content clears the bar.
+- **Close / action bars are `position:sticky` (in-flow):** `#btnCloseProfile`,
+  `#btnCloseFriends`, `#resultActions`. Fixed was tried for all three, but
+  fixed inside a backdrop-filtered overlay hung taps on iOS Safari AND pinned
+  the result bar mid-screen over half the stats. Sticky keeps bars pinned to
+  the viewport bottom while content scrolls underneath, with normal
+  hit-testing everywhere. Overlays reserve bottom padding so content clears
+  the bar.
 - **Glass balance:** surfaces/borders/muted text were raised in the v2.7.1
   block at the end of `app.css` (`--card:.13`, `--card-border:.26`,
   `--ink-soft:.82`). If a panel reads washed out, raise it THERE.
