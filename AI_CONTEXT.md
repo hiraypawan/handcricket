@@ -91,9 +91,26 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | **Arena life** | A crowd band drifts in the stands while a match is live; a ball trail plays on reveal. Both suppressed under `prefers-reduced-motion`. | `public/index.html`, `public/css/app.css`, `09-engine.js` |
 | **Type ramp** | `--ink-soft`/`--ink-faint` widened from .62/.40 to .80/.45 — the two were 22 points apart, so secondary and tertiary text read as one tier. | `public/css/app.css` |
 
+### Knockout cup (`24-tournaments.js`)
+The dock tab labelled **Tournaments** used to open the tutorial. It now opens a
+real 4- or 8-player single-elimination cup. It reuses the ordinary offline match
+engine (`startQuickBotMatch`) rather than a second implementation, so roles, free
+hits and career rules all behave. State persists in `hcp_cup`.
+
+**Fix found by its own tests:** the first version only removed the opponent the
+player actually beat, so the fixtures you don't play never resolved and a
+4-player cup needed three wins. A knockout round now halves the field, always
+including the beaten opponent — 4 players takes 2 wins, 8 takes 3.
+
+### Match replay (`25-replay.js`)
+The engine already records every ball in `G.me.hist` / `G.opp.hist`, so replay is
+**playback, not simulation** — nothing re-rolls a result, so a replay can never
+disagree with the match it came from. Last 5 matches kept in `hcp_replays`.
+Ball values are `"DOT"`, `"NB"`, `"W"` and numeric runs.
+
 ### Not done, and why
 - **SRI on the PeerJS CDN tag** — the sandbox has no outbound network, so the hash could not be computed. Guessing one would break online play outright. `21-shell.js` detects a failed load and labels the online buttons instead.
-- **Server-authoritative online play** — PeerJS is peer-to-peer, so either client can still misreport a score. Needs a Durable Object per room.
+- **Server-authoritative online play** — PeerJS is peer-to-peer, so either client can still misreport a score. Needs a Durable Object per room. This is the one remaining architectural gap.
 
 | **Leaderboard** | `GET /api/leaderboard?limit&me` ranks `profile:*` by wins (ties → win%). Real players only: personas are generated in memory and never persisted, plus an `isPersona` guard. Home → **Leaderboard**; tapping a row opens that player's live profile. | `functions/api/leaderboard.js`, `10-profiles.js`, `#leaderboardOverlay` |
 | **Player profiles** | `showUserProfile(name)` fetches `/api/profile?user=` for **live** stats — used by friend rows and leaderboard rows. Action buttons `stopPropagation` so they don't also open the sheet. | `10-profiles.js`, `20-friends.js` |

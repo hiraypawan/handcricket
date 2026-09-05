@@ -840,6 +840,52 @@ for (let i = 0; i < 5 && !cup8.champion; i++) {
 }
 check("an 8-player cup needs exactly 3 wins", cupRounds === 3 && cup8.champion === CUP_ME, "rounds=" + cupRounds);
 
+// ---------------------------------------------------------------- 13. match replay
+/* A replay must never disagree with the match it came from, so these assert on
+   a match with a hand-computed scoreline rather than on a live one. */
+ev(dom, `localStorage.removeItem("hcp_replays")`);
+const RP = {
+  won: true, lost: false, oppName: "Rohit",
+  myRuns: 11, myWickets: 1, oppRuns: 9, oppWickets: 1,
+  myHist: [4, 6, "DOT", 1, "W"], oppHist: [2, "DOT", 3, 4, "W"],
+};
+const rpId = ev(dom, `hcRecordReplay(${JSON.stringify(RP)})`);
+check("finished match is recorded for replay", typeof rpId === "string" && rpId.length > 0, String(rpId));
+check("replay count reflects the save", ev(dom, `hcReplayCount()`) === 1, String(ev(dom, `hcReplayCount()`)));
+
+const rpSaved = JSON.parse(ev(dom, `localStorage.getItem("hcp_replays")`))[0];
+const rpFrames = JSON.parse(ev(dom, `JSON.stringify(hcReplayFrames(${JSON.stringify(rpSaved)}))`));
+const rpLast = rpFrames[rpFrames.length - 1];
+check("replay covers the longer innings", rpFrames.length === 5, "frames=" + rpFrames.length);
+check(
+  "replayed total equals the real score",
+  rpLast.myScore === "11/1" && rpLast.oppScore === "9/1",
+  rpLast.myScore + " v " + rpLast.oppScore,
+);
+check(
+  "wickets accrue through the innings, not at the end",
+  rpFrames[1].myScore === "10/0" && rpFrames[4].myScore === "11/1",
+  rpFrames.map((f) => f.myScore).join(" "),
+);
+
+ev(dom, `hcOpenReplays()`);
+await sleep(60);
+const rpList = byId(dom, "replayList");
+check("replay list shows the opponent and the result", /Rohit/.test(rpList.innerHTML) && /WON/.test(rpList.innerHTML));
+rpList.querySelector(".rp-row").click();
+await sleep(150);
+check("tapping a match opens playback", !byId(dom, "replayOverlay").classList.contains("hidden"));
+check("playback scoreboard is populated", /YOU/.test(byId(dom, "replayScore").textContent),
+  byId(dom, "replayScore").textContent.trim());
+const rpChips = byId(dom, "replayStrip").querySelectorAll(".rp-ball").length;
+check("ball chips render", rpChips > 0, rpChips + " chips");
+await sleep(700);
+const rpChips2 = byId(dom, "replayStrip").querySelectorAll(".rp-ball").length;
+check("playback advances over time", rpChips2 > rpChips, rpChips + " -> " + rpChips2);
+check("boundaries are visually distinct", /rp-four/.test(byId(dom, "replayStrip").innerHTML));
+ev(dom, `hcStopReplay()`);
+check("Watch Replay button exists on the result screen", !!byId(dom, "btnWatchReplay"));
+
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);
 process.exit(failures === 0 ? 0 : 1);

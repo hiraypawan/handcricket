@@ -1546,3 +1546,45 @@ input,select,textarea{font-size:16px}
 .cup-sub{font-size:12.5px;color:var(--ink-soft);font-family:"Rubik",sans-serif;margin-top:5px}
 .cup-again{width:100%;margin-top:13px;background:var(--amber);border:0;border-radius:13px;
   padding:12px;font-family:"Luckiest Guy",cursive;font-size:14px;color:#1a1206;cursor:pointer}
+
+/* ======================================================== v2.9 match replay ==
+   Ball chips are the whole UI: one row, newest on the right, the live ball
+   highlighted. No pitch, no animation of a stumps graphic — the record IS the
+   replay, so the playback is just a moving highlight. */
+.rp-score{display:flex;align-items:baseline;justify-content:center;gap:10px;
+  font-family:"Luckiest Guy",cursive;font-size:19px;letter-spacing:.5px;margin-top:4px}
+.rp-score .rp-you{color:var(--amber)}
+.rp-score .rp-them{color:var(--sky)}
+.rp-score .rp-sep{font-size:12px;color:var(--ink-faint);font-family:"Rubik",sans-serif}
+.rp-meta{text-align:center;font-size:11.5px;color:var(--ink-faint);
+  font-family:"Rubik",sans-serif;letter-spacing:.6px;margin-top:4px}
+.rp-strip{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  margin:16px auto 0;max-width:420px;min-height:46px}
+.rp-ball{min-width:29px;height:29px;padding:0 5px;border-radius:9px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:"Rubik",sans-serif;font-size:12.5px;font-weight:800;
+  background:rgba(255,255,255,.08);color:var(--ink-soft)}
+.rp-ball.opp{border:1px solid rgba(255,255,255,.16)}
+.rp-ball.rp-dot{color:var(--ink-faint)}
+.rp-ball.rp-four{background:rgba(45,212,191,.2);color:var(--teal)}
+.rp-ball.rp-six{background:rgba(251,191,36,.22);color:var(--amber)}
+.rp-ball.rp-w{background:rgba(251,113,133,.22);color:var(--rose)}
+.rp-ball.rp-nb{background:rgba(167,139,250,.2);color:var(--violet)}
+.rp-ball.now{box-shadow:0 0 0 2px rgba(255,255,255,.5);transform:scale(1.1)}
+.rp-result{text-align:center;margin-top:14px;font-family:"Luckiest Guy",cursive;
+  font-size:15px;color:#fff}
+.rp-result.hidden{display:none}
+.rp-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto auto;gap:10px;
+  align-items:center;width:100%;text-align:left;padding:10px 12px;margin-bottom:7px;
+  border-radius:12px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);cursor:pointer;color:inherit}
+.rp-row:active{transform:translateY(1px)}
+.rp-tag{font-family:"Luckiest Guy",cursive;font-size:11.5px;letter-spacing:.5px;text-align:center;
+  padding:3px 0;border-radius:7px}
+.rp-tag.win{background:rgba(45,212,191,.18);color:var(--teal)}
+.rp-tag.loss{background:rgba(251,113,133,.18);color:var(--rose)}
+.rp-tag.draw{background:rgba(255,255,255,.1);color:var(--ink-soft)}
+.rp-who{font-family:"Rubik",sans-serif;font-size:13px;font-weight:700;color:#fff;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rp-sc{font-family:"Rubik",sans-serif;font-size:11.5px;color:var(--ink-soft);white-space:nowrap}
+.rp-when{font-family:"Rubik",sans-serif;font-size:11px;color:var(--ink-faint)}

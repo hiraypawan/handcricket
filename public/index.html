@@ -329,6 +329,7 @@
 <div id="addFriendBtn" style="display:none;text-align:center"><button id="btnAddFriend" class="add-friend-btn">+ Add Friend</button></div>
 <button id="btnRematch" style="display:none">Rematch</button>
 <button class="btn-share" id="btnShareCard" style="display:none" aria-label="Share this scorecard">Share Scorecard</button>
+<button class="btn-share" id="btnWatchReplay" style="display:none" aria-label="Watch this match again">Watch Replay</button>
 <button id="btnAgain" style="display:none">New Match</button>
 <button id="btnMenu" class="secondary">Main Menu</button>
 </div></div>
@@ -458,6 +459,17 @@
 <h1>Knockout Cup</h1>
 <div class="cup-wrap"><div id="cupBracket"><div class="lb-empty">Loading...</div></div></div>
 <button id="btnCloseCup" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="replaysOverlay">
+<h1>Match Replays</h1>
+<div class="cup-wrap"><div class="lb-list" id="replayList"><div class="lb-empty">Loading...</div></div></div>
+<button id="btnCloseReplays" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="replayOverlay">
+<h1>Replay</h1>
+<div class="rp-score" id="replayScore"></div>
+<div class="rp-meta" id="replayMeta"></div>
+<div class="rp-strip" id="replayStrip"></div>
+<div class="rp-result hidden" id="replayResult"></div>
+<button id="btnCloseReplay" class="secondary small">Close</button></div>
 <div class="toast-host" id="toastHost" aria-live="polite"></div>
 <div class="overlay confirm-overlay hidden" id="confirmOverlay"><h1 id="confirmTitle">Are you sure?</h1>
 <p id="confirmMsg" class="confirm-msg"></p>
@@ -490,5 +502,6 @@
 <script src="js/22-avatars.js?v=2.9.0"></script>
 <script src="js/23-features.js?v=2.9.0"></script>
 <script src="js/24-tournaments.js?v=2.9.0"></script>
+<script src="js/25-replay.js?v=2.9.0"></script>
 </body>
 </html>

@@ -701,6 +701,10 @@ function finishMatch() {
   /* A knockout cup is a bracket of ordinary matches, so it advances here rather
      than in a parallel engine. Returns true only when a cup fixture resolved. */
   if (typeof hcCupMatchEnd === "function") hcCupMatchEnd(matchResult);
+  /* Save the ball-by-ball record for the replay sheet. The engine already has
+     both innings in memory here; replay is pure playback of this, never a
+     re-simulation, so a replay cannot disagree with the match it came from. */
+  if (typeof hcRecordReplay === "function") hcRecordReplay(matchResult);
   if (typeof hcRecordH2H === "function" && typeof getUsername === "function") {
     hcRecordH2H(getUsername(), matchResult.oppName, matchResult);
   }
@@ -735,6 +739,7 @@ function finishMatch() {
     '</div><div class="lbl">Dots</div></div></div></div></div>';
   $("btnRematch").style.display = "inline-block";
   if ($("btnShareCard")) $("btnShareCard").style.display = "inline-block";
+  if ($("btnWatchReplay")) $("btnWatchReplay").style.display = "inline-block";
   $("btnAgain").style.display = "none";
   $("btnMenu").style.display = "inline-block";
   $("resultOverlay").classList.remove("hidden");
@@ -763,6 +768,13 @@ if ($("btnShareCard")) {
   $("btnShareCard").onclick = () => {
     sfx("tap");
     if (typeof hcShareScorecard === "function") hcShareScorecard(G.recentResult);
+  };
+}
+if ($("btnWatchReplay")) {
+  $("btnWatchReplay").onclick = () => {
+    sfx("tap");
+    // Open straight into the match that just finished, not the list.
+    if (typeof hcOpenReplays === "function") hcOpenReplays();
   };
 }
 $("btnRematch").onclick = () => {
