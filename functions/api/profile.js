@@ -36,6 +36,31 @@ export const onRequestPost = async (ctx) => {
       return json({ error: 'Server storage is not configured yet', degraded: true }, 503);
     const body = await ctx.request.json();
     const { user, stats, avatar, token, idToken } = body;
+
+    /* Google lookup: which in-game names are linked to this Google subject?
+       Lets a fresh device re-adopt its in-game name instead of the Google
+       account name. Verified token required; answer reveals only names the
+       caller proved ownership of via Google. */
+    if (body.action === 'lookup') {
+      const aud =
+        (ctx.env && ctx.env.HC_GOOGLE_CLIENT_ID) || GOOGLE_CLIENT_ID_FALLBACK;
+      let sub = null;
+      if (idToken && aud) {
+        try {
+          const v = await verifyGoogleIdToken(idToken, aud, ctx.env.KV);
+          if (v.ok) sub = v.sub;
+        } catch (e) { /* fall through to 401 */ }
+      }
+      if (!sub) return json({ error: 'Bad token' }, 401);
+      let names = [];
+      try {
+        const raw = await ctx.env.KV.get('google:' + sub);
+        const rec = raw ? JSON.parse(raw) : null;
+        if (rec && Array.isArray(rec.names)) names = rec.names.slice(-5);
+      } catch (e) { /* none linked yet */ }
+      return json({ names });
+    }
+
     if (!user) return json({ error: 'Missing user' }, 400);
 
     /* Optional Google link: a verified subject can reclaim its own career
@@ -74,6 +99,22 @@ export const onRequestPost = async (ctx) => {
     profile.updatedAt = Date.now();
 
     await ctx.env.KV.put(key, JSON.stringify(profile));
+    /* Maintain sub -> in-game-names so a new device can find its name. */
+    if (gsub) {
+      try {
+        const gk = 'google:' + gsub;
+        const graw = await ctx.env.KV.get(gk);
+        const grec = graw ? JSON.parse(graw) : null;
+        const list = grec && Array.isArray(grec.names) ? grec.names : [];
+        const low = String(user).toLowerCase();
+        const kept = list.filter((n) => String(n).toLowerCase() !== low);
+        kept.push(user);
+        await ctx.env.KV.put(
+          gk,
+          JSON.stringify({ names: kept.slice(-5), updatedAt: Date.now() }),
+        );
+      } catch (e) { /* index is best-effort */ }
+    }
     await updateLeaderboardIndex(ctx.env.KV, normName(user), profile);
 
     return json({ ok: true, token: profile.token });

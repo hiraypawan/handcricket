@@ -364,6 +364,10 @@ check(
   JSON.stringify({ m: merged.matches, w: merged.wins, r: merged.runs, best: merged.highestScore }),
 );
 check("google restore + save notes wired", ev(dom, `typeof restoreGoogleProgress`) === "function" && !!dom.window.document.querySelector(".save-note"));
+ev(dom, `window.__realFetch2 = window.fetch; window.fetch = (u, o) => Promise.resolve({ ok: true, json: async () => ({ names: ["Ravi"] }) });`);
+const linkedName = await ev(dom, `hcGoogleLinkedName('tok')`);
+check("google lookup adopts the linked in-game name", linkedName === "Ravi", linkedName);
+ev(dom, `window.fetch = window.__realFetch2;`);
 check("dock Career tab is now Ranks", (byId(dom, "tabBar")?.textContent || "").includes("Ranks"));
 
 // ---------------------------------------------------------------- 6. story/casual isolation (C5/C6)

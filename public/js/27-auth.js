@@ -142,7 +142,26 @@ async function restoreGoogleProgress() {
     if (typeof updHomeUsername === "function") updHomeUsername();
   } catch (e) {}
 }
-function hcGoogleCredential(resp) {
+/* Which in-game names did this Google account link before? (server-verified) */
+async function hcGoogleLinkedName(cred) {
+  try {
+    const r = await fetch("/api/profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "lookup",
+        idToken: cred || hcGoogleToken(),
+      }),
+    });
+    if (!r.ok) return "";
+    const j = await r.json();
+    const names = (j && j.names) || [];
+    return names.length ? String(names[names.length - 1]) : "";
+  } catch (e) {
+    return "";
+  }
+}
+async function hcGoogleCredential(resp) {
   try {
     const cred = (resp && resp.credential) || "";
     const payload = JSON.parse(atob(cred.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
@@ -157,23 +176,40 @@ function hcGoogleCredential(resp) {
     const gname = String(payload.name || "").trim().slice(0, 24);
     const cur =
       (typeof getUsername === "function" && getUsername()) || "";
-    if (gname && !cur) {
-      setUsername(gname);
-    } else if (gname && cur.toLowerCase() !== gname.toLowerCase()) {
-      /* Guest played first: merge the guest career INTO the Google career
-         so nothing is lost, then switch identity. */
+    if (!cur) {
+      /* Nameless device: re-adopt the linked in-game name if this Google
+         account has one — otherwise fall back to the Google name. The
+         in-game name is NEVER overwritten by the Google name. */
+      let linked = "";
       try {
-        const guest =
-          typeof loadStats === "function" ? loadStats() : null;
-        setUsername(gname);
-        const mine =
-          typeof loadStats === "function" ? loadStats() : null;
-        if (typeof saveStats === "function")
-          saveStats(mergeStats(mine, guest));
-        toast("Guest progress merged into " + gname, "ok");
-      } catch (e) {
+        linked = await hcGoogleLinkedName(cred);
+      } catch (e) {}
+      if (linked) {
+        setUsername(linked);
+        toast("Welcome back, " + linked, "ok");
+      } else if (gname) {
         setUsername(gname);
       }
+    } else {
+      try {
+        const linked = await hcGoogleLinkedName(cred);
+        if (
+          linked &&
+          linked.toLowerCase() !== cur.toLowerCase()
+        ) {
+          /* Guest progress on THIS device belongs to a different name than
+             the Google-linked one: fold it in, then adopt the linked
+             in-game name so nothing is ever lost. */
+          const guest =
+            typeof loadStats === "function" ? loadStats() : null;
+          setUsername(linked);
+          const mine =
+            typeof loadStats === "function" ? loadStats() : null;
+          if (typeof saveStats === "function")
+            saveStats(mergeStats(mine, guest));
+          toast("Progress merged into " + linked, "ok");
+        }
+      } catch (e) {}
     }
     restoreGoogleProgress();
     if (typeof updHomeUsername === "function") updHomeUsername();
