@@ -285,14 +285,42 @@ const career1 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textCon
 ev(dom, `renderMMPersona(genBotProfile(${JSON.stringify(personaName)}))`);
 const career2 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textContent || "";
 check("persona career is stable for the same name", career1 === career2, `${career1} vs ${career2}`);
+// Start -> LIVE TOSS (forced: me calling, forced heads win) -> my decision
+ev(dom, `localStorage.setItem('hcp_toss_turn', 'me'); window.__mr = Math.random; Math.random = () => 0.01;`);
 ev(dom, `$('btnMMPlayBot').click()`);
-await sleep(1500); // role-less 1v1 boots: startInnings -> nextBall at 700ms
+await sleep(800);
+const tossShown = !byId(dom, "tossOverlay")?.classList.contains("hidden");
+const tossMine = byId(dom, "onlineTossBtns")?.style.display === "block";
+check("quick match shows the live toss, me calling", tossShown && tossMine, `overlay=${tossShown} btns=${tossMine}`);
+ev(dom, `$('btnOHeads').click()`);
+await sleep(3600); // flip 2300 + settle 600 + margin (forced heads => I win)
+const decShown = byId(dom, "onlineTossDec")?.style.display === "block";
+check("toss flip ends with my bat/bowl decision", decShown, "");
+check("toss caller alternates for next time", dom.window.localStorage.getItem("hcp_toss_turn") === "opp", dom.window.localStorage.getItem("hcp_toss_turn"));
+ev(dom, `$('btnOBat').click()`);
+await sleep(2800); // decision closes at 1800ms, then role-less 1v1 boots
+ev(dom, `Math.random = window.__mr;`);
 const qmOverlayHidden = byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const qmBooted = ev(dom, `G.mode==='offline' && G.isBot && (G.state==='waiting'||G.state==='revealing'||G.state==='processing')`);
 check("quick match starts vs the revealed player", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
 check("scoreboard shows the revealed player, not 'BOT'", byId(dom, "labelA")?.textContent.trim() === personaName.trim(), byId(dom, "labelA")?.textContent.trim());
 const rQ = await playOfflineMatch(dom, { teamSize: 1, alreadyStarted: true });
 check("quick match completes", rQ.status === "finished", "result=" + rQ.result);
+// bot-caller toss runs fully automatically end to end (turn key says opp)
+ev(dom, `window.__tossDone2 = 'no'; startLiveToss({caller:tossTakeTurn(), meName:'T', oppName:'B', oppIsBot:true, hi:false, onDone:(b)=>{window.__tossDone2 = b ? 'bat' : 'bowl';}});`);
+await sleep(3000); // let the flip run undisturbed: tight eval polling starves jsdom timers
+for (let i = 0; i < 20 && ev(dom, `window.__tossDone2`) === "no" && byId(dom, "onlineTossDec")?.style.display !== "block"; i++) await sleep(1000);
+if (byId(dom, "onlineTossDec")?.style.display === "block") {
+  ev(dom, `$('btnOBat').click()`); // I won the bot-called toss: decide
+  for (let i = 0; i < 10 && ev(dom, `window.__tossDone2`) === "no"; i++) await sleep(1000);
+}
+const tossAutoHidden = byId(dom, "tossOverlay")?.classList.contains("hidden");
+check(
+  "bot-called toss completes on its own",
+  (ev(dom, `window.__tossDone2`) === "bat" || ev(dom, `window.__tossDone2`) === "bowl") && tossAutoHidden,
+  `done=${ev(dom, `window.__tossDone2`)} hidden=${tossAutoHidden}`,
+);
+check("turn flips back after bot toss", dom.window.localStorage.getItem("hcp_toss_turn") === "me", dom.window.localStorage.getItem("hcp_toss_turn"));
 
 // ---------------------------------------------------------------- 5b. custom XI typing + fictional presets
 ev(dom, `initTeamBuilder(); setTbMode('type');`);

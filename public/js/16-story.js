@@ -230,44 +230,20 @@ function genStoryBotStats(difficulty, name) {
 }
 
 function showStoryToss() {
-  const won = Math.random() < 0.5;
-  if (won) {
-    showStoryDialogue(
-      storyLang === "hi"
-        ? "Toss jeet gaye! Kya karoge?"
-        : "You won the toss! What will you do?",
-      () => {
-        const choice = Math.random() < 0.5;
-        G.iBat = choice;
-        showStoryDialogue(
-          storyLang === "hi"
-            ? choice
-              ? "Pehle batting karenge!"
-              : "Pehle bowling karenge!"
-            : choice
-              ? "You chose to bat first!"
-              : "You chose to bowl first!",
-          () => {
-            startStoryMatchPlay();
-          },
-        );
-      },
-    );
-  } else {
-    G.iBat = Math.random() < 0.5;
-    showStoryDialogue(
-      storyLang === "hi"
-        ? G.iBat
-          ? "Toss haare, wo batting choose karte hain."
-          : "Toss haare, wo bowling choose karte hain."
-        : G.iBat
-          ? "Lost the toss. They chose to bat."
-          : "Lost the toss. They chose to bowl.",
-      () => {
-        startStoryMatchPlay();
-      },
-    );
-  }
+  /* Live coin both sides watch — caller alternates every match. The winner
+     always picks (previously a win auto-picked randomly for the player). */
+  const hi = typeof storyLang !== "undefined" && storyLang === "hi";
+  startLiveToss({
+    caller: tossTakeTurn(),
+    meName: G.myName,
+    oppName: G.oppName,
+    oppIsBot: true,
+    hi,
+    onDone: (iBat) => {
+      G.iBat = iBat;
+      startStoryMatchPlay();
+    },
+  });
 }
 
 function startStoryMatchPlay() {

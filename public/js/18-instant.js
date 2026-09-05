@@ -144,7 +144,6 @@ function startQuickBotMatch(persona) {
   G.botProfile = persona || null;
   G.oppStats = persona ? personaStats(persona) : null;
   if (persona) G.oppName = persona.name;
-  G.iBat = Math.random() < 0.5; // coin flip decides who bats first
   /* Renamable T20/quick team: typed name wins, else username, else YOU. */
   const tn = teamDisplayName();
   if (tn) {
@@ -153,11 +152,22 @@ function startQuickBotMatch(persona) {
     } catch (e) {}
   }
   G.myName = tn || getUsername() || "Player";
-  G.oppName = "";
   // never inherit a previous match's roster (e.g. a story XI)
   G.myPlayers = [];
   G.oppPlayers = [];
-  showRoleForOffline();
+  $("matchmakingOverlay").classList.add("hidden");
+  /* Live coin both sides watch — caller alternates every match. */
+  startLiveToss({
+    caller: tossTakeTurn(),
+    meName: G.myName,
+    oppName: G.oppName,
+    oppIsBot: true,
+    hi: false,
+    onDone: (iBat) => {
+      G.iBat = iBat;
+      showRoleForOffline();
+    },
+  });
 }
 
 document.addEventListener("gesturestart", (e) => e.preventDefault());

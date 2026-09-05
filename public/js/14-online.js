@@ -457,6 +457,10 @@ function handleNet(d) {
         if (match && dp.battingStyle) match.battingStyle = dp.battingStyle;
       });
     }
+  } else if (d.type === "toss_caller") {
+    tossAlignTurn(d.by === "join" ? "me" : "opp");
+    if (!$("tossOverlay").classList.contains("hidden")) applyTossCaller(d.by);
+    else window.__tossCallerSeen = d.by;
   } else if (d.type === "toss_start") {
     runTossAnim(d.result, !d.hostWon);
   } else if (d.type === "toss_dec") {
@@ -877,10 +881,37 @@ function startOnlineToss() {
   } else {
     sb.style.display = "none";
   }
+  /* Caller alternates every match: the host decides with tossTakeTurn() and
+     tells the joiner, so BOTH screens show the same live coin with the same
+     caller. A pending decision that arrived early is applied now. */
+  window.__tossCallerPending = null;
   if (G.isHost) {
+    const caller = tossTakeTurn(); // host view: "me" = host calls
+    sendMsg({ type: "toss_caller", by: caller === "me" ? "host" : "join" });
+    if (caller === "me") {
+      $("tossText").textContent = "Call it!";
+      $("onlineTossBtns").style.display = "block";
+    } else {
+      $("tossText").textContent = G.oppName + " is calling...";
+    }
+  } else if (window.__tossCallerSeen) {
+    const by = window.__tossCallerSeen;
+    window.__tossCallerSeen = null;
+    applyTossCaller(by);
+  } else {
+    $("tossText").textContent = "Waiting for the toss...";
+  }
+}
+/* by: "host" | "join" — who calls, from the room's view. */
+function applyTossCaller(by) {
+  window.__tossCallerSeen = null;
+  const mine = (by === "host") === !!G.isHost;
+  tossAlignTurn(mine ? "me" : "opp");
+  if (mine) {
     $("tossText").textContent = "Call it!";
     $("onlineTossBtns").style.display = "block";
   } else {
+    $("onlineTossBtns").style.display = "none";
     $("tossText").textContent = G.oppName + " is calling...";
   }
 }

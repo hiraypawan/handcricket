@@ -787,20 +787,32 @@ $("btnRematch").onclick = () => {
     G.innings = 1;
     G.freeHit = false;
     BotAI.reset(G.storyDifficulty || 0);
-    startInnings(1);
+    /* Rematch re-tosses live — caller alternates, never a silent restart. */
+    startLiveToss({
+      caller: tossTakeTurn(),
+      meName: G.myName,
+      oppName: G.oppName,
+      oppIsBot: true,
+      hi: false,
+      onDone: (iBat) => {
+        G.iBat = iBat;
+        startInnings(1);
+      },
+    });
   }
 };
 function doRematch() {
   G.innings = 1;
   G.target = null;
-  G.iBat = !G.iBat;
   G.batIdx = 0;
   G.bowlIdx = 0;
   G.me = { score: 0, wkts: 0, balls: 0, hist: [] };
   G.opp = { score: 0, wkts: 0, balls: 0, hist: [] };
   G.freeHit = false;
   $("resultOverlay").classList.add("hidden");
-  startInnings(1);
+  /* Online rematch re-tosses live on BOTH screens — the host negotiates the
+     (alternating) caller, the joiner follows via toss_caller. */
+  startOnlineToss();
 }
 $("btnAgain").onclick = () => {
   sfx("tap");
@@ -812,7 +824,18 @@ $("btnAgain").onclick = () => {
     G.innings = 1;
     G.freeHit = false;
     BotAI.reset(G.storyDifficulty || 0);
-    startInnings(1);
+    /* New Match re-tosses live too — caller alternates. */
+    startLiveToss({
+      caller: tossTakeTurn(),
+      meName: G.myName,
+      oppName: G.oppName,
+      oppIsBot: true,
+      hi: false,
+      onDone: (iBat) => {
+        G.iBat = iBat;
+        startInnings(1);
+      },
+    });
   } else if (G.mode === "online") {
     if (G.isHost) {
       doRematch();

@@ -1652,6 +1652,13 @@ input,select,textarea{font-size:16px}
   .tutorial .tut-next{padding:9px 20px}
   .overlay h1{font-size:clamp(18px,2.8vh,24px)}
 }
+/* result action bar: compact 2-col grid so 5 stacked buttons stop covering
+   half the stats card on phones. Menu + friend rows span full width. */
+#resultActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+#resultActions button{width:100%;margin:0;padding:10px 6px;font-size:12px;max-width:none}
+#resultActions #addFriendBtn{grid-column:1/-1}
+#resultActions #btnAddFriend{width:100%;margin:0}
+#resultActions #btnMenu{grid-column:1/-1}
 /* narrow phones: hide the least-important column, shrink stat values */
 @media (max-width:360px){
   .lb-meta{display:none}

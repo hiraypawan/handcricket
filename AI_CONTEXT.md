@@ -240,6 +240,13 @@ bug C9 fixed). Endpoints: `/api/save`, `/api/load` (story), `/api/profile`,
   (`.you` highlight), matching the arena (opp hand left, your hand right).
   `updScore`/`updAllNames`/`updatePlayerDisplay`/`popScore` all assume this —
   never swap sides by innings again.
+- **Live toss everywhere (`startLiveToss` in `07-display.js`):** quick, story
+  and rematches all flip the shared `#tossOverlay` coin that BOTH sides
+  watch; the winner always picks (bot auto-picks after a beat). The CALLER
+  alternates via `hcp_toss_turn` (`tossTakeTurn`/`tossAlignTurn`) — random
+  first, then strict alternation, including across rematches. Online: the
+  host decides and sends `{type:'toss_caller'}`; the joiner mirrors (with
+  pending-message guard for race). Never decide callers per-device.
 - **Preset squads are fictional** (`TEAMS` in `01-config.js`) — no real
   cricketer names. Players type their own XI in the team builder
   ("Type my XI" mode → same `{id,name,players}` shape as pool picks).

@@ -271,6 +271,190 @@ function tossDotsHTML() {
 }
 
 /* ============================================================================
+   SHARED LIVE TOSS — one coin both sides watch (quick, story, online).
+   The CALLER alternates every match via hcp_toss_turn ("me"|"opp" calls
+   NEXT); the first toss ever is random. Online: the host decides with
+   tossTakeTurn() and sends {type:'toss_caller'} so both screens agree; the
+   joiner mirrors with tossAlignTurn(). Never decide a caller per-device on
+   both ends or the screens disagree.
+   ============================================================================ */
+function tossTakeTurn() {
+  let cur = null;
+  try {
+    cur = localStorage.getItem("hcp_toss_turn");
+  } catch (e) {}
+  const caller =
+    cur === "me" || cur === "opp" ? cur : Math.random() < 0.5 ? "me" : "opp";
+  try {
+    localStorage.setItem("hcp_toss_turn", caller === "me" ? "opp" : "me");
+  } catch (e) {}
+  return caller;
+}
+function tossAlignTurn(callerFromMyView) {
+  try {
+    localStorage.setItem(
+      "hcp_toss_turn",
+      callerFromMyView === "me" ? "opp" : "me",
+    );
+  } catch (e) {}
+}
+function tossEsc(x) {
+  return String(x == null ? "" : x)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function tossResetSharedUI(meN, opN) {
+  setStage("toss");
+  $("tossOverlay").classList.remove("hidden");
+  $("tossVs").textContent = meN + " vs " + opN;
+  $("onlineTossBtns").style.display = "none";
+  $("onlineTossDec").style.display = "none";
+  ["btnOHeads", "btnOTails"].forEach((id) => {
+    const b = $(id);
+    b.disabled = false;
+    b.classList.remove("sel");
+  });
+  const oBox = $("onlineCoinBox");
+  if (oBox) oBox.classList.remove("spinning", "win", "lose");
+  const oCoin = $("onlineCoin");
+  if (oCoin) {
+    oCoin.classList.remove("flipping", "landing");
+    oCoin.style.transform = "";
+    oCoin.style.removeProperty("--coin-total");
+  }
+  const sb = $("tossPreStats");
+  if (sb) sb.style.display = "none";
+  $("tossText").innerHTML = "";
+}
+/* Bot-mode live toss: the human AND the bot watch the same coin on this
+   screen. o = {caller:'me'|'opp', meName, oppName, hi:bool,
+   onDone(iBatMeFirst)}. Overlay buttons are steered into this flow and
+   restored to the online handlers afterwards. */
+function startLiveToss(o) {
+  const gen = (window.__tossGen = (window.__tossGen || 0) + 1);
+  const meN = o.meName || (typeof G !== "undefined" && G.myName) || "YOU";
+  const opN = o.oppName || (typeof G !== "undefined" && G.oppName) || "Opponent";
+  tossResetSharedUI(meN, opN);
+  const T = {
+    bot: true,
+    gen,
+    caller: o.caller,
+    winner: null,
+    done: false,
+    onDone: o.onDone,
+    meN,
+    opN,
+    hi: !!o.hi,
+  };
+  window.__toss = T;
+  $("btnOHeads").onclick = () => botTossFlip("heads", T);
+  $("btnOTails").onclick = () => botTossFlip("tails", T);
+  $("btnOBat").onclick = () => botTossDecide("bat", T);
+  $("btnOBowl").onclick = () => botTossDecide("bowl", T);
+  if (o.caller === "me") {
+    $("tossText").textContent = T.hi
+      ? "Toss uchhalo! Heads ya Tails?"
+      : "Your call — heads or tails?";
+    $("onlineTossBtns").style.display = "block";
+  } else {
+    $("tossText").innerHTML =
+      "<span class='toss-msg'>" + tossEsc(opN) + " is calling...</span>";
+    setTimeout(() => {
+      if (window.__toss !== T || T.done) return;
+      botTossFlip(Math.random() < 0.5 ? "heads" : "tails", T);
+    }, 1100);
+  }
+}
+function botTossFlip(call, T) {
+  if (!T || T.done || window.__toss !== T) return;
+  sfx("coin");
+  haptic(20);
+  const btnCall = call === "heads" ? $("btnOHeads") : $("btnOTails");
+  btnCall.classList.add("sel");
+  $("btnOHeads").disabled = true;
+  $("btnOTails").disabled = true;
+  /* keep the buttons visible (disabled) so both sides see who called what */
+  $("onlineTossBtns").style.display = "block";
+  const res = Math.random() < 0.5 ? "heads" : "tails";
+  T.winner = res === call ? T.caller : T.caller === "me" ? "opp" : "me";
+  const oCoin = $("onlineCoin"),
+    oBox = $("onlineCoinBox");
+  oBox.classList.remove("win", "lose");
+  oBox.classList.add("spinning");
+  $("tossText").innerHTML =
+    '<span class="toss-msg">' +
+    (T.caller === "me"
+      ? "You called <b>" + call + "</b>"
+      : tossEsc(T.opN) + " called <b>" + call + "</b>") +
+    " — flipping" +
+    tossDotsHTML() +
+    "</span>";
+  tossSpin(oCoin, res === "heads");
+  setTimeout(() => {
+    if (window.__toss !== T || T.done) return;
+    oBox.classList.remove("spinning");
+    tossLand(oCoin, res === "heads");
+    setTimeout(() => {
+      if (window.__toss !== T || T.done) return;
+      tossSettle(oCoin, res === "heads");
+      if (T.winner === "me") {
+        oBox.classList.add("win");
+        sfx("win");
+        haptic(30);
+        $("tossText").innerHTML =
+          tossChipHTML(res) +
+          '<span class="toss-msg pop">You won the toss!</span>' +
+          '<span class="toss-msg sub">Pick bat or bowl first</span>';
+        $("onlineTossDec").style.display = "block";
+      } else {
+        oBox.classList.add("lose");
+        sfx("lose");
+        $("tossText").innerHTML =
+          tossChipHTML(res) +
+          '<span class="toss-msg pop">' +
+          tossEsc(T.opN) +
+          " won the toss</span>" +
+          '<span class="toss-msg sub">Choosing' +
+          tossDotsHTML() +
+          "</span>";
+        setTimeout(() => {
+          if (window.__toss !== T || T.done) return;
+          botTossDecide(Math.random() < 0.5 ? "bat" : "bowl", T);
+        }, 1400);
+      }
+    }, 600);
+  }, 2300);
+}
+function botTossDecide(choice, T) {
+  if (!T || T.done || window.__toss !== T) return;
+  T.done = true;
+  const iBat = T.winner === "me" ? choice === "bat" : choice === "bowl";
+  const who = T.winner === "me" ? "You" : T.opN;
+  sfx("go");
+  $("onlineTossDec").style.display = "none";
+  $("tossText").innerHTML =
+    '<span class="toss-msg pop"><b>' +
+    tossEsc(who) +
+    "</b> chose to <b>" +
+    (choice === "bat" ? "BAT" : "BOWL") +
+    " first</b></span>";
+  setTimeout(() => {
+    endLiveToss();
+    if (typeof T.onDone === "function") T.onDone(iBat);
+  }, 1800);
+}
+function endLiveToss() {
+  window.__toss = null;
+  $("tossOverlay").classList.add("hidden");
+  /* restore the online handlers for real P2P tosses */
+  $("btnOHeads").onclick = () => callToss("heads");
+  $("btnOTails").onclick = () => callToss("tails");
+  $("btnOBat").onclick = () => decToss("bat");
+  $("btnOBowl").onclick = () => decToss("bowl");
+}
+
+/* ============================================================================
    v2.8 IN-APP FEEDBACK — replaces every native alert()/confirm().
    Native dialogs block the render thread, ignore the theme and cannot be
    dismissed with the app's own chrome.
