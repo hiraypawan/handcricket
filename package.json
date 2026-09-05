@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler pages dev public",
-    "deploy": "wrangler pages deploy public --project-name handcricket",
+    "deploy": "wrangler pages deploy public --project-name handscricket",
     "test": "node tools/smoke.mjs"
   },
   "devDependencies": {
