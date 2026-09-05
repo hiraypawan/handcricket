@@ -52,6 +52,9 @@ const G = {
   selectTimer: null,
 };
 const $ = (id) => document.getElementById(id);
+/* Bundle version: sent with matchmaking seeks so ops can tell stale clients
+   apart from fresh ones. Bump together with package.json + ?v= tags. */
+const APP_VERSION = "2.9.1";
 /* Team display name: always "<username>'s Team" — derived, never asked.
    Used by quick/instant matches and as the story default. */
 function defaultTeamName() {

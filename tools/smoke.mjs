@@ -350,6 +350,18 @@ check(
   "",
 );
 check(
+  "rendezvous prefers Durable Object, falls back to KV core",
+  /MATCHMAKER/.test(repoSrc("functions/api/quickmatch.js")) &&
+    /handleQuickmatch/.test(repoSrc("lib/api/qm-core.js")) &&
+    /class Matchmaker/.test(repoSrc("lib/api/matchmaker-do.js")),
+  "",
+);
+check(
+  "seeks carry the bundle version for ops",
+  /APP_VERSION/.test(repoSrc("public/js/18-instant.js")),
+  "",
+);
+check(
   "seekers carry a device id so same-name guests still pair",
   /hcp_cid/.test(repoSrc("public/js/18-instant.js")),
   "",
@@ -367,8 +379,8 @@ check(
 );
 check(
   "matchmaking converges concurrent seekers (deterministic room + adopt)",
-  /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
-    /readMatch\(KV, sidOf\(cand\)\)/.test(repoSrc("functions/api/quickmatch.js")),
+  /function roomFor/.test(repoSrc("lib/api/qm-core.js")) &&
+    /readMatch\(store, sidOf\(cand\)\)/.test(repoSrc("lib/api/qm-core.js")),
   "",
 );
 check(

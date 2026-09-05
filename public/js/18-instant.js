@@ -153,7 +153,13 @@ function findOpponent() {
       const r = await fetch("/api/quickmatch", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, user: me, teamSize, cid: qmCid() }),
+        body: JSON.stringify({
+          action,
+          user: me,
+          teamSize,
+          cid: qmCid(),
+          v: typeof APP_VERSION === "string" ? APP_VERSION : "?",
+        }),
       });
       if (!r.ok) throw new Error("http " + r.status);
       S.netFail = 0;

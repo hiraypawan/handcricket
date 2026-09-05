@@ -8,5 +8,19 @@
       "id": "7872bcfef01247f881c7c48d9dba79dc",
       "preview_id": "e18830349fcf44e78e1bdf7b6ebed0ea"
     }
-  ]
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MATCHMAKER",
+        "class_name": "Matchmaker"
+      }
+    ]
+  },
+  "exports": {
+    "Matchmaker": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
 }

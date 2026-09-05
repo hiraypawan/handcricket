@@ -6,6 +6,7 @@
    Run: node tools/qm-sim.mjs (also chained in `npm test`)
 */
 import { onRequestPost as qm } from "../functions/api/quickmatch.js";
+import { handleQuickmatch } from "../lib/api/qm-core.js";
 
 const store = new Map();
 const KV = {
@@ -18,6 +19,17 @@ const ctx = (body) => ({
   request: { json: async () => body },
 });
 const post = async (body) => (await qm(ctx(body))).json();
+
+/* DO-backend mirror: the same core against an in-memory Map (what the
+   Matchmaker Durable Object uses — zero replication lag by construction). */
+const mem = new Map();
+const memStore = {
+  get: async (k) => (mem.has(k) ? mem.get(k) : null),
+  put: async (k, v) => void mem.set(k, v),
+  delete: async (k) => void mem.delete(k),
+};
+const noopLog = async () => {};
+const postMem = async (body) => (await handleQuickmatch(memStore, noopLog, body)).body;
 
 let failures = 0;
 const check = (name, ok, extra = "") => {
@@ -107,6 +119,24 @@ check(
 store.clear();
 const blank = await post({ action: "seek", user: "   ", cid: "bx", teamSize: 1 });
 check("blank username rejected", blank.error === "Missing user", JSON.stringify(blank));
+
+// 7. memory backend (Durable Object shape): same convergence, no store lag
+mem.clear();
+await postMem({ action: "seek", user: "MemA", cid: "ma", teamSize: 1 });
+await postMem({ action: "seek", user: "MemB", cid: "mb", teamSize: 1 });
+const [g, h] = await Promise.all([
+  postMem({ action: "poll", user: "MemA", cid: "ma", teamSize: 1 }),
+  postMem({ action: "poll", user: "MemB", cid: "mb", teamSize: 1 }),
+]);
+check(
+  "memory backend pairs too",
+  g.status === "matched" &&
+    h.status === "matched" &&
+    g.room === h.room &&
+    g.opp === "MemB" &&
+    h.opp === "MemA",
+  `G=${g.room}/${g.role} H=${h.room}/${h.role}`,
+);
 
 console.log(failures === 0 ? "✅ QM-SIM: all checks passed" : `❌ QM-SIM: ${failures} failed`);
 process.exit(failures === 0 ? 0 : 1);
