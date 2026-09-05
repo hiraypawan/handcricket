@@ -54,9 +54,14 @@ function hcGoogleToken() {
   }
 }
 /* Render the Sign in with Google button into every .google-btn-slot on this
-   screen. Silent no-op when no Client ID is configured. */
+   screen. Silent no-op when no Client ID is configured. Save-progress notes
+   hide once an account is linked. */
 async function renderGoogleButtons() {
   try {
+    const linked = !!hcGoogleStored();
+    document.querySelectorAll(".save-note").forEach((el) => {
+      el.style.display = linked ? "none" : "";
+    });
     const id = await hcGoogleClientId();
     if (!id) return;
     const ok = await hcGoogleLoad();
@@ -80,6 +85,63 @@ async function renderGoogleButtons() {
     });
   } catch (e) {}
 }
+/* Union of two careers (disjoint histories): totals summed, bests maxed. */
+function mergeStats(a, b) {
+  const n = (v) => (typeof v === "number" && isFinite(v) ? v : 0);
+  const base = typeof defaultStats === "function" ? defaultStats() : {};
+  const A = Object.assign({}, base, a || {});
+  const B = b || {};
+  const out = {};
+  ["matches", "wins", "losses", "ties", "runs", "ballsFaced", "sixes", "fours", "dots", "dotsBowled", "wicketsTaken", "ballsBowled", "runsConceded", "hatricks", "outs"].forEach(
+    (k) => {
+      out[k] = n(A[k]) + n(B[k]);
+    },
+  );
+  ["highestScore", "bestWinStreak", "winStreak", "streak", "bestBowlWkts", "bestBowlRuns"].forEach(
+    (k) => {
+      out[k] = Math.max(n(A[k]), n(B[k]));
+    },
+  );
+  out.name = A.name || B.name || "";
+  return typeof deriveStats === "function" ? deriveStats(out) : out;
+}
+/* Multi-device restore: adopt whichever side (server vs this device) has the
+   richer career, then push everything (career + Google link) and pull story. */
+async function restoreGoogleProgress() {
+  try {
+    const u =
+      (typeof getUsername === "function" && getUsername()) || "";
+    if (!u) return;
+    let server = null;
+    try {
+      const r = await fetch("/api/profile?user=" + encodeURIComponent(u));
+      if (r.ok) {
+        const j = await r.json();
+        if (j && j.profile && j.profile.stats) server = j.profile.stats;
+      }
+    } catch (e) {}
+    const local =
+      (typeof loadStats === "function" && loadStats()) || null;
+    const sm = (server && server.matches) || 0;
+    const lm = (local && local.matches) || 0;
+    if (server && sm > lm && typeof saveStats === "function") {
+      saveStats(
+        Object.assign(
+          typeof defaultStats === "function" ? defaultStats() : {},
+          server,
+        ),
+      );
+      toast("Progress restored from your Google account", "ok");
+    }
+    if (typeof cloudLoadStory === "function") {
+      try {
+        await cloudLoadStory();
+      } catch (e) {}
+    }
+    if (typeof publishProfile === "function") publishProfile();
+    if (typeof updHomeUsername === "function") updHomeUsername();
+  } catch (e) {}
+}
 function hcGoogleCredential(resp) {
   try {
     const cred = (resp && resp.credential) || "";
@@ -93,11 +155,28 @@ function hcGoogleCredential(resp) {
       );
     } catch (e) {}
     const gname = String(payload.name || "").trim().slice(0, 24);
-    if (gname && !getUsername()) {
+    const cur =
+      (typeof getUsername === "function" && getUsername()) || "";
+    if (gname && !cur) {
       setUsername(gname);
-      if (typeof updHomeUsername === "function") updHomeUsername();
+    } else if (gname && cur.toLowerCase() !== gname.toLowerCase()) {
+      /* Guest played first: merge the guest career INTO the Google career
+         so nothing is lost, then switch identity. */
+      try {
+        const guest =
+          typeof loadStats === "function" ? loadStats() : null;
+        setUsername(gname);
+        const mine =
+          typeof loadStats === "function" ? loadStats() : null;
+        if (typeof saveStats === "function")
+          saveStats(mergeStats(mine, guest));
+        toast("Guest progress merged into " + gname, "ok");
+      } catch (e) {
+        setUsername(gname);
+      }
     }
-    toast("Google linked — progress is tied to your account", "ok");
+    restoreGoogleProgress();
+    if (typeof updHomeUsername === "function") updHomeUsername();
     renderGoogleButtons();
   } catch (e) {}
 }

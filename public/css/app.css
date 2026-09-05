@@ -1616,6 +1616,8 @@ input,select,textarea{font-size:16px}
 /* home secondary row (How to Play / Profile / Friends / Leaderboard):
    wrap on narrow screens and never stretch full-width per button */
 .home-btn-row button{width:auto;flex:0 1 auto;margin-top:0;white-space:nowrap}
+/* save-progress nudge under Google buttons */
+.save-note{font-size:10.5px;color:var(--ink-faint);text-align:center;max-width:280px;margin:8px auto 0;line-height:1.5}
 /* presence (online / last-seen) on friend rows */
 .friend-presence{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--ink-faint);margin-top:2px}
 .friend-presence .pdot{width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0}

@@ -357,6 +357,13 @@ const fs5b = await import("node:fs");
 const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
 check("spectate endpoints exist", /spectate/.test(repoSrc("public/js/26-spectate.js")) && /action.*publish/.test(repoSrc("functions/api/spectate.js")));
 check("google auth scaffolded", /accounts\.google\.com\/gsi\/client/.test(repoSrc("public/js/27-auth.js")) && /verifyGoogleIdToken/.test(repoSrc("lib/api/shared.js")));
+const merged = ev(dom, `mergeStats({matches:2,wins:1,runs:50,highestScore:30,bestWinStreak:2}, {matches:3,wins:1,runs:70,highestScore:60,bestWinStreak:5})`);
+check(
+  "guest->google career merge sums totals, maxes bests",
+  merged.matches === 5 && merged.wins === 2 && merged.runs === 120 && merged.highestScore === 60 && merged.bestWinStreak === 5,
+  JSON.stringify({ m: merged.matches, w: merged.wins, r: merged.runs, best: merged.highestScore }),
+);
+check("google restore + save notes wired", ev(dom, `typeof restoreGoogleProgress`) === "function" && !!dom.window.document.querySelector(".save-note"));
 check("dock Career tab is now Ranks", (byId(dom, "tabBar")?.textContent || "").includes("Ranks"));
 
 // ---------------------------------------------------------------- 6. story/casual isolation (C5/C6)
