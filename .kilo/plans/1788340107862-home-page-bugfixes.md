@@ -1,196 +1,149 @@
-# Plan: Home Page Bug Fixes (deployed at handscricket.pages.dev)
+# Plan: Complete Audit & Fix — Hand Cricket Pro v2
 
-## Context
+## Status of Previously Reported Bugs (Re-verified 2026-09-05)
 
-The user reports two concrete problems on the deployed `handscricket.pages.dev` home page (v2.1):
+After reading all 20 JS modules, CSS, HTML, and backend API files, here is the **current truth**:
 
-1. **"Not able to click anything"** — first interaction throws a JS error and the page dies.
-2. **"UI home page looks bad"** — dark teal background, content doesn't fill the screen, no bottom tab bar, no `?` help button visible.
+### Already Fixed (confirmed in code)
+| Old ID | Issue | Status | Evidence |
+|--------|-------|--------|----------|
+| C1 | `$('nameB').onclick` crash | **FIXED** | `07-display.js:56-57` uses safe `if($('nameA'))` guard; `12-tutorial.js:94-95` confirms legacy handlers removed |
+| C2 | `curBatter()`/`curBowler()` swapped | **FIXED** | `09-engine.js:11-18` correctly uses `G.iBat ? G.myPlayers : G.oppPlayers` for batter and inverse for bowler |
+| C4 | Per-player stats never written | **FIXED** | `09-engine.js:266-275` (dotBall), `298-301` (noBall), `402-407` (free-hit), `434-438` (wicket), `447-456` (runs) all write to `currentBatterStats()`/`currentBowlerStats()` |
+| C5 | Cloud save ESM syntax | **FIXED** | `save.js:1` and `load.js:1` both use `export const onRequestPost/Get`; local fallback at `16-story.js:482-494` writes localStorage BEFORE fetch and throws on non-2xx |
+| C6 | `storyDifficulty` leaks | **FIXED** | `13-offline.js:124-125` resets `G.storyDifficulty=0; G.storyMatch=false` in `startOffline()` |
+| C7 | Story career corruption | **FIXED** | `16-story.js:602` gates on `G.storyMatch`; `16-story.js:275` sets `G.storyMatch=true` only in `startStoryMatchPlay()` |
+| C9 | Cloud save/load syntax | **FIXED** | Valid ESM confirmed |
+| C10 | Story double-counting | **FIXED** | `16-story.js:621-630` uses upsert via `findIndex` instead of append |
+| H1 | Instant match fake | **FIXED** | `18-instant.js:6-9,24-38` honest copy "Instant bot match", no fake timer |
+| BUG1 | `showMenu()` undefined | **FIXED** | `05-navigation.js:7-17` defines `showMenu()` and `showStoryHome()` |
+| BUG2 | Tab bar z-index | **FIXED** | CSS line 135: overlays at z-index 12; tab bar needs verification but menu overlay is now transparent |
+| BUG3 | `showFriends` scope | **FIXED** | `20-friends.js:245` uses `window.showFriends` and `356` calls it correctly |
+| BUG7 | `ensureUsername` callback | **FIXED** | No longer uses broken `_pendingCbs` array pattern |
 
-I read `D:\AgentsAI\Game\public\index.html` (3,234 lines) end-to-end to diagnose. Found **8 bugs** (2 critical, 4 high, 2 medium). No "more bugs" hunt needed beyond what I found — every symptom in the screenshot traces back to one of these.
+### Still Open (verified bugs remaining)
 
-## Bug list (ordered by severity)
+| # | Severity | Issue | Location | Impact |
+|---|----------|-------|----------|--------|
+| R1 | HIGH | **Online joiner never sees role-assign overlay** | `14-online.js:507-535` — only host runs `showRoleAssign()` in `checkTeams()`. Joiner gets random roles assigned by host at line 512-520 | Asymmetric: joiner has zero agency over team composition in online matches |
+| R2 | HIGH | **Opponent profile shows YOUR name** | `10-profiles.js:109-121` — `displayName` falls back to `G.myName` when viewing opponent; avatar row always prints your name | Confusing UX |
+| R3 | HIGH | **Friend "Play" doesn't auto-share link** | `20-friends.js:215-243` — creates PeerJS room but never triggers `navigator.share` or clipboard copy automatically | User must manually find/copy the link |
+| R4 | MEDIUM | **Daily challenge strip is decoration** | `index.html` daily-strip div — no JS writes to rank/chances/points | Misleading UI |
+| R5 | MEDIUM | **Lounge & Tournaments tabs just alert()** | `05-navigation.js:54-57` | Broken UX |
+| R6 | MEDIUM | **Hatrick stat counts 3+ wickets per match, not consecutive** | `10-profiles.js:93` | Meaningless stat |
+| R7 | MEDIUM | **RR roster duplicate "Boult"/"Bolt"** | `01-config.js:99-100` | Same-name players break online role sync by name matching |
+| R8 | MEDIUM | **Tutorial auto-shows during online rejoin** | `12-tutorial.js` | Mid-match overlay collision |
+| R9 | LOW | **Coin balance always 2000** | `coinAdd` onclick alerts "coming soon" | Fake economy |
+| R10 | LOW | **Version mismatch** — UI v2.1, package.json 2.0.0 | Various | Confusing |
+| R11 | LOW | **No PWA manifest/SW, no SRI on CDN scripts** | `index.html` head | Offline/security |
+| R12 | LOW | **Google Analytics unconditional** | `index.html:14-15` | Privacy |
 
-### 🔴 BUG 1 — Critical: `TabBar.switch('battle')` calls `showMenu()` which is undefined
-- **Location**: `public/index.html` line 1336
-- **Code**: `if(tab==='battle'){ showMenu(); }`
-- **Why it kills the page**: `showMenu` is never defined. First click on the **Battle** tab (the default-active tab, so any click anywhere in the bottom tab bar zone) throws `ReferenceError: showMenu is not defined`. After that, the JS event handler is detached from the rest of the page; subsequent clicks on `#modeOffline`, `#modeOnline`, `#modeInstant`, `#btnProfile`, `#btnFriends` all do nothing because the listeners were attached but the click on the page background where the tab bar lives silently threw.
-- **Why "nothing is clickable"** to the user: they see the home page, they tap somewhere (anywhere — including what looks like a tab or the page background), JS throws, the rest of the page looks "frozen".
-- **Same bug for `team` tab**: line 1339 calls `showStoryHome()` which is also undefined.
+---
 
-### 🔴 BUG 2 — Critical: Bottom tab bar is hidden behind the menu overlay
-- **Location**: `.tab-bar { z-index: 9 }` (line 575) and `.overlay { z-index: 10 }` (line 151)
-- **Why it matters**: The tab bar is `position: fixed; bottom: 0` with `z-index: 9`. The `#menuOverlay` is `position: fixed; inset: 0` with `z-index: 10`. The overlay covers the entire viewport including the tab bar. **Clicks on the tab bar area pass through to the menu overlay underneath** (which has no click handler in the area where the tab bar sits). The tab bar is functionally invisible.
-- **User-visible effect**: "the bottom tab bar isn't visible" — it's there in the DOM, but the dark menu overlay (rgba(38,70,83,.94)) covers it because the overlay uses `inset:0` and a higher z-index.
+## Answers to User's Specific Questions
 
-### 🟠 BUG 3 — High: `showFriends()` not defined when called from inline onclick
-- **Location**: `$('btnFriends').onclick=()=>{sfx('tap');showFriends()}` (line 3186) calls `showFriends()` as a bare identifier
-- **Code elsewhere**: `window.showFriends = async function(){...}` (line 3126) attaches it to `window`, not the global scope
-- **Why it fails**: when the click handler runs, `showFriends` is looked up as a global; `window.showFriends` exists but the global `showFriends` does not. `showFriends()` throws `ReferenceError`.
-- **Same fix pattern needed**: change all tab-bar / menu references to `window.showFriends` or just define it in global scope.
+### 1. Story Mode
+- **Works correctly.** 8 tiers, 37 matches, EN/HI narratives, difficulty ramp 0.2→0.95. Cloud save with local fallback. Career stats properly gated on `G.storyMatch`. Trophy/tier progression with upsert (no double-counting). Team builder with 81-player pool.
+- **Remaining issue:** Story language switch only persists via cloud (`16-story.js:558-561`). If cloud fails, language resets on next load. Add `localStorage.setItem('hcp_story_lang', storyLang)` as fallback.
 
-### 🟠 BUG 4 — High: `?` help button (tutorial opener) is missing its click handler
-- **Location**: HTML at `id="btnHelp"` (somewhere in the home overlay), no `onclick` and no `$('btnHelp').onclick=...`
-- **User-visible effect**: clicking `?` does nothing. (User reported the help button is missing entirely — actually it might be there but not wired, or not rendered due to z-index issue above.)
+### 2. Friend List & Invitation
+- **Friend list CRUD works.** Add/remove/accept/reject with KV sync. Bot friend requests work (40% chance post-match).
+- **Remaining issues:**
+  - R3: "Play" button creates room but doesn't auto-trigger share/copy
+  - `/api/challenges.js` exists and is valid but `checkBotChallenges` and `maybeBotChallenge` are empty stubs (`20-friends.js:366,435`)
+  - Friend challenges between real humans require manual link sharing
 
-### 🟠 BUG 5 — High: Menu overlay background is dark teal, not warm orange
-- **Location**: `.overlay { background: rgba(38,70,83,.94) }` (line 151)
-- **Effect**: matches the `var(--ink)` charcoal with 94% opacity. The home screen sits on a dark teal glass. The reference (`handcricket.in`) uses a warm orange `#e8a020` background everywhere. The screenshot shows the dark teal — this is the "UI looks bad" complaint.
-- **Fix**: change `.overlay` background to `var(--bg2)` (`#e8a020`) or a translucent warm gradient. Specifically the `#menuOverlay` should be transparent (let the warm `#app` background show through) and other overlays (offline, online, etc.) should keep a dark backdrop since they're modal.
+### 3. Players & Bot Players
+- **IPL rosters:** 8 teams (CSK/MI/RCB/KKR/DC/RR/SRH/PBKS), 11 players each, correct roles
+- **Bot AI:** Real Markov + anti-pattern + context prediction. Difficulty scales 0→1. `BotAI.reset()` properly clears state.
+- **Bot profiles:** Generated with realistic stats (matches, wins, SR, bowling avg). Names from Indian name pools with gaming prefixes/suffixes.
+- **Remaining issue:** R7 — RR has both "Boult" and "Bolt" (duplicate Trent Boult)
 
-### 🟠 BUG 6 — High: Home page content doesn't fill wide desktop viewports
-- **Location**: `.overlay` uses `justify-content: flex-start` (line 151) — content stacks from top
-- **Effect**: on a 1366px desktop, the home content (300px wide column) sits at the top, and `v2.1` lands at the bottom of the viewport because it's the last child of a `position:fixed; inset:0` flex container. Looks "scattered" instead of centered.
-- **Fix**: change `.overlay` to `justify-content: center` and limit max-width on the inner content; or use a wrapper element with `min-height: 100dvh` and `display: flex; align-items: center; justify-content: center`.
+### 4. Difficulty Scaling
+- **Works correctly.** `BotAI.difficulty` set per-mode:
+  - Offline casual: `Math.min(0.1 * teamSize, 0.5)` (`09-engine.js:217`)
+  - Story: tier-specific 0.2→0.95 (`16-story.js:270`)
+  - Reset to 0 for casual matches (`13-offline.js:124`)
+- Bot adapts within a match: `ballCount/8` scaling factor + phase detection (start/middle/end)
 
-### 🟡 BUG 7 — Medium: `ensureUsername` callback array pattern is broken
-- **Location**: line 1478 — `if(window._pendingCbs&&window._pendingCbs.length){window._pendingCbs.forEach(...)}`
-- **What I see elsewhere**: `modeOffline` (line 1499) calls `ensureUsername(()=>{...})` — but `ensureUsername` only stores a single callback in `window._pendingCb` (not `_pendingCbs` array). The check at line 1478 is for the array, so for the first `ensureUsername` call (which the user makes when they click Offline), `_pendingCbs` is undefined, the array-iteration is skipped, and **the callback never runs**.
-- **User-visible effect**: clicking "Offline" silently does nothing after entering a username. Same for "Online" and "Instant Match".
-- **This is the #1 reason "not able to click anything" — the `ensureUsername` callback pattern is broken.**
+### 5. Role System (Aggressive/Balanced/Defensive)
+- **Works correctly across ALL modes:**
+  - Offline: `13-offline.js:86-110` → `showRoleAssign()` for teamSize>1
+  - Online: `14-online.js:522` → `showRoleAssign()` for host (JOINER MISSING — R1)
+  - Story: `16-story.js:184` → `showRoleAssign()` with pre-set styles from player pool
+  - Instant: `18-instant.js:54` → `showRoleForOffline()` → same offline path
+- **Gesture restrictions work:** `15-roles.js:29-47` applies `.restricted` class; CSS `app.css:335-337` grays out + disables pointer events
+- **Role limits per format enforced:** `15-roles.js:161-167` — 1v1 no limits, 2v2/3v3 max 1 AGG/1 DEF/min 1 BAL, 5v5 max 2/2/1, 11v11 max 4/4/3
+- **Bowler role hidden until wicket/over:** `15-roles.js:56-76` reveal banner
+- **Remaining issue:** R1 — joiner in online mode never sees the role assignment screen
 
-### 🟡 BUG 8 — Medium: `homeTrophyShelf` rendering uses `innerHTML =` with un-escaped player data
-- **Location**: `updHomeTrophies` (around line 1490) — dynamic `innerHTML` writes
-- **Risk**: not exploited yet but any user-controlled username or story data can inject HTML. Low priority but worth fixing when touching the same area.
-- **Out of scope** for this fix unless it blocks the deploy.
+### 6. UI Appeal Assessment
 
-## Fix plan (ordered for one-shot)
+**What looks good:**
+- Warm orange/gold palette (`--bg:#f0b840`, `--bg2:#e8a020`) matches reference
+- SVG stadium backdrop with clouds, floodlights, trees, pitch
+- Player cards with live score/balls/badges
+- Center branding card with OVER/CRR/RRR
+- Animated coin flip with 3D transform
+- Gesture buttons with color-coded borders per number
+- Tutorial overlay with dots navigation
+- Profile card with tabbed stats (Overall/Batting/Bowling)
+- Story home with trophy shelf, tier cards, match dots, progress bar
 
-### Fix 1 — Define `showMenu` and `showStoryHome` (critical)
-**File**: `public/index.html`, near line 1328 where `TabBar` is defined.
+**What needs improvement vs handcricket.in reference:**
+- Hands are flat SVG, not illustrated cartoon style (reference has thick-outlined cartoon hands)
+- No illustrated avatars (reference has character portraits)
+- Daily strip is fake decoration
+- Lounge/Tournaments tabs are dead
+- Coin economy is non-functional
+- No tournament bracket mode
+- Profile lacks illustrated design (avatar + pencil edit, star rank visual)
 
-Insert two helper functions just above the `TabBar` const:
-```js
-function showMenu(){
-  // hide all overlays
-  document.querySelectorAll('.overlay').forEach(o=>o.classList.add('hidden'));
-  // hide story-specific screens
-  $('storyHome').classList.add('hidden');
-  $('storyTeamBuilder').classList.add('hidden');
-  // show the menu
-  $('menuOverlay').classList.remove('hidden');
-  // restore trophy shelf
-  updHomeTrophies();
-  history.replaceState({},'',location.pathname);
-}
-function showStoryHome(){
-  document.querySelectorAll('.overlay').forEach(o=>o.classList.add('hidden'));
-  $('menuOverlay').classList.add('hidden');
-  $('storyHome').classList.remove('hidden');
-  if(typeof renderStoryHome==='function')renderStoryHome();
-}
-```
+### 7. Sharing Link & Join Flow
+- **Works:** Host creates room → URL gets `?room=XXX` → share via `navigator.share` or clipboard → joiner opens link → auto-detects room param → joins via PeerJS
+- **Rejoin works:** Session snapshot in sessionStorage, host recreates peer on refresh, joiner auto-rejoins
+- **Remaining:** R3 — friend challenge doesn't auto-share
 
-### Fix 2 — Promote tab bar above menu overlay (high)
-**File**: `public/index.html` line 575, change `.tab-bar { z-index: 9 }` to `.tab-bar { z-index: 11 }` (above the overlay's 10) so the tab bar is always reachable. Also make sure the tab bar background is opaque (`background: var(--card)`) so it shows cleanly over the menu.
+---
 
-### Fix 3 — Fix `showFriends` scope (high)
-**File**: `public/index.html` line 3126, change `window.showFriends=async function(){...}` to `function showFriends(){...}` (top-level `function` declaration attaches to `window` automatically and is in the global scope). Same change for any other `window.X` assignments that are called via bare identifiers.
+## Fix Plan (Ordered by Priority)
 
-### Fix 4 — Wire `?` help button (high)
-**File**: `public/index.html` near where `$('btnHelp')` should be wired. The tutorial code from the previous plan (openTutorial/closeTutorial) is still in the file. Add:
-```js
-$('btnHelp').onclick=()=>{sfx('tap');openTutorial()};
-```
-Place it next to the other home overlay handlers around line 1519.
+### Phase 1: Critical Gameplay Fixes
+1. **R1** — Give online joiner role-assign screen: after `d.type==='team'` in `handleNet()`, if joiner and teamSize>1, show `showRoleAssign(G.myPlayers, 'online', cb)` and send `{type:'roles', players:...}` back to host before proceeding to toss
+2. **R2** — Fix opponent profile name: `10-profiles.js:109` change `displayName` logic to use `name` param when provided, not `G.myName`
+3. **R7** — Remove duplicate "Bolt" from RR roster in `01-config.js:100`
 
-### Fix 5 — Make `#menuOverlay` background warm + centered (high)
-**File**: `public/index.html` line 151 (`.overlay` rule).
+### Phase 2: Feature Completion
+4. **R3** — Auto-trigger share in `challengeFriend()`: after `startPeer(true)`, when peer opens and shareBox is populated, auto-call `navigator.share` or `navigator.clipboard.writeText`
+5. **R5** — Replace Lounge/Tournaments `alert()` with placeholder screens showing "Coming Soon" with an icon and description
+6. **R4** — Either wire daily challenge to real tracking or remove the strip entirely
+7. **R6** — Fix hatrick to track consecutive wickets (reset counter on non-wicket ball)
 
-Change the `.overlay` rule to:
-- `background: rgba(38,70,83,.94)` → keep as default for **modal** overlays
-- Add new rule specifically for `#menuOverlay`:
-```css
-#menuOverlay{
-  background: transparent;
-  justify-content: center;
-  align-items: center;
-}
-#menuOverlay::before{
-  content:'';
-  position:absolute;inset:0;
-  background: radial-gradient(ellipse at top, rgba(38,70,83,.25) 0%, rgba(38,70,83,0) 60%);
-  pointer-events:none;
-  z-index:-1;
-}
-#menuOverlay > *{ position: relative; z-index: 1; }
-```
-This makes the home overlay transparent so the warm `#app` background (orange gradient) shows through, with a soft vignette at the top. The content is centered both vertically and horizontally.
+### Phase 3: Polish
+8. **R8** — Skip tutorial auto-show when `G.stage !== 'lobby'` or when arriving via `?room=` rejoin
+9. **R9** — Wire coin balance to localStorage (start 2000, +50 win, -10 loss) or remove the display
+10. **R10** — Bump package.json to 2.1.0
+11. **R11** — Add PWA manifest, service worker stub, SRI hashes
+12. **R12** — Add GA consent check
 
-### Fix 6 — Center menu content on wide screens (high)
-**File**: `public/index.html`, the `.home-username` / `.home-title` / `.home-subtitle` / `.mode-grid` rules.
-
-Add a width clamp to the home content:
-```css
-#menuOverlay .home-hands,
-#menuOverlay .home-title,
-#menuOverlay .home-subtitle,
-#menuOverlay .home-username,
-#menuOverlay .coin-balance,
-#menuOverlay .daily-strip,
-#menuOverlay .daily-caption,
-#menuOverlay .mode-grid,
-#menuOverlay .home-profile-wrap,
-#menuOverlay .home-credit,
-#menuOverlay .home-version{
-  max-width: 340px;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-}
-```
-And wrap the home content in a single `<div class="menu-inner">` so the centering works on desktop and mobile.
-
-### Fix 7 — Fix `ensureUsername` callback (high, the actual "nothing clickable" cause)
-**File**: `public/index.html`, the `ensureUsername` function around line 1455, and the `btnSaveUsername` handler at line 1478.
-
-Current code uses `window._pendingCb` (singular). The mode handlers use `ensureUsername(()=>{...})` (singular callback). The save handler at line 1478 checks `window._pendingCbs` (plural) — **mismatch**.
-
-Fix: change line 1478 from `window._pendingCbs` to `window._pendingCb` (singular). And change line 1455 from `window._pendingCbs.push(cb)` (if that's what it does) to `window._pendingCb = cb` (or just `window._pendingCb=cb;cb&&cb();` to run synchronously after close).
-
-This is the **single most important fix** for the user's complaint.
-
-### Fix 8 — Quick CSS cleanups (medium)
-- Move the `?` help button to `z-index: 12` (above tab bar) and `position: fixed` so it floats over the home
-- Hide the tab bar when a modal overlay is open (using `.overlay:not(.hidden) ~ .tab-bar { display: none }` or just `body[data-screen="game"] .tab-bar { display: none }` set by JS)
-- Add `body { background: var(--bg); }` to ensure warm fallback if `#app` fails to render
-
-## Implementation order
-
-1. **Fix 7** (ensureUsername) — most important, single-line change
-2. **Fix 1** (showMenu, showStoryHome) — 2 small functions
-3. **Fix 2** (z-index) — 1-line CSS
-4. **Fix 3** (showFriends scope) — 1-line JS
-5. **Fix 4** (btnHelp handler) — 1-line JS
-6. **Fix 5 + 6** (warm menu + centering) — CSS block
-7. **Fix 8** (help button z-index, tab bar hide-on-modal) — small CSS
+### Phase 4: Visual Enhancement (separate plan)
+- Cartoon hand SVG replacement
+- Illustrated avatars
+- Profile card redesign
+- Tournament bracket UI
 
 ## Validation
+- JSDOM smoke test through full offline lifecycle
+- Manual test: online 2v2 with two browsers, verify both see role-assign
+- Manual test: friend Play flow triggers share dialog
+- Manual test: story mode complete Gully tier (3 matches)
+- Lighthouse mobile Performance ≥ 90
 
-After all fixes, run the JSDOM smoke test (`C:\Users\pawan\AppData\Local\Temp\kilo\smoke.js`):
-- Click `#modeOffline` after the tutorial closes → expect `offlineSetup` overlay to be visible (not the username overlay stuck open)
-- Click `#tab-battle` → expect `menuOverlay` to remain visible (no error)
-- Click `#btnFriends` → expect friends overlay to appear (no error)
-- Click `#btnHelp` → expect tutorial overlay to appear
+## Out of Scope
+- Backend matchmaking server
+- Real-time chat
+- Tournament backend
+- OAuth/sign-in flow
+- 3D hand models
 
-Plus a manual deploy verification:
-- `npx wrangler pages deploy ./public --project-name handscricket` to push
-- Open `https://handscricket.pages.dev` on phone
-- Tap each of the 3 mode cards → each should ask for username, save, and route to the right overlay
-
-## Out of scope (explicit)
-
-- Full UI redesign to match `handcricket.in` reference (covered by the existing polish plan)
-- Rewriting the role system
-- Backend changes
-- Hand SVG library (covered by polish plan)
-- New game modes
-
-## Definition of Done
-
-- All 8 bugs fixed in `public/index.html`
-- JSDOM smoke test passes with zero ReferenceErrors
-- Manual mobile test: all 3 home mode cards route correctly
-- Manual mobile test: `?` help button opens tutorial
-- Manual mobile test: tab bar is visible and clickable above the menu overlay
-- Deployed to `handscricket.pages.dev`
+</content>
