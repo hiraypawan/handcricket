@@ -355,6 +355,11 @@ check(
   "",
 );
 check(
+  "matchmaking failures surface instead of silent bot fallback",
+  /Can't reach matchmaking/.test(repoSrc("public/js/18-instant.js")),
+  "",
+);
+check(
   "quick search needs a username + leaves pool on bot fallback",
   /if \(!me0\.trim\(\)\)/.test(repoSrc("public/js/18-instant.js")) &&
     /qmLeave\(\);/.test(repoSrc("public/js/18-instant.js")),

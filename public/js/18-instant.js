@@ -125,7 +125,15 @@ function findOpponent() {
       ? window.__qmCutoffMs
       : 18000 + Math.random() * 7000;
   const t0 = Date.now();
-  const S = { cancelled: false, poll: null, cut: null, stages: [], seekers: 0 };
+  const S = {
+    cancelled: false,
+    poll: null,
+    cut: null,
+    stages: [],
+    seekers: 0,
+    netFail: 0,
+    warned: false,
+  };
   mmSearch = S;
   const botNowBtn = $("btnMMBotNow");
   if (botNowBtn) {
@@ -147,9 +155,21 @@ function findOpponent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, user: me, teamSize, cid: qmCid() }),
       });
-      if (!r.ok) return null;
+      if (!r.ok) throw new Error("http " + r.status);
+      S.netFail = 0;
       return await r.json();
     } catch (e) {
+      /* Never fail silently into a bot game: after a couple of dead
+         requests, say so — otherwise "no real players" looks identical
+         to "your network blocks the matchmaker". */
+      S.netFail++;
+      if (S.netFail >= 2 && !S.warned) {
+        S.warned = true;
+        $("matchStatus").textContent =
+          "Can't reach matchmaking — check your connection.";
+        if (typeof toast === "function")
+          toast("Matchmaking unreachable — check connection", "warn");
+      }
       return null;
     }
   };
@@ -198,9 +218,14 @@ function findOpponent() {
   let si = 0;
   const beat = () => {
     if (S.cancelled) return;
-    $("matchStatus").textContent =
-      MM_SEARCH_STAGES[si % MM_SEARCH_STAGES.length] +
-      (S.seekers > 1 ? " • " + S.seekers + " searching" : "");
+    if (S.netFail >= 2) {
+      $("matchStatus").textContent =
+        "Can't reach matchmaking — check your connection.";
+    } else {
+      $("matchStatus").textContent =
+        MM_SEARCH_STAGES[si % MM_SEARCH_STAGES.length] +
+        (S.seekers > 1 ? " • " + S.seekers + " searching" : "");
+    }
     si++;
     S.stages.push(setTimeout(beat, 1400));
   };
