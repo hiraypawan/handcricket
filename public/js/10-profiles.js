@@ -356,6 +356,9 @@ function showProfile(name, stats, meta) {
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9.5h12M6 14.5h12"/></svg></div><div class="prof-stat-val">' +
     s.batAvg +
     '</div><div class="prof-stat-lbl">Batting Avg</div></div>' +
+    '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></div><div class="prof-stat-val">' +
+    (s.outs || 0) +
+    '</div><div class="prof-stat-lbl">Times Out</div></div>' +
     '<div class="prof-stat-card"><div class="prof-stat-icon"><svg class="ic-stat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.6"/><path d="M12 7.4V12l3 2.2"/></svg></div><div class="prof-stat-val">' +
     s.oversFaced +
     '</div><div class="prof-stat-lbl">Overs Faced</div></div>' +

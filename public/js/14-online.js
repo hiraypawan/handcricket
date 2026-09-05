@@ -472,8 +472,10 @@ function handleNet(d) {
   if (d.type === "hello") {
     stopRejoin();
     G.oppName = d.name;
-    if (!G.isHost) {
-      G.teamSize = d.teamSize || G.teamSize;
+    if (!G.isHost && d.teamSize && Number(d.teamSize) !== Number(G.teamSize)) {
+      G.teamSize = d.teamSize;
+      if (typeof syncSizeButtons === "function") syncSizeButtons(d.teamSize);
+      connLog("Format: host plays " + d.teamSize + "v" + d.teamSize, false, true);
     }
     G.oppStats = d.stats || null;
     const inProg = G.stage === "playing" || G.stage === "break";

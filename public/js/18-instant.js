@@ -254,6 +254,23 @@ function findOpponent() {
 }
 /* A real seeker was found: drop into the normal online flow (host creates
    the room, guest joins by code) — team select, roles, live toss follow. */
+/* "1" -> "1v1", 11 -> "11v11" for messages. */
+function fmtSize(ts) {
+  const n = Number(ts) || 1;
+  return n + "v" + n;
+}
+/* Keep every size picker truthful to the agreed format (downstream code
+   reads the active button as well as G.teamSize). */
+function syncSizeButtons(ts) {
+  try {
+    document.querySelectorAll(".team-size-btn").forEach((b) => {
+      b.classList.toggle(
+        "active",
+        parseInt(b.dataset.size, 10) === Number(ts),
+      );
+    });
+  } catch (e) {}
+}
 function joinRealMatch(m) {
   mmSearching = false;
   $("searchSpinner").style.display = "none";
@@ -261,7 +278,14 @@ function joinRealMatch(m) {
   G.isBot = false;
   G.storyMatch = false;
   G.storyDifficulty = 0;
-  G.teamSize = m.teamSize || getTeamSize();
+  const wantSize = getTeamSize();
+  G.teamSize = m.teamSize || wantSize;
+  /* Relaxed pairing may adopt the HOST's format — never silently: say so
+     out loud and reflect it in the pickers. */
+  if (Number(m.teamSize) && Number(m.teamSize) !== Number(wantSize)) {
+    toast("Format updated to " + fmtSize(m.teamSize) + " (host's pick)", "warn");
+    syncSizeButtons(m.teamSize);
+  }
   G.oppName = m.opp || "Opponent";
   G.myName = (typeof getUsername === "function" && getUsername()) || "Player";
   G.isHost = m.role !== "guest";
@@ -282,11 +306,14 @@ function joinRealMatch(m) {
   if (G.isHost) {
     $("waitTitle").textContent = "Opponent found!";
     $("waitDesc").textContent =
-      (m.opp || "Opponent") + " is joining... keep this screen open.";
+      (m.opp || "Opponent") +
+      " is joining... keep this screen open. Format: " +
+      fmtSize(G.teamSize);
     connLog("Creating room " + m.room + "...");
   } else {
     $("waitTitle").textContent = "Opponent found!";
-    $("waitDesc").textContent = "Joining " + (m.opp || "opponent") + "...";
+    $("waitDesc").textContent =
+      "Joining " + (m.opp || "opponent") + "... Format: " + fmtSize(G.teamSize);
     connLog("Joining " + m.room + "...");
   }
   startPeer(G.isHost, m.room);

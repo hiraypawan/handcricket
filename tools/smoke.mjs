@@ -278,6 +278,25 @@ await sleep(4200); // staged search + short-cutoff fallback
 const qmSeek = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
 check("quick search polls the real matchmaking pool first", /\/api\/quickmatch/.test(qmSeek), qmSeek.slice(0, 90));
 check("Play Bot Now escape hatch exists", !!byId(dom, "btnMMBotNow"));
+// guest adopting the host format: announced, reflected, consistent
+ev(dom, `resetGame(); G.teamSize = 1; document.querySelectorAll('.team-size-btn').forEach((b) => b.classList.toggle('active', b.dataset.size === "1")); joinRealMatch({ teamSize: 11, opp: "Hosty", role: "guest", room: "ZZZZ99" });`);
+await sleep(300);
+const adoptToast = (byId(dom, "toastHost")?.textContent || "").includes("Format updated");
+const adoptSize = ev(dom, `G.teamSize`);
+const adoptBtn = ev(dom, `document.querySelector('#mmSize .team-size-btn.active')?.dataset.size`);
+check(
+  "adopted host format is announced and reflected",
+  adoptToast && adoptSize === 11 && adoptBtn === "11",
+  `toast=${adoptToast} size=${adoptSize} btn=${adoptBtn}`,
+);
+ev(dom, `$('waitingOverlay').classList.add('hidden'); showMenu();`);
+await sleep(200);
+/* restore 1v1 world for the flows below (adopt test left 11v11 behind) */
+ev(dom, `G.teamSize = 1; document.querySelectorAll('.team-size-btn').forEach((b) => b.classList.toggle('active', b.dataset.size === "1")); $('roleAssignOverlay').classList.add('hidden');`);
+ev(dom, `showProfile();`);
+await sleep(200);
+const timesOut = ((byId(dom, "profileCard")?.textContent || "").includes("Times Out"));
+check("batting tab shows Times Out dismissals", timesOut, "");
 const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
 const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
 const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
