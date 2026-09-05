@@ -5,11 +5,13 @@ import { handleQuickmatch } from '../../lib/api/qm-core.js';
    classes. This route only talks to it through the MATCHMAKER binding and
    falls back to the KV core when the binding is absent. */
 
-/* QUICK MATCHMAKING route — thin proxy with KV fallback.
-   Preferred path: the Matchmaker Durable Object (single global instance, so
-   every seeker shares one live pool with zero replication lag). If the DO
-   binding is absent or errors, the same core runs against KV inline — solo
-   and same-network pairing keep working, cross-network may lag. */
+/* QUICK MATCHMAKING route — Durable Object first, KV fallback.
+   Preferred path: POST straight to the handcricket-matchmaker Worker, whose
+   Matchmaker Durable Object holds ONE global in-memory pool — every seeker
+   worldwide shares live state with zero replication lag (plain HTTPS, so no
+   Pages binding is required at all). If that hop fails for any reason, the
+   same core runs against KV inline — solo and same-network pairing keep
+   working, cross-network may lag up to the KV cache window. */
 export const onRequestPost = async (ctx) => {
   try {
     if (!ctx.env || !ctx.env.KV)
@@ -20,19 +22,32 @@ export const onRequestPost = async (ctx) => {
     } catch (e) {
       return json({ error: 'Missing params' }, 400);
     }
-    if (ctx.env.MATCHMAKER) {
+    /* QM_DO_URL=off forces the KV core (tests, local dev without network).
+       The 4s cap keeps one slow worker hop from stalling the 2s poll loop. */
+    const doUrl =
+      ctx.env.QM_DO_URL === 'off'
+        ? null
+        : ctx.env.QM_DO_URL ||
+          'https://handcricket-matchmaker.pawanhiray88.workers.dev/match';
+    if (doUrl) {
       try {
-        const stub = ctx.env.MATCHMAKER.get(
-          ctx.env.MATCHMAKER.idFromName('quickmatch-global'),
-        );
-        const r = await stub.fetch(
-          new Request('https://do/quickmatch', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          }),
-        );
-        return new Response(await r.text(), {
+        const ctrl =
+          typeof AbortController !== 'undefined'
+            ? new AbortController()
+            : null;
+        const to =
+          ctrl && typeof setTimeout === 'function'
+            ? setTimeout(() => ctrl.abort(), 4000)
+            : null;
+        const r = await fetch(doUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+          signal: ctrl ? ctrl.signal : undefined,
+        });
+        if (to) clearTimeout(to);
+        const text = await r.text();
+        return new Response(text, {
           status: r.status,
           headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });

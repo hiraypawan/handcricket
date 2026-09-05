@@ -15,7 +15,7 @@ const KV = {
   delete: async (k) => void store.delete(k),
 };
 const ctx = (body) => ({
-  env: { KV },
+  env: { KV, QM_DO_URL: 'off' },
   request: { json: async () => body },
 });
 const post = async (body) => (await qm(ctx(body))).json();

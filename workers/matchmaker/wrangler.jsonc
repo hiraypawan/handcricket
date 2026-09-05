@@ -9,6 +9,14 @@
       "preview_id": "e18830349fcf44e78e1bdf7b6ebed0ea"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MATCHMAKER",
+        "class_name": "Matchmaker"
+      }
+    ]
+  },
   "exports": {
     "Matchmaker": {
       "type": "durable-object",

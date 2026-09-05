@@ -353,7 +353,8 @@ check(
   "rendezvous prefers Durable Object, falls back to KV core",
   /MATCHMAKER/.test(repoSrc("functions/api/quickmatch.js")) &&
     /handleQuickmatch/.test(repoSrc("lib/api/qm-core.js")) &&
-    /class Matchmaker/.test(repoSrc("lib/api/matchmaker-do.js")),
+    /class Matchmaker/.test(repoSrc("lib/api/matchmaker-do.js")) &&
+    /handcricket-matchmaker/.test(repoSrc("workers/matchmaker/src/index.js")),
   "",
 );
 check(
