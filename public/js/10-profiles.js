@@ -249,7 +249,18 @@ function showProfile(name, stats, meta) {
   // C12: viewing an OPPONENT'S profile must show the OPPONENT's name, not ours.
   // v2.8: on online matches the name arrives over the wire, so it is escaped
   // before it is interpolated into innerHTML.
-  const rawName = name || G.myName || "Player";
+  /* My Profile must show MY username — never the engine placeholder ("YOU",
+     "Player") that G.myName carries mid-match. Explicit names (opponents)
+     still win. */
+  const stored =
+    typeof getUsername === "function" ? getUsername() || "" : "";
+  const rawName =
+    name ||
+    (stored || "") ||
+    (G.myName && G.myName !== "YOU" && G.myName !== "Player"
+      ? G.myName
+      : "") ||
+    "Player";
   const displayName = escHtml(rawName);
   const city = meta && meta.city ? escHtml(meta.city) : "";
   $("profileTitle").textContent = name ? rawName + "'s Profile" : "My Profile";

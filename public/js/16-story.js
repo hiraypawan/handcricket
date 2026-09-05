@@ -714,26 +714,11 @@ document.querySelectorAll("#storyLang .lang-btn").forEach((b) => {
   };
 })();
 
-(function () {
-  const mg = document.querySelector(".mode-grid");
-  if (mg) {
-    mg.classList.remove("three-col");
-    mg.style.gridTemplateColumns = "repeat(4, 1fr)";
-    mg.style.maxWidth = "380px";
-    const sb = document.createElement("div");
-    sb.className = "mode-btn";
-    sb.id = "modeStory";
-    sb.innerHTML =
-      '<span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg></span><span class="title">Story</span><span class="desc">Build your legacy</span>';
-    sb.onclick = () => {
-      ensureAudio();
-      sfx("tap");
-      haptic();
-      enterStoryMode();
-    };
-    mg.appendChild(sb);
-  }
-})();
+/* NOTE: the home Story tile lives in index.html (#modeStory, wired in
+   11-modes.js). An older revision injected a second tile here at runtime —
+   removed: it duplicated the button (and the id) on the home screen. */
+// ================================================================
+// PLAYER SELECTION + INNINGS BREAK SYSTEM
 // ================================================================
 // PLAYER SELECTION + INNINGS BREAK SYSTEM
 // ================================================================
