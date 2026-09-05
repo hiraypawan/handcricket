@@ -8,6 +8,12 @@ export const onRequestPost = async (ctx) => {
   };
 
   try {
+    if (!ctx.env || !ctx.env.KV) {
+      return new Response(JSON.stringify({ error: 'Server storage is not configured yet', degraded: true }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
     const body = await ctx.request.json();
     const { user, data, token } = body;
 

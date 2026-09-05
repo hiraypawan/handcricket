@@ -163,10 +163,20 @@ function publishProfile() {
   try {
     const user = getUsername();
     if (!user) return;
+    let idToken = "";
+    try {
+      idToken =
+        typeof hcGoogleToken === "function" ? hcGoogleToken() : "";
+    } catch (e) {}
     fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user, stats: loadStats(), token: getClientToken() }),
+      body: JSON.stringify({
+        user,
+        stats: loadStats(),
+        token: getClientToken(),
+        idToken: idToken || undefined,
+      }),
     })
       .then((r) => {
         /* 403 = this name is already claimed by another device. Say so once
@@ -357,6 +367,9 @@ function showProfile(name, stats, meta) {
   const fr = $("friendsOverlay");
   if (fr) fr.classList.add("hidden");
   $("profileOverlay").classList.remove("hidden");
+  try {
+    if (typeof renderGoogleButtons === "function") renderGoogleButtons();
+  } catch (e) {}
 }
 const ProfileTabs = {
   switch(tab, btn) {
@@ -523,6 +536,22 @@ async function showUserProfile(name, fallbackStats) {
       if (j && j.profile && j.profile.stats) stats = j.profile.stats;
     }
   } catch (e) {}
+  if (!stats) {
+    /* Bots never publish, so the server can never have them — fall back to
+       the list snapshot, then a progressive generated career for bots. */
+    try {
+      const key = String(name || "").toLowerCase();
+      if (window.__friendStats && window.__friendStats[key]) {
+        stats = window.__friendStats[key];
+      } else if (
+        window.__friendIsBot &&
+        window.__friendIsBot[key] &&
+        typeof botCareerFor === "function"
+      ) {
+        stats = botCareerFor(name);
+      }
+    } catch (e) {}
+  }
   if (!stats) {
     toast("No public career for " + name + " yet", "warn");
     return;

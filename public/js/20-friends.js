@@ -112,9 +112,100 @@ function loadLocal() {
     await syncFromServer();
   }
 
+  /* ---- presence (online / last-seen) ---- */
+  window.__friendStats = window.__friendStats || {};
+  window.__friendIsBot = window.__friendIsBot || {};
+  window.__presenceMap = window.__presenceMap || {};
+  window.hcPresence = window.hcPresence || { state: "menu", room: null };
+  window.hcPresenceSet = function (state, room) {
+    window.hcPresence = { state: state || "menu", room: room || null };
+    presenceBeat();
+  };
+  async function presenceBeat() {
+    const u = typeof getUsername === "function" ? getUsername() : "";
+    if (!u) return;
+    try {
+      await fetch("/api/presence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user: u,
+          state: (window.hcPresence && window.hcPresence.state) || "menu",
+          room: (window.hcPresence && window.hcPresence.room) || null,
+        }),
+      });
+    } catch (e) {}
+  }
+  window.hcPresenceBeat = presenceBeat;
+  setInterval(presenceBeat, 60000);
+  function presenceLabel(online, lastSeen) {
+    if (online) return { txt: "Online", on: true };
+    const mins = Math.max(1, Math.round((Date.now() - (lastSeen || 0)) / 60000));
+    if (!lastSeen) return { txt: "Offline", on: false };
+    if (mins < 60) return { txt: mins + "m ago", on: false };
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return { txt: hrs + "h ago", on: false };
+    return { txt: Math.floor(hrs / 24) + "d ago", on: false };
+  }
+  /* Real friends: server presence (unknown => allow). Bots: deterministic
+     pseudo-presence so the list feels alive. */
+  window.friendPresenceStatus = function (name) {
+    const key = String(name || "").toLowerCase();
+    const isBot = !!(window.__friendIsBot && window.__friendIsBot[key]);
+    if (isBot && typeof botPresence === "function") {
+      const b = botPresence(name);
+      if (b.online) return { online: true, label: "Online", known: true, bot: true };
+      return {
+        online: false,
+        label: b.lastMin < 60 ? b.lastMin + "m ago" : Math.floor(b.lastMin / 60) + "h ago",
+        known: true,
+        bot: true,
+      };
+    }
+    const rec = window.__presenceMap && window.__presenceMap[key];
+    if (!rec) return { online: true, label: "", known: false, bot: false };
+    const lab = presenceLabel(rec.online, rec.lastSeen);
+    return { online: !!rec.online, label: lab.txt, known: true, bot: false, state: rec.state, room: rec.room };
+  };
+  async function refreshPresence() {
+    const names = ((myFriends.friends || []).map((f) => f.name) || []).filter(
+      (n) => !(window.__friendIsBot && window.__friendIsBot[String(n).toLowerCase()]),
+    );
+    if (names.length && typeof getUsername === "function" && getUsername()) {
+      try {
+        const r = await fetch("/api/presence?names=" + encodeURIComponent(names.join(",")));
+        if (r.ok) {
+          const j = await r.json();
+          if (j && j.presence) window.__presenceMap = j.presence;
+        }
+      } catch (e) {}
+    }
+    document.querySelectorAll("[data-pres]").forEach((el) => {
+      const st = window.friendPresenceStatus(el.getAttribute("data-pres"));
+      el.innerHTML =
+        '<span class="pdot' + (st.online ? " on" : "") + '"></span>' +
+        (st.label ? '<span class="ptxt">' + st.label + "</span>" : "");
+      el.classList.toggle("off", !st.online && st.known);
+    });
+    document.querySelectorAll("[data-watchbtn]").forEach((btn) => {
+      const st = window.friendPresenceStatus(btn.getAttribute("data-watchbtn"));
+      btn.style.display = st.state === "playing" && st.room ? "" : "none";
+    });
+  }
+  window.hcRefreshPresence = refreshPresence;
+
   function renderFriendList() {
     const list = $("friendList");
     if (!list) return;
+    /* snapshots for profile fallback + bot flags for presence */
+    try {
+      (myFriends.friends || []).concat(myFriends.pending || []).forEach((f) => {
+        const k = String(f.name || "").toLowerCase();
+        if (!k) return;
+        if (f.stats) window.__friendStats[k] = f.stats;
+        if (f.isBot) window.__friendIsBot[k] = true;
+      });
+    } catch (e) {}
     if (currentTab === "list") {
       if (!myFriends.friends || myFriends.friends.length === 0) {
         list.innerHTML =
@@ -138,8 +229,16 @@ function loadLocal() {
             "</div>" +
             '<div class="friend-rank">' +
             (f.stats ? getRank(f.stats) : "") +
-            "</div></div>" +
+            "</div>" +
+            '<div class="friend-presence" data-pres="' +
+            escAttr(f.name) +
+            '"></div></div>' +
             '<div class="friend-actions">' +
+            '<button class="fa-watch" data-watchbtn="' +
+            escAttr(f.name) +
+            '" style="display:none" onclick="event.stopPropagation();hcWatchFriend(\'' +
+            escAttr(f.name) +
+            "')\">Watch</button>" +
             '<button class="fa-challenge" onclick="event.stopPropagation();challengeFriend(\'' +
             escAttr(f.name) +
             "')\">Play</button>" +
@@ -182,6 +281,9 @@ function loadLocal() {
         .join("");
     }
     updatePendingCount();
+    try {
+      refreshPresence();
+    } catch (e) {}
   }
 
   function updatePendingCount() {
@@ -244,9 +346,32 @@ function loadLocal() {
   // starts a real online host room: you get a shareable invite link and wait
   // for your friend to open it (they join as the guest). Requires PeerJS — the
   // retry button handles transient network failures.
+  window.hcWatchFriend = function (name) {
+    const st =
+      typeof window.friendPresenceStatus === "function"
+        ? window.friendPresenceStatus(name)
+        : null;
+    if (typeof hcSpectate === "function" && st && st.room) {
+      hcSpectate(st.room, name);
+    } else {
+      toast(name + " is not in a live match right now", "warn");
+    }
+  };
   window.challengeFriend = function (name) {
     ensureAudio();
     sfx("tap");
+    /* Play requests only go to friends who are online — real (presence) or
+       bot (pseudo-presence). Unknown status fails open (old behavior). */
+    try {
+      const st =
+        typeof window.friendPresenceStatus === "function"
+          ? window.friendPresenceStatus(name)
+          : null;
+      if (st && st.known && !st.online) {
+        toast(name + " is offline" + (st.label ? " (" + st.label + ")" : "") + " — try later", "warn");
+        return;
+      }
+    } catch (e) {}
     $("friendsOverlay").classList.add("hidden");
     if (typeof Peer === "undefined") {
       toast("Online play needs a connection — check your network and retry", "warn");
@@ -298,6 +423,9 @@ function loadLocal() {
   window.showFriends = async function () {
     await loadFriends();
     pollInbox(false);
+    try {
+      presenceBeat();
+    } catch (e) {}
     currentTab = "list";
     renderFriendList();
     const pr = $("profileOverlay");

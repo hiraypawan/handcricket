@@ -1616,6 +1616,21 @@ input,select,textarea{font-size:16px}
 /* home secondary row (How to Play / Profile / Friends / Leaderboard):
    wrap on narrow screens and never stretch full-width per button */
 .home-btn-row button{width:auto;flex:0 1 auto;margin-top:0;white-space:nowrap}
+/* presence (online / last-seen) on friend rows */
+.friend-presence{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--ink-faint);margin-top:2px}
+.friend-presence .pdot{width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0}
+.friend-presence .pdot.on{background:#34d399;box-shadow:0 0 6px rgba(52,211,153,.7)}
+.friend-presence.off{opacity:.75}
+.fa-watch{padding:5px 10px;border-radius:8px;font-size:10px;font-weight:800;border:1px solid rgba(45,212,191,.4);background:rgba(45,212,191,.1);color:#7ef0dd;cursor:pointer;pointer-events:auto}
+/* spectate sheet */
+.spec-score{font-family:var(--font-title);font-size:clamp(24px,4.5vh,34px);color:#fff;margin:10px 0 2px}
+.spec-meta{font-size:11px;font-weight:700;color:var(--ink-faint);margin-bottom:8px}
+.spec-comments{display:flex;flex-direction:column;gap:6px;width:min(100%,380px);margin:6px auto;max-height:30vh;overflow-y:auto;padding:2px}
+.spec-comments .float-msg{position:static;transform:none;animation:fadeUp .25s ease}
+.spec-presets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:min(100%,380px);margin:8px auto}
+#watchEye svg{vertical-align:-2px}
+.watch-row{display:flex;align-items:center;gap:8px;padding:8px 10px;font-size:13px;font-weight:700;color:#fff}
+.watch-row .pdot{width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 6px rgba(52,211,153,.7);flex-shrink:0}
 /* team-builder type-my-XI rows */
 .tb-mode-row{display:flex;gap:8px;width:min(100%,380px);margin:8px auto 4px}
 .tb-mode-row .ftab{flex:1;margin-top:0}

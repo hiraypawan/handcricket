@@ -6,6 +6,12 @@ export const onRequestGet = async (ctx) => {
   };
 
   try {
+    if (!ctx.env || !ctx.env.KV) {
+      return new Response(JSON.stringify({ error: 'Server storage is not configured yet', degraded: true }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
     const url = new URL(ctx.request.url);
     const user = url.searchParams.get('user');
 

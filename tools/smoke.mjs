@@ -272,8 +272,11 @@ check("quick-match overlay opens with honest copy", mmShown && !/real player|sea
 // pick 1v1 inside the overlay, then Find Opponent -> persona reveal -> Start
 ev(dom, `document.querySelector('#mmSize .team-size-btn[data-size="1"]').click()`);
 check("quick match CTA starts as 'Find Opponent'", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Find Opponent", byId(dom, "btnMMPlayBot")?.textContent.trim());
+ev(dom, `window.__qmCutoffMs = 1500;`); // fast bot fallback in-suite (prod: 9-14s)
 ev(dom, `$('btnMMPlayBot').click()`);
-await sleep(4200); // staged search is deliberately ~2.6-3.6s
+await sleep(4200); // staged search + short-cutoff fallback
+const qmSeek = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
+check("quick search polls the real matchmaking pool first", /\/api\/quickmatch/.test(qmSeek), qmSeek.slice(0, 90));
 const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
 const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
 const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
@@ -337,6 +340,24 @@ const xiSaved = ev(dom, `getCustomTeams().some(t => t.name === 'Smoke XI' && t.p
 check("typed XI saves as a custom team", xiSaved === true, "");
 const presetHit = ev(dom, `Object.values(TEAMS).flatMap(t => t.players.map(p => p.name)).some(n => ['Kohli','Rohit','Dhoni','Bumrah','Pant','Buttler','Warner','Maxwell','Starc','Kuldeep','Chahal','Hardik','Jadeja','Pant'].includes(n))`);
 check("preset squads carry no real-famous names", presetHit === false, "");
+// bot skill tiers + progressive careers + pseudo-presence are pure/deterministic
+const tierNew = ev(dom, `BotAI.skillFor({matches:0,wins:0}).key`);
+const tierPro = ev(dom, `BotAI.skillFor({matches:10,wins:4}).key`);
+const tierMaster = ev(dom, `BotAI.skillFor({matches:60,wins:40}).key`);
+check("bot skill climbs with career (learner→pro→master)", tierNew === "learner" && tierPro === "pro" && tierMaster === "master", `${tierNew}/${tierPro}/${tierMaster}`);
+const bcA = ev(dom, `JSON.stringify(botCareerFor('Test Hero'))`);
+const bcB = ev(dom, `JSON.stringify(botCareerFor('Test Hero'))`);
+check("bot careers are deterministic per name", bcA === bcB && JSON.parse(bcA).matches > 0, bcA.slice(0, 60));
+const bpA = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
+const bpB = ev(dom, `JSON.stringify(botPresence('Test Hero'))`);
+check("bot presence is deterministic per time bucket", bpA === bpB && typeof JSON.parse(bpA).online === "boolean", bpA);
+// spectate + auth + ranks wiring (static: no live peers in jsdom)
+check("spectate client present", ev(dom, `typeof hcSpectate`) === "function" && ev(dom, `typeof window.spectateTick`) === "function");
+const fs5b = await import("node:fs");
+const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
+check("spectate endpoints exist", /spectate/.test(repoSrc("public/js/26-spectate.js")) && /action.*publish/.test(repoSrc("functions/api/spectate.js")));
+check("google auth scaffolded", /accounts\.google\.com\/gsi\/client/.test(repoSrc("public/js/27-auth.js")) && /verifyGoogleIdToken/.test(repoSrc("lib/api/shared.js")));
+check("dock Career tab is now Ranks", (byId(dom, "tabBar")?.textContent || "").includes("Ranks"));
 
 // ---------------------------------------------------------------- 6. story/casual isolation (C5/C6)
 // A casual offline match played AFTER story mode must not touch the story

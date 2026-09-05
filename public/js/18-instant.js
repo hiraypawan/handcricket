@@ -11,16 +11,31 @@
    career, revealed before the match starts. The persona is derived from the
    name, so re-matching the same player never shows a different record. */
 let mmPersona = null;
-let mmFindTimer = null;
+let mmSearch = null;
 
+function stopQmSearch() {
+  if (!mmSearch) return;
+  try {
+    mmSearch.cancelled = true;
+    clearInterval(mmSearch.poll);
+    clearTimeout(mmSearch.cut);
+    (mmSearch.stages || []).forEach(clearTimeout);
+  } catch (e) {}
+  mmSearch = null;
+}
 function resetMatchmakingUI() {
+  stopQmSearch();
+  try {
+    const me = (typeof getUsername === "function" && getUsername()) || "Player";
+    fetch("/api/quickmatch", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "leave", user: me }),
+    }).catch(() => {});
+  } catch (e) {}
   mmSearching = false;
   mmPersona = null;
   clearInterval(matchTimer);
-  if (mmFindTimer) {
-    clearTimeout(mmFindTimer);
-    mmFindTimer = null;
-  }
   $("matchStatus").textContent = "Pick your format — we will find you an opponent.";
   $("matchTimer").textContent = "";
   $("searchSpinner").style.display = "none";
@@ -45,13 +60,16 @@ function renderMMPersona(p) {
   $("mmPersona").classList.remove("hidden");
 }
 
-/* Staged search: a real-feeling beat (~3s) instead of an instant reveal.
-   Still an honest bot game (see header) — the stages describe rating
-   matching, never "real players". One chained timer id so Cancel clears it. */
+/* QUICK MATCHMAKING — real players first, bot fallback after.
+   Seekers poll /api/quickmatch every 2s; anyone else seeking the same format
+   matches instantly into a real P2P room (earlier seeker hosts). Nothing
+   found by a random 9–14s cutoff → a bot persona with a real-looking name.
+   window.__qmCutoffMs overrides the cutoff (used by the smoke suite). */
 const MM_SEARCH_STAGES = [
   "Finding you an opponent...",
   "Comparing ratings...",
   "Confirming opponent...",
+  "Still looking...",
 ];
 function findOpponent() {
   mmSearching = true;
@@ -59,17 +77,45 @@ function findOpponent() {
   $("mmPersona").classList.add("hidden");
   const btn = $("btnMMPlayBot");
   btn.disabled = true;
-  let stage = 0;
-  const runStage = () => {
-    mmFindTimer = null;
-    if (!mmSearching) return;
-    if (stage < MM_SEARCH_STAGES.length) {
-      $("matchStatus").textContent = MM_SEARCH_STAGES[stage];
-      btn.textContent = "Searching...";
-      stage++;
-      mmFindTimer = setTimeout(runStage, 850 + Math.random() * 350);
-      return;
+  btn.textContent = "Searching...";
+  if (typeof window.hcPresenceSet === "function")
+    window.hcPresenceSet("seeking", null);
+  const me = (typeof getUsername === "function" && getUsername()) || "Player";
+  const teamSize = getTeamSize();
+  const cutoff =
+    typeof window.__qmCutoffMs === "number"
+      ? window.__qmCutoffMs
+      : 9000 + Math.random() * 5000;
+  const t0 = Date.now();
+  const S = { cancelled: false, poll: null, cut: null, stages: [] };
+  mmSearch = S;
+  const qmPost = async (action) => {
+    try {
+      const r = await fetch("/api/quickmatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, user: me, teamSize }),
+      });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (e) {
+      return null;
     }
+  };
+  const goReal = (m) => {
+    if (S.cancelled) return;
+    S.cancelled = true;
+    clearInterval(S.poll);
+    clearTimeout(S.cut);
+    S.stages.forEach(clearTimeout);
+    mmSearch = null;
+    joinRealMatch(m);
+  };
+  const goBot = () => {
+    if (S.cancelled) return;
+    S.cancelled = true;
+    clearInterval(S.poll);
+    mmSearch = null;
     mmPersona = genBotProfile();
     renderMMPersona(mmPersona);
     mmSearching = false;
@@ -79,7 +125,65 @@ function findOpponent() {
     btn.textContent = "Start Match";
     sfx("tap");
   };
-  runStage();
+  let si = 0;
+  const beat = () => {
+    if (S.cancelled) return;
+    $("matchStatus").textContent = MM_SEARCH_STAGES[si % MM_SEARCH_STAGES.length];
+    si++;
+    S.stages.push(setTimeout(beat, 1400));
+  };
+  beat();
+  S.poll = setInterval(async () => {
+    if (S.cancelled) return;
+    if (Date.now() - t0 > cutoff) {
+      goBot();
+      return;
+    }
+    const j = await qmPost("poll");
+    if (j && j.status === "matched") goReal(j);
+  }, 2000);
+  qmPost("seek").then((j) => {
+    if (j && j.status === "matched") goReal(j);
+  });
+  S.cut = setTimeout(goBot, cutoff + 800);
+}
+/* A real seeker was found: drop into the normal online flow (host creates
+   the room, guest joins by code) — team select, roles, live toss follow. */
+function joinRealMatch(m) {
+  mmSearching = false;
+  $("searchSpinner").style.display = "none";
+  G.mode = "online";
+  G.isBot = false;
+  G.storyMatch = false;
+  G.storyDifficulty = 0;
+  G.teamSize = m.teamSize || getTeamSize();
+  G.oppName = m.opp || "Opponent";
+  G.myName = (typeof getUsername === "function" && getUsername()) || "Player";
+  G.isHost = m.role !== "guest";
+  G.roomId = m.room;
+  G.wantRejoin = false;
+  $("matchmakingOverlay").classList.add("hidden");
+  $("menuOverlay").classList.add("hidden");
+  $("waitingOverlay").classList.remove("hidden");
+  $("connLog").innerHTML = "";
+  const badge = $("connBadge");
+  if (badge) badge.style.display = "none";
+  if (typeof Peer === "undefined") {
+    toast("Online play needs a connection — check your network and retry", "warn");
+    $("waitingOverlay").classList.add("hidden");
+    $("menuOverlay").classList.remove("hidden");
+    return;
+  }
+  if (G.isHost) {
+    $("waitTitle").textContent = "Opponent found!";
+    $("waitDesc").textContent = (m.opp || "Opponent") + " is joining...";
+    connLog("Creating room " + m.room + "...");
+  } else {
+    $("waitTitle").textContent = "Opponent found!";
+    $("waitDesc").textContent = "Joining " + (m.opp || "opponent") + "...";
+    connLog("Joining " + m.room + "...");
+  }
+  startPeer(G.isHost, m.room);
 }
 
 $("btnMMCancel").onclick = () => {
@@ -100,12 +204,9 @@ $("btnMMPlayBot").onclick = () => {
 };
 /* keep the revealed persona when the match actually starts */
 function resetMatchmakingUI2() {
+  stopQmSearch();
   mmSearching = false;
   clearInterval(matchTimer);
-  if (mmFindTimer) {
-    clearTimeout(mmFindTimer);
-    mmFindTimer = null;
-  }
 }
 function teamDisplayName() {
   try {
@@ -132,6 +233,7 @@ function startMatchmaking() {
   });
   resetMatchmakingUI();
   $("btnMMPlayBot").style.display = "block";
+  if (typeof window.hcPresenceSet === "function") window.hcPresenceSet("seeking", null);
 }
 // Random toss + full offline rules (role screen for team formats).
 function startQuickBotMatch(persona) {

@@ -47,7 +47,7 @@
 <div class="free-hit-banner" id="fhBanner">FREE HIT! Cannot get OUT!</div>
 <div class="target-banner" id="targetBanner">Target: <b id="targetNum">0</b></div>
 <div class="balls-row" id="ballsRow"></div>
-<div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
+<div class="status-bar"><div class="status" id="status">Choose mode</div><button class="leave-btn hidden" id="watchEye" aria-label="Who is watching"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> <span id="watchCount">0</span></button><button class="leave-btn" id="leaveBtn" style="display:none">Leave</button></div>
 <div class="arena">
 <div class="arena-stadium"><svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="presentation">
 <defs>
@@ -172,7 +172,7 @@
   <span>Play</span>
  </button><button class="tab-btn" data-tab="team" onclick="TabBar.switch('team')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4.5a2.5 2.5 0 0 0 0 5H7M17 6h2.5a2.5 2.5 0 0 1 0 5H17"/></svg>
-  <span>Career</span>
+  <span>Ranks</span>
  </button><button class="tab-btn" data-tab="tournaments" onclick="TabBar.switch('tournaments')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.6 2.6 0 1 1 3.6 2.5c-.9.4-1.3 1-1.3 2"/><path d="M12 16.9h.01"/></svg>
   <span>Help</span>
@@ -309,6 +309,7 @@
 <button id="btnNoLeave" class="secondary">Continue</button></div>
 <div class="overlay hidden" id="profileOverlay"><h1 id="profileTitle" style="margin-bottom:4px">My Profile</h1>
 <div class="profile-card" id="profileCard"></div>
+<div class="google-btn-slot" id="googleBtnProfile" style="margin-top:10px;display:flex;justify-content:center"></div>
 <button id="btnCloseProfile" class="secondary small">Close</button></div>
 <div class="friends-overlay hidden" id="friendsOverlay"><h1>Friends</h1>
 <div class="ptr-row"><button class="ptr-btn" id="btnFriendsRefresh" type="button">Refresh</button></div>
@@ -322,7 +323,7 @@
 </div>
 <div class="overlay hidden" id="usernameOverlay"><h1>Welcome!</h1><p style="font-size:13px;opacity:.8;margin-bottom:12px">What should we call you?</p>
 <input type="text" id="usernameInput" placeholder="Your Name" maxlength="16" autocomplete="off" style="text-align:center;font-size:18px;padding:12px;width:220px"/>
-<button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button></div>
+<button id="btnSaveUsername" style="margin-top:12px">Let's Play!</button><div class="google-btn-slot" id="googleBtnName" style="margin-top:10px;display:flex;justify-content:center"></div></div>
 
 <div class="role-reveal-banner" id="roleRevealBanner"></div>
 
@@ -440,6 +441,16 @@
 <div class="rp-strip" id="replayStrip"></div>
 <div class="rp-result hidden" id="replayResult"></div>
 <button id="btnCloseReplay" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="spectateOverlay"><h1>Live Match</h1>
+<div class="connected-badge"><span class="dot"></span><span id="specVs">vs</span></div>
+<div class="spec-score" id="specScore">Connecting...</div>
+<div class="spec-meta" id="specMeta"></div>
+<div class="spec-comments" id="specComments"></div>
+<div class="spec-presets" id="specPresets"></div>
+<button id="btnSpecLeave" class="secondary small">Leave Spectate</button></div>
+<div class="overlay hidden" id="watchOverlay"><h1>Watching (<span id="watchCount2">0</span>)</h1>
+<div class="friend-list" id="watchList"></div>
+<button id="btnCloseWatch" class="secondary small">Close</button></div>
 <div class="toast-host" id="toastHost" aria-live="polite"></div>
 <div class="overlay confirm-overlay hidden" id="confirmOverlay"><h1 id="confirmTitle">Are you sure?</h1>
 <p id="confirmMsg" class="confirm-msg"></p>
@@ -473,5 +484,7 @@
 <script defer src="js/23-features.js?v=2.9.0"></script>
 <script defer src="js/24-tournaments.js?v=2.9.0"></script>
 <script defer src="js/25-replay.js?v=2.9.0"></script>
+<script defer src="js/26-spectate.js?v=2.9.0"></script>
+<script defer src="js/27-auth.js?v=2.9.0"></script>
 </body>
 </html>

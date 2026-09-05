@@ -25,6 +25,9 @@ export const onRequestGet = (ctx) => {
         ? { urls, username, credential }
         : null,
     turnSource: urls && username && credential ? 'env' : 'free-openrelay',
+    /* Public OAuth Client ID for Google Sign-In (empty until the owner
+       creates one and sets HC_GOOGLE_CLIENT_ID in the Pages dashboard). */
+    googleClientId: env.HC_GOOGLE_CLIENT_ID || null,
   };
   return json(body);
 };

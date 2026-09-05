@@ -212,6 +212,7 @@ function updBotLvl() {
   if (p && p.city) bits.push(p.city);
   const rk = getRank(G.oppStats || p);
   if (rk) bits.push(rk);
+  if (BotAI.tier) bits.push(BotAI.tier);
   el.textContent = bits.join(" \u00b7 ");
 }
 function armWD() {

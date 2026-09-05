@@ -26,6 +26,7 @@ function showMenu() {
   showDock();
   updHomeUsername();
   updHomeTrophies();
+  if (typeof window.hcPresenceSet === "function") window.hcPresenceSet("menu", null);
 }
 function showStoryHome() {
   document.querySelectorAll(".overlay,.friends-overlay").forEach(function (o) {
@@ -50,8 +51,14 @@ const TabBar = {
       // Play — main menu
       showMenu();
     } else if (tab === "team") {
-      // Career — story mode
-      showStoryHome();
+      // Ranks — leaderboard (Story lives on the home tile; the dock had
+      // pointed here too, giving two Story buttons for one destination)
+      document.querySelectorAll(".overlay,.friends-overlay").forEach(function (o) {
+        o.classList.add("hidden");
+      });
+      if (typeof showLeaderboard === "function") showLeaderboard();
+      else showMenu();
+      showDock();
     } else if (tab === "friends") {
       /* v2.8: the dock used to carry an "Arena" tab that opened the exact same
          Quick Match overlay as the home tile. Friends had no root entry at all

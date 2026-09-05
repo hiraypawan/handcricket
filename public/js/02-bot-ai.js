@@ -232,6 +232,7 @@ const BotAI = {
   bowl() {
     const diff = this.difficulty || 0;
     if (this.ballCount < 3) return this.rand();
+    if (this.maybeMistake(diff)) return this.rand();
     const d = Math.min(this.ballCount / 8, 1);
     const pr = this.predict();
     const anti = this.antiPattern();
@@ -268,6 +269,7 @@ const BotAI = {
   bat() {
     const diff = this.difficulty || 0;
     if (this.ballCount < 3) return this.rand();
+    if (this.maybeMistake(diff)) return this.rand();
     const d = Math.min(this.ballCount / 8, 1);
     const pr = this.predict();
     let opts = [1, 2, 3, 4, 5, 6];
@@ -318,6 +320,26 @@ const BotAI = {
     return this.wp(opts, w);
   },
 
+  /* SKILL TIERS — the bot climbs as YOUR career grows, so results track
+     skill, not luck. diff scales how often the bot trusts its read; the
+     role clamp in botPickWithRole() applies AFTER, so tiers never cheat
+     the gesture rules — a Master still can't pick outside its role. */
+  skillFor(stats) {
+    const m = (stats && stats.matches) || 0;
+    const w = (stats && stats.wins) || 0;
+    const score = m + w * 2;
+    if (score >= 60) return { key: "master", label: "Master", diff: 0.85 };
+    if (score >= 32) return { key: "veteran", label: "Veteran", diff: 0.7 };
+    if (score >= 14) return { key: "pro", label: "Pro", diff: 0.55 };
+    if (score >= 4) return { key: "club", label: "Club", diff: 0.35 };
+    return { key: "learner", label: "Learner", diff: 0.15 };
+  },
+  /* Learner mistake gate: low tiers often guess blind even with a read.
+     At diff .15 most balls are honest guesses; at .85 almost never. */
+  maybeMistake(diff) {
+    const d = typeof diff === "number" ? diff : 0;
+    return Math.random() > 0.3 + d * 0.65;
+  },
   rand() {
     return Math.floor(Math.random() * 6) + 1;
   },

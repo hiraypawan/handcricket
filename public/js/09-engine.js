@@ -132,6 +132,8 @@ $("btnNoLeave").onclick = () => {
 };
 function startInnings(n) {
   if (typeof hideDock === "function") hideDock(); // dock never overlays live play
+  if (typeof window.hcPresenceSet === "function")
+    window.hcPresenceSet("playing", G.roomId || null);
   /* v2.9: the crowd only moves while a match is on. Off the field the stadium
      stays still — motion you cannot turn off is noise, not polish. */
   const ar = document.querySelector(".arena");
@@ -199,6 +201,10 @@ function curBat() {
 }
 function nextBall() {
   clearWD();
+  /* spectators: publish snapshot + eye count + bot viewers, once a ball */
+  try {
+    if (typeof window.spectateTick === "function") window.spectateTick();
+  } catch (e) {}
   const bat = curBat();
   if (bat.balls >= G.totalBalls || bat.wkts >= G.totalWkts) {
     endInnings();
@@ -218,8 +224,20 @@ function nextBall() {
   $("labelOpponent").textContent = "?";
   if (G.mode === "offline") {
     BotAI.updateContext(G.target, G.me.score, G.me.wkts, G.totalBalls);
-    BotAI.difficulty =
-      G.storyDifficulty || Math.min(0.1 * (G.teamSize || 1), 0.5);
+    /* Skill-matched bot: the tier climbs with YOUR career (story keeps its
+       own authored difficulty). Same gesture rules for both sides — the tier
+       only changes how often the bot trusts its read. */
+    if (G.storyDifficulty) {
+      BotAI.difficulty = G.storyDifficulty;
+      BotAI.tier = "Story";
+    } else {
+      const sk =
+        typeof loadStats === "function"
+          ? BotAI.skillFor(loadStats())
+          : { label: "Club", diff: 0.35 };
+      BotAI.difficulty = sk.diff;
+      BotAI.tier = sk.label;
+    }
     G.oppPick = botPickWithRole();
     updBotLvl();
   }
@@ -858,6 +876,9 @@ $("btnMenu").onclick = () => {
 };
 $("btnMenu").className = "back-btn";
 function resetGame() {
+  try {
+    if (typeof window.specResetHost === "function") window.specResetHost();
+  } catch (e) {}
   const ar0 = document.querySelector(".arena");
   if (ar0) ar0.classList.remove("live");
   clearWD();

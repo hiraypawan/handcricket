@@ -46,6 +46,8 @@ async function statsFor(KV, user, provided) {
 
 export const onRequestGet = async (ctx) => {
   try {
+    if (!ctx.env || !ctx.env.KV)
+      return json({ error: 'Server storage is not configured yet', degraded: true }, 503);
     const url = new URL(ctx.request.url);
     const user = url.searchParams.get('user');
     if (!user) return json({ error: 'Missing user' }, 400);
@@ -70,6 +72,8 @@ export const onRequestGet = async (ctx) => {
 
 export const onRequestPost = async (ctx) => {
   try {
+    if (!ctx.env || !ctx.env.KV)
+      return json({ error: 'Server storage is not configured yet', degraded: true }, 503);
     const body = await ctx.request.json();
     const { action, user, target, targetStats, isBot, data, token } = body;
     if (!user || !action) return json({ error: 'Missing params' }, 400);

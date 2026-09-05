@@ -13,6 +13,9 @@ function ensureUsername(cb) {
   $("usernameOverlay").classList.remove("hidden");
   $("usernameInput").value = "";
   $("usernameInput").focus();
+  try {
+    if (typeof renderGoogleButtons === "function") renderGoogleButtons();
+  } catch (e) {}
   if (!window._pendingCbs) window._pendingCbs = [];
   window._pendingCbs.push(cb);
 }

@@ -16,6 +16,8 @@ import {
    were published before the index existed. */
 export const onRequestGet = async (ctx) => {
   try {
+    if (!ctx.env || !ctx.env.KV)
+      return json({ error: 'Server storage is not configured yet', degraded: true }, 503);
     const url = new URL(ctx.request.url);
     const limit = Math.min(parseInt(url.searchParams.get('limit') || '20', 10) || 20, 50);
     const me = (url.searchParams.get('me') || '').toLowerCase().trim();

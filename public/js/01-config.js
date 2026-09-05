@@ -400,6 +400,39 @@ function mulberry32(a) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+/* Progressive bot career: deterministic base (same name, same player) that
+   GROWS with calendar weeks, so bot friends look alive instead of frozen.
+   Never persisted server-side — computed on the fly wherever a bot's
+   career is shown (friend rows, profiles, leaderboard guard filters them). */
+function botCareerFor(name) {
+  const p = genBotProfile(name);
+  const s = personaStats(p);
+  const weeks = Math.max(
+    0,
+    Math.floor((Date.now() - 1767225600000) / 604800000),
+  );
+  if (weeks > 0) {
+    const h = hashStr(String(name).toLowerCase()) % 5;
+    s.matches += weeks * (1 + (h % 2));
+    s.wins = Math.min(s.matches, s.wins + weeks * (h % 2));
+    s.runs += weeks * (20 + h * 7);
+    s.ballsFaced += weeks * (10 + h * 5);
+  }
+  if (typeof deriveStats === "function") return deriveStats(s);
+  s.winPct = s.matches ? ((s.wins / s.matches) * 100).toFixed(0) : "0";
+  s.strikeRate = s.ballsFaced
+    ? ((s.runs / s.ballsFaced) * 100).toFixed(1)
+    : "0.0";
+  return s;
+}
+/* Deterministic pseudo-presence for bots: same bot shows the same status to
+   everyone at the same time (5-minute buckets, ~2/3 online). */
+function botPresence(name) {
+  const bucket = Math.floor(Date.now() / 300000);
+  const h = hashStr(String(name).toLowerCase() + ":" + bucket);
+  if (h % 3 !== 0) return { online: true, lastMin: 0 };
+  return { online: false, lastMin: 2 + (h % 38) };
+}
 
 function genBotName() {
   const f = BOT_FIRST[Math.floor(Math.random() * BOT_FIRST.length)];
