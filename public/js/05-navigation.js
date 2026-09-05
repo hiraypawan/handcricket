@@ -52,24 +52,31 @@ const TabBar = {
     } else if (tab === "team") {
       // Career — story mode
       showStoryHome();
-    } else if (tab === "arena") {
-      // Arena — instant bot battle format picker (honest quick match)
-      $("menuOverlay").classList.add("hidden");
-      if ($("matchmakingOverlay")) {
-        $("matchmakingOverlay").classList.remove("hidden");
-        if (typeof startMatchmaking === "function") startMatchmaking();
-      } else {
-        showMenu();
-      }
+    } else if (tab === "friends") {
+      /* v2.8: the dock used to carry an "Arena" tab that opened the exact same
+         Quick Match overlay as the home tile. Friends had no root entry at all
+         (it was buried behind Profile), so the duplicate became the Friends
+         tab — one way to reach each destination. */
+      document.querySelectorAll(".overlay,.friends-overlay").forEach(function (o) {
+        o.classList.add("hidden");
+      });
+      if (typeof showFriends === "function") showFriends();
+      else showMenu();
+      showDock();
     } else if (tab === "lounge") {
       // Profile — same action as the home profile button
       const b = $("btnProfile");
       if (b) b.click();
       else showMenu();
     } else if (tab === "tournaments") {
-      // Help — how to play (on demand, never auto-opens)
-      showMenu();
-      if (typeof openTutorial === "function") openTutorial();
+      /* v2.9: this tab used to open the tutorial, so its label promised
+         tournaments and delivered help. It now opens the knockout cup; help is
+         still one tap away from the home row. */
+      if (typeof hcOpenCup === "function") hcOpenCup();
+      else {
+        showMenu();
+        if (typeof openTutorial === "function") openTutorial();
+      }
     }
   },
 };

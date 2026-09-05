@@ -7,20 +7,90 @@
 // 8-second "searching for a real player" countdown (with a cosmetic PeerJS
 // peer nobody could join) and silently dropped you into a bot match. There is
 // no matchmaking service; the overlay now says so and starts immediately.
-$("btnMMCancel").onclick = () => {
+/* v2.8 QUICK MATCH — the opponent is a player with a name, a city and a
+   career, revealed before the match starts. The persona is derived from the
+   name, so re-matching the same player never shows a different record. */
+let mmPersona = null;
+let mmFindTimer = null;
+
+function resetMatchmakingUI() {
   mmSearching = false;
+  mmPersona = null;
   clearInterval(matchTimer);
+  if (mmFindTimer) {
+    clearTimeout(mmFindTimer);
+    mmFindTimer = null;
+  }
+  $("matchStatus").textContent = "Pick your format — we will find you an opponent.";
+  $("matchTimer").textContent = "";
+  $("searchSpinner").style.display = "none";
+  $("mmPersona").classList.add("hidden");
+  $("mmPersona").innerHTML = "";
+  const btn = $("btnMMPlayBot");
+  btn.textContent = "Find Opponent";
+  btn.disabled = false;
+}
+
+function renderMMPersona(p) {
+  const st = personaStats(p);
+  $("mmPersona").innerHTML =
+    (typeof avatarHtml === "function" ? avatarHtml(p.name || "?", 62, "persona-avatar") : '<div class="persona-avatar">' + escHtml((p.name || "?").trim().charAt(0).toUpperCase()) + "</div>") +
+    '<div class="persona-body"><div class="persona-name">' + escHtml(p.name) + "</div>" +
+    '<div class="persona-meta">' + escHtml(p.city) + " \u00b7 " + escHtml(p.style) + "</div>" +
+    '<div class="persona-stats">' +
+    "<span>" + st.matches + " matches</span>" +
+    "<span>" + st.winPct + "% wins</span>" +
+    "<span>" + getRank(st) + "</span>" +
+    "</div></div>";
+  $("mmPersona").classList.remove("hidden");
+}
+
+function findOpponent() {
+  mmSearching = true;
+  $("searchSpinner").style.display = "block";
+  $("mmPersona").classList.add("hidden");
+  $("matchStatus").textContent = "Finding you an opponent...";
+  const btn = $("btnMMPlayBot");
+  btn.disabled = true;
+  btn.textContent = "Searching...";
+  mmFindTimer = setTimeout(() => {
+    mmFindTimer = null;
+    mmPersona = genBotProfile();
+    renderMMPersona(mmPersona);
+    mmSearching = false;
+    $("searchSpinner").style.display = "none";
+    $("matchStatus").textContent = "Opponent found — ready when you are.";
+    btn.disabled = false;
+    btn.textContent = "Start Match";
+    sfx("tap");
+  }, 1100 + Math.random() * 700);
+}
+
+$("btnMMCancel").onclick = () => {
+  resetMatchmakingUI();
   destroyPeer();
   $("matchmakingOverlay").classList.add("hidden");
   $("menuOverlay").classList.remove("hidden");
 };
 $("btnMMPlayBot").onclick = () => {
-  mmSearching = false;
-  clearInterval(matchTimer);
+  if (!mmPersona) {
+    findOpponent();
+    return;
+  }
+  resetMatchmakingUI2();
   destroyPeer();
   $("matchmakingOverlay").classList.add("hidden");
-  startQuickBotMatch();
+  startQuickBotMatch(mmPersona);
 };
+/* keep the revealed persona when the match actually starts */
+function resetMatchmakingUI2() {
+  mmSearching = false;
+  clearInterval(matchTimer);
+  if (mmFindTimer) {
+    clearTimeout(mmFindTimer);
+    mmFindTimer = null;
+  }
+}
 function startMatchmaking() {
   mmSearching = false;
   clearInterval(matchTimer);
@@ -31,19 +101,20 @@ function startMatchmaking() {
   document.querySelectorAll("#mmSize .team-size-btn").forEach((b) => {
     b.classList.toggle("active", parseInt(b.dataset.size, 10) === G.teamSize);
   });
-  $("matchStatus").textContent = "Instant bot match — pick your format!";
-  $("matchTimer").textContent = "";
-  $("searchSpinner").style.display = "none";
+  resetMatchmakingUI();
   $("btnMMPlayBot").style.display = "block";
 }
 // Random toss + full offline rules (role screen for team formats).
-function startQuickBotMatch() {
+function startQuickBotMatch(persona) {
   G.teamSize = getTeamSize();
   G.mode = "offline";
   G.isHost = true;
   G.isBot = true;
-  G.oppStats = null;
-  G.botProfile = null;
+  // carry the revealed player into the match so the scoreboard, the profile
+  // card and the result screen all show the same opponent
+  G.botProfile = persona || null;
+  G.oppStats = persona ? personaStats(persona) : null;
+  if (persona) G.oppName = persona.name;
   G.iBat = Math.random() < 0.5; // coin flip decides who bats first
   G.myName = getUsername() || "Player";
   G.oppName = "";
@@ -139,17 +210,27 @@ try {
     connLog("Host restored, recreating room...");
     startPeer(true, rid);
   } else {
-    $("menuOverlay").classList.add("hidden");
-    $("onlineLobby").classList.remove("hidden");
-    $("nameInput").value = getUsername() || "";
-    $("btnJoin").style.display = "block";
-    $("btnCreate").style.display = "none";
-    $("hostFormat").style.display = "none";
-    $("joinerNote").style.display = "block";
-    if (sess && sess.role === "join" && sess.room === rid) {
-      $("nameInput").value = sess.name;
-      G.wantRejoin = true;
-    }
+    /* v2.8: a brand-new player opening an invite link used to land in the
+       lobby with no username at all — their career and friend list were then
+       written under an empty key. Ask for a name first, then show the lobby. */
+    const openLobby = () => {
+      $("menuOverlay").classList.add("hidden");
+      $("onlineLobby").classList.remove("hidden");
+      $("nameInput").value = getUsername() || "";
+      if (typeof setLobbyMode === "function") setLobbyMode(true, rid);
+      else {
+        $("btnJoin").style.display = "block";
+        $("btnCreate").style.display = "none";
+        $("hostFormat").style.display = "none";
+        $("joinerNote").style.display = "block";
+      }
+      if (sess && sess.role === "join" && sess.room === rid) {
+        $("nameInput").value = sess.name;
+        G.wantRejoin = true;
+      }
+    };
+    if (getUsername()) openLobby();
+    else ensureUsername(openLobby);
   }
 })();
 if (typeof checkBotChallenges === "function")

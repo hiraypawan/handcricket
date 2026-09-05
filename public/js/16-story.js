@@ -497,7 +497,11 @@ async function cloudSaveStory() {
     const r = await fetch("/api/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user: storyProgress.user, data: storyProgress }),
+      body: JSON.stringify({
+        user: storyProgress.user,
+        data: storyProgress,
+        token: getClientToken(),
+      }),
     });
     if (!r.ok) throw new Error("save status " + r.status);
   } catch (e) {
@@ -535,9 +539,15 @@ $("btnStoryBack").onclick = () => {
   $("storyDialogue").classList.add("hidden");
 };
 $("btnStoryBack").className = "back-btn";
-$("btnStoryRestart").onclick = () => {
+$("btnStoryRestart").onclick = async () => {
   sfx("tap");
-  if (confirm("Restart story? All progress will be lost!")) {
+  // v2.8: in-app sheet instead of the native confirm()
+  const ok = await confirmDialog(
+    "Restart story?",
+    "Your career progress will be lost.",
+    "Restart",
+  );
+  if (ok) {
     storyProgress = defaultStoryProgress();
     cloudSaveStory();
     renderStoryHome();

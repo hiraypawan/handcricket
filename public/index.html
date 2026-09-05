@@ -11,15 +11,37 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-M484S7S0KG"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-M484S7S0KG');</script>
-<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer"></script><link rel="stylesheet" href="css/app.css?v=2.7.2"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" href="img/icon-192.png" type="image/png"/>
+<link rel="apple-touch-icon" href="img/icon-192.png"/>
+<script>
+/* Analytics loads ONLY after the player accepts. GA is off by default and
+   never phones home until hcp_consent is set — required before shipping to the
+   EU, and it stops the first paint from racing a third-party request. */
+(function(){
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = gtag;
+  gtag('js', new Date());
+  try {
+    if (localStorage.getItem('hcp_consent') === 'yes') {
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-M484S7S0KG';
+      document.head.appendChild(s);
+      gtag('config', 'G-M484S7S0KG');
+      window.__gaLoaded = true;
+    }
+  } catch (e) {}
+})();
+</script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js" defer crossorigin="anonymous" referrerpolicy="no-referrer" onerror="window.__peerFailed=true"></script><link rel="stylesheet" href="css/app.css?v=2.9.0"/>
 </head>
 <div id="app">
 <div class="scoreboard">
 <div class="team" id="teamA"><div class="label" id="labelA">YOU</div><div class="score" id="scoreBoxA"><span id="scoreA">0</span>/<span id="wicketsA">0</span></div><div class="balls" id="ballsA">0.0</div><div class="batting-indicator" id="batA" style="display:none">BATTING</div><div class="current-player" id="playerA"></div></div>
 <div class="vs">VS</div>
-<div class="team" id="teamB"><div class="label" id="labelB">BOT</div><div class="score" id="scoreBoxB"><span id="scoreB">0</span>/<span id="wicketsB">0</span></div><div class="balls" id="ballsB">0.0</div><div class="batting-indicator" id="batB" style="display:none">BATTING</div><div class="bot-lvl" id="botLvl"></div><div class="current-player" id="playerB"></div></div>
+<div class="team" id="teamB"><div class="label" id="labelB">Opponent</div><div class="score" id="scoreBoxB"><span id="scoreB">0</span>/<span id="wicketsB">0</span></div><div class="balls" id="ballsB">0.0</div><div class="batting-indicator" id="batB" style="display:none">BATTING</div><div class="bot-lvl" id="botLvl"></div><div class="current-player" id="playerB"></div></div>
 </div>
 <div class="free-hit-banner" id="fhBanner">FREE HIT! Cannot get OUT!</div>
 <div class="target-banner" id="targetBanner">Target: <b id="targetNum">0</b></div>
@@ -45,6 +67,12 @@
 <path d="M84 40 L60 330 L460 330 L136 40 Z" fill="#fff3c4" opacity=".05"/>
 <path d="M664 40 L340 330 L740 330 L716 40 Z" fill="#fff3c4" opacity=".05"/>
 <path d="M0 132 Q200 86 400 106 Q600 86 800 132 L800 252 Q600 210 400 226 Q200 210 0 252 Z" fill="url(#standG)"/>
+<g class="crowd-band">
+<line x1="0" y1="150" x2="820" y2="150" stroke="#8fb4e0" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="0.1 45.455555555555556" opacity="0.34"/>
+<line x1="0" y1="178" x2="820" y2="178" stroke="#8fb4e0" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.1 40.9" opacity="0.34"/>
+<line x1="0" y1="206" x2="820" y2="206" stroke="#8fb4e0" stroke-width="1.7" stroke-linecap="round" stroke-dasharray="0.1 37.17272727272727" opacity="0.34"/>
+<line x1="0" y1="234" x2="820" y2="234" stroke="#8fb4e0" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="0.1 34.06666666666666" opacity="0.34"/>
+</g>
 <path d="M0 132 Q200 86 400 106 Q600 86 800 132" fill="none" stroke="#2c4a70" stroke-width="4"/>
 <path d="M0 138 Q200 92 400 112 Q600 92 800 138" fill="none" stroke="#0a1220" stroke-width="10" opacity=".6"/>
 <path d="M8 148 Q200 106 400 126 Q600 106 792 148" fill="none" stroke="#101c30" stroke-width="7" stroke-dasharray="5 8"/>
@@ -82,7 +110,7 @@
 </svg></div>
 <!-- Opponent player card (left) -->
 <div class="player-card pc-left" id="pcLeft">
- <div class="pc-header"><span class="pc-name" id="pcNameB">BOT</span><span class="pc-dot"></span></div>
+ <div class="pc-header"><span class="pc-name" id="pcNameB">Opponent</span><span class="pc-dot"></span></div>
  <div class="pc-score"><span id="pcScoreB">0</span>/<span id="pcWktsB">0</span></div>
  <div class="pc-balls" id="pcBallsB">0 balls</div>
  <div class="pc-badge" id="pcBadgeB" style="display:none">OPPONENT</div>
@@ -115,7 +143,9 @@
 <button class="gesture-btn disabled" data-val="4" aria-label="Pick number 4"><span class="big">4</span><span class="small">4</span></button>
 <button class="gesture-btn disabled" data-val="5" aria-label="Pick number 5"><span class="big">5</span><span class="small">5</span></button>
 <button class="gesture-btn disabled" data-val="6" aria-label="Pick number 6, a six"><span class="big">6</span><span class="small">SIX</span></button>
-</div></div>
+</div>
+<div class="role-hint hidden" id="roleHint" aria-live="polite"></div>
+</div>
 <div class="emoji-bar" id="emojiBar">
 <button class="emoji-btn emoji-expand" data-action="msgs" aria-label="Quick messages"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
 </div>
@@ -133,9 +163,9 @@
 <button class="tab-btn" data-tab="lounge" onclick="TabBar.switch('lounge')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.2-3.7 4-5.5 7.5-5.5s6.3 1.8 7.5 5.5"/></svg>
   <span>Profile</span>
- </button><button class="tab-btn" data-tab="arena" onclick="TabBar.switch('arena')">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-  <span>Arena</span>
+ </button><button class="tab-btn" data-tab="friends" onclick="TabBar.switch('friends')">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20.2c.9-3.3 3.3-5 6.2-5s5.3 1.7 6.2 5"/><path d="M16.4 5.2a3.2 3.2 0 0 1 0 6.1"/><path d="M18 15.4c2.1.6 3.4 2.2 4 4.8"/></svg>
+  <span>Friends</span>
  </button><button class="tab-btn active" data-tab="battle" onclick="TabBar.switch('battle')">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
   <span>Play</span>
@@ -168,16 +198,16 @@
 <div class="mode-grid three-col">
 <div class="mode-btn" id="modeOffline"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><rect x="4.5" y="8" width="15" height="11" rx="4"/><path d="M12 8V4.6"/><circle cx="12" cy="3.8" r="1.2" fill="currentColor" stroke="none"/><circle cx="9" cy="13.4" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="13.4" r="1.3" fill="currentColor" stroke="none"/><path d="M9.6 16.7h4.8"/></svg></span><span class="title">Offline</span><span class="desc">vs Ultra-Smart Bot</span></div>
 <div class="mode-btn" id="modeOnline"><span class="icon"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c-3.3 3.4-3.3 14.6 0 18M12 3c3.3 3.4 3.3 14.6 0 18"/></svg></span><span class="title">Play with Friend</span><span class="desc">Invite via link</span></div>
-<div class="mode-btn" id="modeInstant"><span class="icon"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span class="title">Quick Match</span><span class="desc">Instant bot battle</span></div>
+<div class="mode-btn" id="modeInstant"><span class="icon"><svg class="" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 3 14h9l-1 8 10-12h-9z" fill="currentColor"/></svg></span><span class="title">Quick Match</span><span class="desc">Get a game in seconds</span></div>
 </div>
-<div class="home-profile-wrap" style="display:flex;gap:8px;justify-content:center">
-<button class="secondary small" id="btnHowTo" style="display:inline-flex;align-items:center;gap:6px"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg> How to Play</button><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button></div>
+<div class="home-profile-wrap home-btn-row" style="display:flex;gap:8px;justify-content:center">
+<button class="secondary small" id="btnHowTo" style="display:inline-flex;align-items:center;gap:6px"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ><path d="M2 4.5C4 3.6 6 3.6 8 4.5V20c-2-.9-4-.9-6 0z"/><path d="M16 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/><path d="M8 4.5c2-.9 4-.9 6 0V20c-2-.9-4-.9-6 0z"/></svg> How to Play</button><button class="secondary small" id="btnProfile">My Profile</button><button class="secondary small" id="btnFriends">Friends</button><button class="secondary small" id="btnLeaderboard">Leaderboard</button></div>
 <div class="home-credit">Made with love by <a href="https://x.com/pawanhiray" target="_blank">@pawanhiray</a></div>
-<div class="home-version">v2.7.2</div>
+<div class="home-version">v2.9.0</div>
 
 </div>
 
-<div class="overlay hidden" id="offlineSetup"><h1>vs Ultra Bot</h1><p>Champion AI awaits!</p>
+<div class="overlay hidden" id="offlineSetup"><h1 id="offlineTitle">Offline Match</h1><p id="offlineSubtitle">Pick a format and play.</p>
 <div id="offlineBotStats" style="display:none"></div>
 <h2>Choose Format</h2>
 <div class="team-size-select" id="offlineSize">
@@ -220,14 +250,19 @@
 <div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
 <div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div></div>
-<div id="joinerNote" style="display:none"><p style="font-size:12px;opacity:.7">Format & size decided by host</p></div>
+<div id="joinerNote" style="display:none"><p class="field-hint">Format &amp; size decided by host</p></div>
+<div id="roomCodeWrap" style="display:none"><h2>Room Code</h2>
+<input type="text" id="roomCodeInput" class="room-code-input" placeholder="K7QX2M" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false"/>
+<p class="field-hint">Type the code your friend shared — or just open their invite link.</p></div>
+<button id="btnShowJoin" class="secondary small" style="display:none">Join with a code</button>
+<div class="form-error hidden" id="lobbyError" role="alert"></div>
 <button id="btnCreate" style="display:none">Create Room</button>
 <button id="btnJoin" style="display:none">Join Room</button>
 <button id="btnBack2" class="secondary small" style="margin-top:12px">Back</button></div>
 
 <div class="overlay hidden" id="matchmakingOverlay"><h1>Quick Match</h1>
 <div class="search-spinner" id="searchSpinner" style="display:none"></div>
-<p id="matchStatus">Instant bot match — pick your format!</p>
+<p id="matchStatus">Pick your format — we will find you an opponent.</p>
 <p id="matchTimer" style="font-size:24px;font-weight:900;color:#f59e0b;margin:8px 0"></p>
 <div class="team-size-select" id="mmSize">
 <div class="team-size-btn active" data-size="1">1v1<br><small>1 wk, 1 ov</small></div>
@@ -236,12 +271,15 @@
 <div class="team-size-btn" data-size="5">5v5<br><small>5 wk, 5 ov</small></div>
 <div class="team-size-btn" data-size="11">11v11<br><small>10 wk, 20 ov</small></div>
 </div>
-<button id="btnMMPlayBot" class="small" style="margin-top:8px">Start Match</button>
+<div class="persona-card hidden" id="mmPersona"></div>
+<button id="btnMMPlayBot" class="small" style="margin-top:8px">Find Opponent</button>
 <button id="btnMMCancel" class="secondary small" style="margin-top:8px">Cancel</button></div>
 
 <div class="overlay hidden" id="waitingOverlay"><h1 id="waitTitle">Waiting...</h1>
 <p id="waitDesc"></p>
+<div class="room-code-share hidden" id="roomCodeShare"><span class="rcs-label">Room code</span><span class="rcs-code" id="roomCodeText"></span></div>
 <div class="share-box" id="shareBox" style="display:none"></div>
+<button id="btnCopyCode" class="secondary small" style="display:none">Copy Code</button>
 <button id="btnCopy" style="display:none">Copy Link</button>
 <div class="conn-log" id="connLog"></div>
 <div id="connBadge" style="display:none"><div class="connected-badge"><span class="dot"></span><span id="connName">Connected!</span></div></div>
@@ -290,6 +328,8 @@
 <div id="resultActions">
 <div id="addFriendBtn" style="display:none;text-align:center"><button id="btnAddFriend" class="add-friend-btn">+ Add Friend</button></div>
 <button id="btnRematch" style="display:none">Rematch</button>
+<button class="btn-share" id="btnShareCard" style="display:none" aria-label="Share this scorecard">Share Scorecard</button>
+<button class="btn-share" id="btnWatchReplay" style="display:none" aria-label="Watch this match again">Watch Replay</button>
 <button id="btnAgain" style="display:none">New Match</button>
 <button id="btnMenu" class="secondary">Main Menu</button>
 </div></div>
@@ -300,6 +340,7 @@
 <div class="profile-card" id="profileCard"></div>
 <button id="btnCloseProfile" class="secondary small">Close</button></div>
 <div class="friends-overlay hidden" id="friendsOverlay"><h1>Friends</h1>
+<div class="ptr-row"><button class="ptr-btn" id="btnFriendsRefresh" type="button">Refresh</button></div>
 <div class="friend-tabs"><button class="ftab active" data-tab="list" id="ftabList">My Friends</button><button class="ftab" data-tab="pending" id="ftabPending">Requests <span class="badge" id="pendingCount" style="display:none">0</span></button></div>
 <div class="friend-list" id="friendList"></div>
 <button id="btnCloseFriends" class="secondary small">Close</button></div>
@@ -323,6 +364,7 @@
 <button class="ra-secondary" id="btnRoleAllBal">All Balanced</button>
 <button class="ra-accent" id="btnRoleRandom">Randomize</button>
 <button class="ra-accent" id="btnRoleReal">Use Real Types</button>
+<button class="ptr-btn" id="btnAutoRoles" type="button">Auto-pick my XI</button>
 <button class="ra-primary" id="btnRoleStart">Start Match</button>
 </div>
 <button class="secondary small back-btn" id="btnRoleBack" style="margin-top:8px;">Back</button>
@@ -408,28 +450,58 @@
 <div id="tutSlide"></div>
 </div>
 </div>
+<div class="overlay hidden" id="leaderboardOverlay"><h1>Leaderboard</h1>
+<p class="lb-sub">Most wins — real players only</p>
+<div class="ptr-row"><button class="ptr-btn" id="btnLbRefresh" type="button">Refresh</button></div>
+<div class="lb-list" id="lbList"><div class="lb-empty">Loading...</div></div>
+<button id="btnCloseLb" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="cupOverlay">
+<h1>Knockout Cup</h1>
+<div class="cup-wrap"><div id="cupBracket"><div class="lb-empty">Loading...</div></div></div>
+<button id="btnCloseCup" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="replaysOverlay">
+<h1>Match Replays</h1>
+<div class="cup-wrap"><div class="lb-list" id="replayList"><div class="lb-empty">Loading...</div></div></div>
+<button id="btnCloseReplays" class="secondary small">Close</button></div>
+<div class="overlay hidden" id="replayOverlay">
+<h1>Replay</h1>
+<div class="rp-score" id="replayScore"></div>
+<div class="rp-meta" id="replayMeta"></div>
+<div class="rp-strip" id="replayStrip"></div>
+<div class="rp-result hidden" id="replayResult"></div>
+<button id="btnCloseReplay" class="secondary small">Close</button></div>
+<div class="toast-host" id="toastHost" aria-live="polite"></div>
+<div class="overlay confirm-overlay hidden" id="confirmOverlay"><h1 id="confirmTitle">Are you sure?</h1>
+<p id="confirmMsg" class="confirm-msg"></p>
+<button id="btnConfirmYes" class="danger">Yes</button>
+<button id="btnConfirmNo" class="secondary">Cancel</button></div>
 </div>
 
-<script src="js/story-data.js?v=2.7.2"></script>
-<script src="js/01-config.js?v=2.7.2"></script>
-<script src="js/02-bot-ai.js?v=2.7.2"></script>
-<script src="js/03-state.js?v=2.7.2"></script>
-<script src="js/04-hands.js?v=2.7.2"></script>
-<script src="js/05-navigation.js?v=2.7.2"></script>
-<script src="js/06-sfx.js?v=2.7.2"></script>
-<script src="js/07-display.js?v=2.7.2"></script>
-<script src="js/08-network.js?v=2.7.2"></script>
-<script src="js/09-engine.js?v=2.7.2"></script>
-<script src="js/10-profiles.js?v=2.7.2"></script>
-<script src="js/11-modes.js?v=2.7.2"></script>
-<script src="js/12-tutorial.js?v=2.7.2"></script>
-<script src="js/13-offline.js?v=2.7.2"></script>
-<script src="js/14-online.js?v=2.7.2"></script>
-<script src="js/15-roles.js?v=2.7.2"></script>
-<script src="js/16-story.js?v=2.7.2"></script>
-<script src="js/17-selection.js?v=2.7.2"></script>
-<script src="js/18-instant.js?v=2.7.2"></script>
-<script src="js/19-chat.js?v=2.7.2"></script>
-<script src="js/20-friends.js?v=2.7.2"></script>
+<script src="js/story-data.js?v=2.9.0"></script>
+<script src="js/01-config.js?v=2.9.0"></script>
+<script src="js/02-bot-ai.js?v=2.9.0"></script>
+<script src="js/03-state.js?v=2.9.0"></script>
+<script src="js/04-hands.js?v=2.9.0"></script>
+<script src="js/05-navigation.js?v=2.9.0"></script>
+<script src="js/06-sfx.js?v=2.9.0"></script>
+<script src="js/07-display.js?v=2.9.0"></script>
+<script src="js/08-network.js?v=2.9.0"></script>
+<script src="js/09-engine.js?v=2.9.0"></script>
+<script src="js/10-profiles.js?v=2.9.0"></script>
+<script src="js/11-modes.js?v=2.9.0"></script>
+<script src="js/12-tutorial.js?v=2.9.0"></script>
+<script src="js/13-offline.js?v=2.9.0"></script>
+<script src="js/14-online.js?v=2.9.0"></script>
+<script src="js/15-roles.js?v=2.9.0"></script>
+<script src="js/16-story.js?v=2.9.0"></script>
+<script src="js/17-selection.js?v=2.9.0"></script>
+<script src="js/18-instant.js?v=2.9.0"></script>
+<script src="js/19-chat.js?v=2.9.0"></script>
+<script src="js/20-friends.js?v=2.9.0"></script>
+<script src="js/21-shell.js?v=2.9.0"></script>
+<script src="js/22-avatars.js?v=2.9.0"></script>
+<script src="js/23-features.js?v=2.9.0"></script>
+<script src="js/24-tournaments.js?v=2.9.0"></script>
+<script src="js/25-replay.js?v=2.9.0"></script>
 </body>
 </html>

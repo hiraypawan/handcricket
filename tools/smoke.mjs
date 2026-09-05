@@ -60,6 +60,17 @@ const boot = async () => {
       try {
         window.AudioContext = class {};
       } catch {}
+      // record every fetch so API contracts can be asserted (jsdom has no fetch)
+      window.__net = [];
+      window.fetch = (url, o) => {
+        window.__net.push({ url: String(url), body: o && o.body });
+        return Promise.resolve(
+          new window.Response(
+            JSON.stringify({ ok: true, friends: [], pending: [], challenges: [], data: null }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+        );
+      };
     },
   });
   await sleep(300); // let inline scripts + early timeouts settle
@@ -252,13 +263,28 @@ await sleep(500);
 const mmShown = !byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const mmStatus = byId(dom, "matchStatus")?.textContent || "";
 check("quick-match overlay opens with honest copy", mmShown && !/real player|searching/i.test(mmStatus), mmStatus);
-// pick 1v1 inside the overlay, then Start Match
+// pick 1v1 inside the overlay, then Find Opponent -> persona reveal -> Start
 ev(dom, `document.querySelector('#mmSize .team-size-btn[data-size="1"]').click()`);
+check("quick match CTA starts as 'Find Opponent'", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Find Opponent", byId(dom, "btnMMPlayBot")?.textContent.trim());
+ev(dom, `$('btnMMPlayBot').click()`);
+await sleep(2200); // the reveal is deliberately ~1.1-1.8s
+const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
+const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
+const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
+check("quick match reveals a named opponent with a city", personaShown && personaName.length > 2 && personaMeta.includes("·"), `${personaName} | ${personaMeta}`);
+check("opponent name is a clean Indian name (no gamer tags)", /^[A-Za-z]+ [A-Za-z]+$/.test(personaName.trim()), personaName);
+check("quick match CTA becomes 'Start Match' after the reveal", byId(dom, "btnMMPlayBot")?.textContent.trim() === "Start Match", byId(dom, "btnMMPlayBot")?.textContent.trim());
+// the same player must show the same career if revealed twice
+const career1 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textContent || "";
+ev(dom, `renderMMPersona(genBotProfile(${JSON.stringify(personaName)}))`);
+const career2 = byId(dom, "mmPersona")?.querySelector(".persona-stats")?.textContent || "";
+check("persona career is stable for the same name", career1 === career2, `${career1} vs ${career2}`);
 ev(dom, `$('btnMMPlayBot').click()`);
 await sleep(1500); // role-less 1v1 boots: startInnings -> nextBall at 700ms
 const qmOverlayHidden = byId(dom, "matchmakingOverlay")?.classList.contains("hidden");
 const qmBooted = ev(dom, `G.mode==='offline' && G.isBot && (G.state==='waiting'||G.state==='revealing'||G.state==='processing')`);
-check("quick match starts instantly vs bot", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
+check("quick match starts vs the revealed player", qmOverlayHidden && qmBooted, `overlayHidden=${qmOverlayHidden} booted=${qmBooted}`);
+check("scoreboard shows the revealed player, not 'BOT'", byId(dom, "labelB")?.textContent.trim() === personaName.trim(), byId(dom, "labelB")?.textContent.trim());
 const rQ = await playOfflineMatch(dom, { teamSize: 1, alreadyStarted: true });
 check("quick match completes", rQ.status === "finished", "result=" + rQ.result);
 
@@ -357,19 +383,55 @@ check(
    "Best Win Streak","Hat-tricks","Runs Conceded","Overs Faced"].every((t) => profTxt.includes(t)),
 );
 
-// 6f. career math for the new derived stats
+// 6f. career math for the derived stats
+//   - not out yet  -> Batting Avg is the raw score, never runs/wickets-taken
+//   - economy/dots -> bowling dots come from oppHist, batting dots from myHist
 const derived = ev(dom, `(() => {
   saveStats(defaultStats());
-  updateStatsAfterMatch({won:true,myRuns:50,myBalls:30,mySixes:2,myFours:4,
-    myHist:['DOT','DOT'],oppWickets:3,oppBalls:24,oppRuns:20});
+  updateStatsAfterMatch({won:true,myRuns:50,myBalls:30,mySixes:2,myFours:4,myWickets:0,
+    myHist:['DOT','DOT'],oppWickets:3,oppBalls:24,oppRuns:20,
+    oppHist:['DOT','DOT','DOT','W',4,1]});
   const s = loadStats();
-  return JSON.stringify({eco:s.economy,dot:s.dotPct,avg:s.batAvg,ov:s.oversBowled,best:s.bestBowlWkts});
+  return JSON.stringify({eco:s.economy,dot:s.dotPct,avg:s.batAvg,ov:s.oversBowled,
+    best:s.bestBowlWkts,outs:s.outs,dotsBowled:s.dotsBowled,bowlDot:s.bowlDotPct});
 })()`);
 const D = JSON.parse(derived);
 check(
-  "derived stats compute (economy 5.00, dot 7%, avg 16.7, 4.0 ov, best 3W)",
-  D.eco === "5.00" && D.dot === 7 && D.avg === "16.7" && D.ov === "4.0" && D.best === 3,
-  derived,
+  "derived stats compute (eco 5.00, bat dot 7%, not-out avg 50.0, 4.0 ov, best 3)",
+  D.eco === "5.00" && D.dot === 7 && D.avg === "50.0" && D.ov === "4.0" && D.best === 3,
+  JSON.stringify(D),
+);
+// regression: dismissals used to be incremented by the wickets you TOOK
+const attr = ev(dom, `(() => {
+  saveStats(defaultStats());
+  updateStatsAfterMatch({won:false,lost:true,myRuns:20,myBalls:12,mySixes:1,myFours:2,
+    myWickets:0, myHist:[6,'DOT',4], oppWickets:2, oppBalls:12, oppRuns:14,
+    oppHist:['DOT','DOT','W',1]});
+  const s = loadStats();
+  return JSON.stringify({outs:s.outs,wkts:s.wicketsTaken,avg:s.batAvg,
+    battingDots:s.dots,bowlingDots:s.dotsBowled});
+})()`);
+const A = JSON.parse(attr);
+check(
+  "batting/bowling attribution: outs=0 (never out), 2 wkts taken, avg 20.0",
+  A.outs === 0 && A.wkts === 2 && A.avg === "20.0",
+  JSON.stringify(A),
+);
+check(
+  "bowling 'Dots Bowled' counts oppHist, not my batting dots",
+  A.bowlingDots === 2 && A.battingDots === 1,
+  JSON.stringify(A),
+);
+const outCase = JSON.parse(
+  ev(dom, `(() => { saveStats(defaultStats());
+    updateStatsAfterMatch({won:true,myRuns:30,myBalls:20,mySixes:1,myFours:3,myWickets:1,
+      myHist:[4],oppWickets:1,oppBalls:18,oppRuns:16,oppHist:['W']});
+    const s = loadStats(); return JSON.stringify({outs:s.outs,avg:s.batAvg}); })()`),
+);
+check(
+  "a real dismissal moves outs -> Batting Avg 30.0",
+  outCase.outs === 1 && outCase.avg === "30.0",
+  JSON.stringify(outCase),
 );
 
 // 6g. close/action bars are pinned (position:fixed) so they can't drift on scroll
@@ -427,6 +489,402 @@ check(
   /@keyframes hn27/.test(cssSrc) && /@keyframes th27x/.test(cssSrc) &&
     /@keyframes ring27/.test(cssSrc) && /prefers-reduced-motion:reduce/.test(cssSrc),
 );
+
+// ---------------------------------------------------------------- 9. v2.8 fixes
+const fs = await import("node:fs");
+const jsSrc = (f) => fs.readFileSync(join(root, "public/js", f), "utf8");
+
+// 9a. friends: the client must speak the server's protocol (add/accept/reject/remove)
+ev(dom, `localStorage.clear(); setUsername('Alice'); localStorage.setItem('hcp_friends',
+  JSON.stringify({friends:[],pending:[{name:'Bob',stats:null,since:1}]}))`);
+await sleep(50);
+ev(dom, `dom0=0; window.__net.length=0; acceptFriend('Bob')`);
+await sleep(150);
+const acceptCall = JSON.parse(
+  ev(dom, `JSON.stringify(window.__net.filter(c=>c.body).map(c=>JSON.parse(c.body)))`),
+);
+check(
+  "acceptFriend posts action:'accept' (server used to 400 on 'sync')",
+  acceptCall.some((b) => b.action === "accept" && b.target === "Bob"),
+  JSON.stringify(acceptCall).slice(0, 120),
+);
+ev(dom, `window.__net.length=0; G.oppName='Ravi'; G.isBot=false; G.oppStats=null; G.storyMatch=false;
+  showAddFriendBtn(); document.getElementById('btnAddFriend').click()`);
+await sleep(200);
+const addCall = JSON.parse(
+  ev(dom, `JSON.stringify(window.__net.filter(c=>c.body).map(c=>JSON.parse(c.body)))`),
+);
+check(
+  "Add Friend posts action:'add' with the target (reaches THEIR record)",
+  addCall.some((b) => b.action === "add" && b.target === "Ravi"),
+  JSON.stringify(addCall).slice(0, 120),
+);
+check(
+  "friend client speaks add/accept/reject/remove, never a bare 'sync'",
+  ["accept", "reject", "remove", "add"].every((a) =>
+    new RegExp('api\\("' + a + '"').test(jsSrc("20-friends.js"))),
+  "all four actions are called",
+);
+
+// 9b. profile: stable id, per-user stats, escaped opponent name
+const id1 = ev(dom, `setUsername('Alice'); showProfile(); document.querySelector('.prof-id').textContent`);
+const id2 = ev(dom, `showProfile(); document.querySelector('.prof-id').textContent`);
+check("profile id is stable across renders", id1 === id2 && /^HC-\d{6}/.test(id1), `${id1} / ${id2}`);
+const keyed = ev(dom, `setUsername('Alice'); saveStats(loadStats()); !!localStorage.getItem('hc_stats:alice')`);
+check("career stats are stored per-username", keyed === true, "hc_stats:alice");
+const isolated = ev(dom, `(() => { setUsername('Zed'); return loadStats().matches; })()`);
+check("a new username starts a fresh career", isolated === 0, "matches=" + isolated);
+ev(dom, `setUsername('Alice'); G.oppName='<img src=x onerror=1>'; G.oppStats=Object.assign(defaultStats(),{matches:4}); showOppProfile()`);
+const injected = ev(dom, `document.getElementById('profileCard').querySelectorAll('img').length`);
+check("opponent name is escaped in the profile card", injected === 0, "img nodes=" + injected);
+
+// 9c. invite flow: a typed room code works without a ?room= deep link
+check("room-code field exists in the lobby", !!byId(dom, "roomCodeInput"));
+const codeFromField = ev(dom, `document.getElementById('roomCodeInput').value='k7 qx-2m';
+  resolveRoomCode()`);
+check("room code is read + normalised from the field", codeFromField === "K7QX2M", codeFromField);
+ev(dom, `setLobbyMode(false,''); `);
+const hostMode = ev(dom, `getComputedStyle(document.getElementById('btnCreate')).display`);
+ev(dom, `setLobbyMode(true,'ABCD12')`);
+const joinMode = ev(dom, `[document.getElementById('roomCodeWrap').style.display, document.getElementById('roomCodeInput').value].join('|')`);
+check("lobby switches host/join and prefills the code", joinMode === "block|ABCD12", joinMode);
+
+// 9d. no native dialogs left in the app
+const stripComments = (t) =>
+  t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+const dialogs = ["14-online.js", "16-story.js", "20-friends.js", "18-instant.js", "11-modes.js", "09-engine.js"]
+  .map((f) => [f, (stripComments(jsSrc(f)).match(/(^|[^.\w])(alert|confirm)\s*\(/g) || []).length])
+  .filter(([, n]) => n > 0);
+check("no native alert()/confirm() left in gameplay code", dialogs.length === 0, JSON.stringify(dialogs));
+check("toast() and confirmDialog() exist", ev(dom, `typeof toast`) === "function" && ev(dom, `typeof confirmDialog`) === "function");
+
+// 9e. navigation is no longer duplicated
+const tabs = [...byId(dom, "tabBar").querySelectorAll(".tab-btn")].map((b) => b.dataset.tab);
+check("dock tabs: Profile/Friends/Play/Career/Help (no duplicate Arena)",
+  JSON.stringify(tabs) === '["lounge","friends","battle","team","tournaments"]', JSON.stringify(tabs));
+const markup = fs.readFileSync(join(root, "public/index.html"), "utf8");
+check(
+  "markup contains no 'BOT' / 'Ultra Bot' label",
+  !/>\s*BOT\s*</.test(markup) && !/Ultra Bot/.test(markup),
+);
+
+// ---------------------------------------------------------------- 10. v2.8b
+// 10a. roster integrity: no duplicate names inside a squad (breaks online role
+// sync, which matches players by name)
+const rosterDupes = ev(dom, `(() => {
+  const bad = [];
+  Object.keys(TEAMS).forEach((k) => {
+    const n = TEAMS[k].players.map((p) => p.name);
+    const d = n.filter((x, i) => n.indexOf(x) !== i);
+    if (d.length) bad.push(k + ':' + d.join(','));
+  });
+  return bad.join('|');
+})()`);
+check("no duplicate player names within any squad (RR Boult/Bolt fixed)", rosterDupes === "", rosterDupes || "clean");
+
+// 10b. role locks explain themselves
+ev(dom, `resetGame(); G.mode='offline'; G.teamSize=3; G.state='waiting'; G.iBat=true;
+  G.myPlayers=[{name:'Me1',role:'batter',battingStyle:'defensive',bowlingStyle:'balanced'},
+               {name:'Me2',role:'bowler',battingStyle:'balanced',bowlingStyle:'balanced'},
+               {name:'Me3',role:'all',battingStyle:'balanced',bowlingStyle:'balanced'}];
+  G.batIdx=0; applyGestureRestrictions()`);
+const lockedBtns = [...byId(dom, "gestureGrid").querySelectorAll(".gesture-btn.restricted")];
+const reasons = new Set(lockedBtns.map((b) => b.dataset.lockReason));
+check(
+  "defensive batter locks 4,5,6",
+  lockedBtns.map((b) => b.dataset.val).join(",") === "4,5,6",
+  lockedBtns.map((b) => b.dataset.val).join(","),
+);
+check(
+  "every locked number carries a reason the player can read",
+  lockedBtns.length === 3 && reasons.size === 1 && /Defensive batter/.test([...reasons][0] || ""),
+  [...reasons][0],
+);
+check(
+  "arena shows a role hint line while numbers are locked",
+  !byId(dom, "roleHint").classList.contains("hidden") &&
+    /Defensive/.test(byId(dom, "roleHint").textContent),
+  byId(dom, "roleHint").textContent.trim().slice(0, 60),
+);
+ev(dom, `G.myPlayers[0].battingStyle='balanced'; applyGestureRestrictions()`);
+check(
+  "balanced role unlocks everything and hides the hint",
+  byId(dom, "gestureGrid").querySelectorAll(".gesture-btn.restricted").length === 0 &&
+    byId(dom, "roleHint").classList.contains("hidden"),
+);
+
+// 10c. leaderboard + other-player profiles
+check("leaderboard overlay + button exist", !!byId(dom, "leaderboardOverlay") && !!byId(dom, "btnLeaderboard"));
+check("showLeaderboard/showUserProfile are wired", ev(dom, `typeof showLeaderboard`) === "function" && ev(dom, `typeof showUserProfile`) === "function");
+ev(dom, `window.__net.length=0; showLeaderboard()`);
+await sleep(200);
+const lbCall = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
+check("leaderboard fetches /api/leaderboard with my name", /\/api\/leaderboard\?limit=20&me=/.test(lbCall), lbCall.slice(0, 90));
+ev(dom, `window.__net.length=0; showUserProfile('Rohit')`);
+await sleep(200);
+const profCall = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
+check("tapping a player fetches their LIVE profile", /\/api\/profile\?user=Rohit/.test(profCall), profCall.slice(0, 90));
+
+// 10d. the two engine hooks are no longer empty stubs
+check("checkBotChallenges polls the inbox", /pollInbox/.test(jsSrc("20-friends.js")));
+check("maybeBotChallenge offers a rematch", /wants a rematch/.test(jsSrc("20-friends.js")));
+
+// 10e. sheets scroll: no nested scroller inside a scrolling sheet
+check(
+  "friend list is not a nested scroller (scroll-lock fix)",
+  /\.friend-list\{overflow:visible;flex:none\}/.test(cssSrc),
+);
+check(
+  "sheets keep the last row clear of the dock",
+  /padding-bottom:calc\(84px/.test(cssSrc) && /overscroll-behavior:contain/.test(cssSrc),
+);
+check(
+  "no font size below 10px anywhere in the stylesheet",
+  !/font-size:[1-9](\.\d)?px/.test(cssSrc),
+);
+
+// ---------------------------------------------------------------- 11. v2.9
+// 11a. API ownership token
+const tok1 = ev(dom, `getClientToken()`);
+const tok2 = ev(dom, `getClientToken()`);
+check("device token is generated once and reused", /^[A-Za-z0-9]{16,64}$/.test(tok1) && tok1 === tok2, tok1);
+check("token is stored, not re-randomised", ev(dom, `localStorage.getItem("hcp_token")`) === tok1);
+ev(dom, `window.__net.length=0; publishProfile()`);
+await sleep(120);
+const profBody = ev(dom, `window.__net.map(c=>c.body).filter(Boolean).pop() || "{}"`);
+check(
+  "career publish sends the ownership token",
+  JSON.parse(profBody).token === tok1,
+  profBody.slice(0, 70),
+);
+check(
+  "friend mutations send the ownership token",
+  /token:\s*getClientToken\(\)/.test(jsSrc("20-friends.js")),
+);
+check(
+  "story save sends the ownership token",
+  /token:\s*getClientToken\(\)/.test(jsSrc("16-story.js")),
+);
+
+// 11b. generated avatars are deterministic
+const avA1 = ev(dom, `avatarSvg("Rohit", 40)`);
+const avA2 = ev(dom, `avatarSvg("Rohit", 40)`);
+const avB = ev(dom, `avatarSvg("Priya", 40)`);
+check("same name always draws the same face", avA1 === avA2 && /<svg/.test(avA1), avA1.length + " chars");
+check("different names draw different faces", avA1 !== avB);
+check("avatar svg is labelled for screen readers", /aria-label="Avatar for Rohit"/.test(avA1));
+check(
+  "profile, persona, friend and leaderboard rows all use it",
+  ["10-profiles.js", "18-instant.js", "20-friends.js"].every((f) => /avatarHtml\(/.test(jsSrc(f))),
+);
+
+// 11c. analytics consent
+check(
+  "GA is gated on stored consent",
+  /localStorage\.getItem\('hcp_consent'\) === 'yes'/.test(html) &&
+    !/^<script async src="https:\/\/www\.googletagmanager\.com/m.test(html),
+);
+check("consent bar can record a decline", ev(dom, `typeof hcConsent`) === "function");
+ev(dom, `hcConsent(false)`);
+check("declining persists the choice", ev(dom, `localStorage.getItem("hcp_consent")`) === "no");
+
+// 11d. installability
+const swSrc = readFileSync(join(root, "public/sw.js"), "utf8");
+const manifest = JSON.parse(readFileSync(join(root, "public/manifest.webmanifest"), "utf8"));
+check("manifest declares name + icons", manifest.name === "Hand Cricket Pro" && manifest.icons.length >= 2);
+check("service worker exists and is registered", /register\("sw\.js"\)/.test(jsSrc("21-shell.js")));
+check(
+  "service worker never caches /api/ (live reads must stay live)",
+  /startsWith\('\/api\/'\)/.test(swSrc) && /return;/.test(swSrc),
+);
+check("manifest is linked from the page", /rel="manifest"/.test(html));
+
+// 11e. retention: daily streak
+ev(dom, `localStorage.removeItem("hcp_activity")`);
+const st1 = ev(dom, `hcRecordPlayedDay()`);
+const st1b = ev(dom, `hcRecordPlayedDay()`);
+const act = ev(dom, `JSON.stringify(hcGetActivity())`);
+check("first match today starts a 1-day streak", st1 === 1, String(st1));
+check("a second match the same day does not double-count", st1b === 1 && JSON.parse(act).playedToday === true, String(st1b));
+check("streak card renders into the profile", /sk-flame/.test(ev(dom, `hcStreakCardHtml()`)));
+
+// 11f. head-to-head
+ev(dom, `localStorage.clear()`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{won:true})`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{won:true})`);
+ev(dom, `hcRecordH2H("Alice","Rohit",{lost:true})`);
+const h2h = ev(dom, `hcH2HHtml("Alice","Rohit")`);
+check("head-to-head tracks wins and losses", /2&ndash;1/.test(h2h) && /You lead/.test(h2h), h2h.slice(0, 60));
+check("no record renders nothing", ev(dom, `hcH2HHtml("Alice","Nobody")`) === "");
+check("you cannot have a rivalry with yourself", ev(dom, `hcH2HHtml("Alice","alice")`) === "");
+
+// 11g. auto-pick respects the format's role limits
+const picked = ev(dom, `JSON.stringify(hcAutoPickRoles(
+  [{name:'a',role:'batter'},{name:'b',role:'batter'},{name:'c',role:'all'},
+   {name:'d',role:'all'},{name:'e',role:'bowler'}], 5)
+  .map(p=>p.battingStyle))`);
+const pickedArr = JSON.parse(picked);
+check(
+  "5v5 auto-pick stays inside max 2 aggressive / 2 defensive",
+  pickedArr.filter((x) => x === "aggressive").length <= 2 &&
+    pickedArr.filter((x) => x === "defensive").length <= 2,
+  picked,
+);
+check(
+  "5v5 auto-pick keeps the balanced minimum",
+  pickedArr.filter((x) => x === "balanced").length >= 1,
+  picked,
+);
+check("auto-pick button exists on the role screen", !!byId(dom, "btnAutoRoles"));
+
+// 11h. online plumbing
+check(
+  "role sync is index-based, not name-based",
+  /idx:\s*i,\s*name:\s*p\.name/.test(jsSrc("14-online.js")) &&
+    /typeof dp\.idx === "number"/.test(jsSrc("14-online.js")),
+);
+check(
+  "matchResult carries the opponent name (h2h + share need it)",
+  /oppName:\s*G\.oppName/.test(jsSrc("09-engine.js")),
+);
+check(
+  "TURN is configurable instead of hardcoded to the free relay",
+  /window\.__hcTurn/.test(jsSrc("14-online.js")) && /HC_TURN_URLS/.test(readFileSync(join(root, "functions/api/config.js"), "utf8")),
+);
+check("ICE servers still work with no config", ev(dom, `buildIceServers().length`) >= 8);
+ev(dom, `window.__hcTurn = {urls:"turn:r.test:3478", username:"u", credential:"c"}`);
+const ices = ev(dom, `JSON.stringify(buildIceServers())`);
+check("a configured relay replaces the free one", /turn:r\.test:3478/.test(ices) && !/metered/.test(ices), ices.slice(0, 60));
+
+// 11i. sharing + refresh
+check("share button exists on the result screen", !!byId(dom, "btnShareCard"));
+check("share scorecard is implemented", ev(dom, `typeof hcShareScorecard`) === "function");
+check("leaderboard + friends have an explicit refresh", !!byId(dom, "btnLbRefresh") && !!byId(dom, "btnFriendsRefresh"));
+check(
+  "arena gets a live crowd band while a match is on",
+  /crowd-band/.test(html) && /classList\.add\("live"\)/.test(jsSrc("09-engine.js")),
+);
+check("ball trail respects reduced motion", /prefers-reduced-motion:reduce\)\{\.ball-trail\{display:none\}\}/.test(cssSrc));
+
+// ---------------------------------------------------------------- 12. knockout cup
+// 11f cleared localStorage, which took hcp_username with it — restore it, then
+// read the player's name back out of the draw rather than hardcoding it.
+ev(dom, `localStorage.removeItem("hcp_cup"); setUsername("Alice")`);
+const CUP_ME = ev(dom, `getUsername()`);
+check("cup overlay exists", !!byId(dom, "cupOverlay"));
+check("tournaments tab opens the cup, not the tutorial", /hcOpenCup\(\)/.test(jsSrc("05-navigation.js")));
+check("no cup running initially", ev(dom, `hcHasActiveCup()`) === false);
+
+ev(dom, `hcOpenCup()`);
+await sleep(60);
+const cupHost = byId(dom, "cupBracket");
+check("opening the cup offers 4 and 8 player draws", /4 players/.test(cupHost.innerHTML) && /8 players/.test(cupHost.innerHTML));
+
+cupHost.querySelector('.cup-size[data-size="4"]').click();
+await sleep(60);
+let cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("4-player draw includes the player", cup.draw[0] === CUP_ME && cup.draw.length === 4, cup.draw.join(", "));
+check("every slot in the draw is a distinct player", new Set(cup.draw).size === 4);
+check("a 4-player draw is labelled Semi-final", /Semi-final/.test(cupHost.innerHTML));
+check("cup is active once drawn", ev(dom, `hcHasActiveCup()`) === true);
+
+const cupOpp = ev(dom, `(function(){var c=JSON.parse(localStorage.getItem('hcp_cup'));return c.remaining.filter(n=>n!==c.draw[0])[0];})()`);
+ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(cupOpp)}})`);
+cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check(
+  "winning a semi halves the field (fixtures you don't play still resolve)",
+  cup.remaining.length === 2 && cup.remaining.indexOf(cupOpp) === -1,
+  cup.remaining.join(", "),
+);
+check("cup wins are counted", cup.wins === 1, String(cup.wins));
+const cupOpp2 = cup.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(cupOpp2)}})`);
+cup = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("winning the final crowns the player", cup.champion === CUP_ME && ev(dom, `hcHasActiveCup()`) === false, String(cup.champion));
+
+// a loss hands the cup to the opponent; a tie eliminates nobody
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="4"]').click();
+await sleep(40);
+let cupL = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+const lostTo = cupL.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:false, lost:true, oppName:${JSON.stringify(lostTo)}})`);
+cupL = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("losing eliminates the player and crowns the opponent", cupL.champion === lostTo && cupL.remaining.indexOf(CUP_ME) === -1, String(cupL.champion));
+
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="4"]').click();
+await sleep(40);
+let cupT = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+const tiedWith = cupT.remaining.filter((n) => n !== CUP_ME)[0];
+ev(dom, `hcCupMatchEnd({won:false, lost:false, tied:true, oppName:${JSON.stringify(tiedWith)}})`);
+cupT = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("a tie replays the fixture instead of eliminating anyone", cupT.remaining.length === 4 && !cupT.champion, cupT.remaining.join(", "));
+
+// 8-player bracket takes exactly three wins
+ev(dom, `hcCupClear(); hcOpenCup()`);
+await sleep(40);
+byId(dom, "cupBracket").querySelector('.cup-size[data-size="8"]').click();
+await sleep(40);
+let cup8 = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+check("8-player draw is labelled Quarter-final", /Quarter-final/.test(byId(dom, "cupBracket").innerHTML));
+let cupRounds = 0;
+for (let i = 0; i < 5 && !cup8.champion; i++) {
+  const o = cup8.remaining.filter((n) => n !== cup8.draw[0])[0];
+  if (!o) break;
+  ev(dom, `hcCupMatchEnd({won:true, lost:false, oppName:${JSON.stringify(o)}})`);
+  cup8 = JSON.parse(ev(dom, `localStorage.getItem("hcp_cup")`));
+  cupRounds++;
+}
+check("an 8-player cup needs exactly 3 wins", cupRounds === 3 && cup8.champion === CUP_ME, "rounds=" + cupRounds);
+
+// ---------------------------------------------------------------- 13. match replay
+/* A replay must never disagree with the match it came from, so these assert on
+   a match with a hand-computed scoreline rather than on a live one. */
+ev(dom, `localStorage.removeItem("hcp_replays")`);
+const RP = {
+  won: true, lost: false, oppName: "Rohit",
+  myRuns: 11, myWickets: 1, oppRuns: 9, oppWickets: 1,
+  myHist: [4, 6, "DOT", 1, "W"], oppHist: [2, "DOT", 3, 4, "W"],
+};
+const rpId = ev(dom, `hcRecordReplay(${JSON.stringify(RP)})`);
+check("finished match is recorded for replay", typeof rpId === "string" && rpId.length > 0, String(rpId));
+check("replay count reflects the save", ev(dom, `hcReplayCount()`) === 1, String(ev(dom, `hcReplayCount()`)));
+
+const rpSaved = JSON.parse(ev(dom, `localStorage.getItem("hcp_replays")`))[0];
+const rpFrames = JSON.parse(ev(dom, `JSON.stringify(hcReplayFrames(${JSON.stringify(rpSaved)}))`));
+const rpLast = rpFrames[rpFrames.length - 1];
+check("replay covers the longer innings", rpFrames.length === 5, "frames=" + rpFrames.length);
+check(
+  "replayed total equals the real score",
+  rpLast.myScore === "11/1" && rpLast.oppScore === "9/1",
+  rpLast.myScore + " v " + rpLast.oppScore,
+);
+check(
+  "wickets accrue through the innings, not at the end",
+  rpFrames[1].myScore === "10/0" && rpFrames[4].myScore === "11/1",
+  rpFrames.map((f) => f.myScore).join(" "),
+);
+
+ev(dom, `hcOpenReplays()`);
+await sleep(60);
+const rpList = byId(dom, "replayList");
+check("replay list shows the opponent and the result", /Rohit/.test(rpList.innerHTML) && /WON/.test(rpList.innerHTML));
+rpList.querySelector(".rp-row").click();
+await sleep(150);
+check("tapping a match opens playback", !byId(dom, "replayOverlay").classList.contains("hidden"));
+check("playback scoreboard is populated", /YOU/.test(byId(dom, "replayScore").textContent),
+  byId(dom, "replayScore").textContent.trim());
+const rpChips = byId(dom, "replayStrip").querySelectorAll(".rp-ball").length;
+check("ball chips render", rpChips > 0, rpChips + " chips");
+await sleep(700);
+const rpChips2 = byId(dom, "replayStrip").querySelectorAll(".rp-ball").length;
+check("playback advances over time", rpChips2 > rpChips, rpChips + " -> " + rpChips2);
+check("boundaries are visually distinct", /rp-four/.test(byId(dom, "replayStrip").innerHTML));
+ev(dom, `hcStopReplay()`);
+check("Watch Replay button exists on the result screen", !!byId(dom, "btnWatchReplay"));
 
 dom.window.close();
 console.log(failures === 0 ? "\n✅ SMOKE: all checks passed" : `\n❌ SMOKE: ${failures} check(s) failed`);

@@ -1,4 +1,4 @@
-# AI_CONTEXT.md — Hand Cricket Pro v2.7
+# AI_CONTEXT.md — Hand Cricket Pro v2.8
 
 > Read this first. It maps the whole codebase so an AI or vibe coder can make
 > changes without guessing. Companion docs (audit history & known bugs):
@@ -17,7 +17,11 @@ handcricket/
 │   │                       theme, responsive framing + every screen (edit visuals HERE).
 │   │                       NOTE: old css/theme.css layer was deleted in v2.5.
 │   ├── js/                  Game logic — see the numbered load order below
-│   └── functions/           Cloudflare Pages Functions (KV-backed REST)
+│   └── (no functions/ here — see below)
+├── functions/               Cloudflare Pages Functions (KV-backed REST).
+│                            MUST be at the repo root: Pages only compiles
+│                            <root>/functions. Inside public/ it is deployed
+│                            as static files and the API 404s.
 ├── tools/smoke.mjs          jsdom regression suite — RUN BEFORE/AFTER changes
 ├── docs/                    Analysis artifacts (audit, directory map, bug hunt)
 ├── AI_CONTEXT.md            ← you are here
@@ -56,6 +60,64 @@ hoisted, so cross-file calls resolve at call time. Each file starts with a
 | 19 | `18-instant.js` | **Quick Match** (honest instant bot game) + boot-time init (loads last) |
 | 20 | `19-chat.js` | Quick-chat + bot banter — float bubbles are TEXT + inline-SVG face chips (`faceSVG`, mood tokens). Legacy emoji tokens map via `LEGACY_EMOJI_TO_MOOD` (never rendered as emoji) |
 | 21 | `20-friends.js` | Friend lists/sync, friend requests, challenge invite |
+
+## 2b. v2.8 changes you must not undo
+
+| Area | What changed | Where |
+|------|--------------|-------|
+| **Deploy** | `functions/` moved from `public/functions/` to the repo root. Pages only compiles `<root>/functions`; the old path shipped zero Functions **and** exposed handler source at `/functions/api/*.js`. | `functions/api/*`, `.github/workflows/deploy.yml` (also fixed `--project-name handscricket` → `handcricket`) |
+| **Friends** | The client now speaks the server protocol (`add` / `accept` / `reject` / `remove`). It used to POST `{action:"sync"}` for everything, which the server rejected with **400 "Invalid action"**, so no request ever reached a second device. `sync` is still accepted server-side as a merge, for old clients. | `20-friends.js`, `functions/api/friends.js` |
+| **Invites** | "Play" on a friend creates a room **and** pushes an invite (with the code) into their inbox. The inbox is polled on boot, on opening Friends, and every 20s while visible — there is no realtime channel. | `20-friends.js` (`pollInbox`/`joinInvite`), `functions/api/challenges.js` |
+| **Stats** | `outs` now comes from `result.myWickets` (times you were dismissed). It used to add `result.oppWickets` — the wickets you **took** — so Batting Avg was runs ÷ wickets-taken. Bowling "Dots Bowled" now counts `result.oppHist` (added to the engine result); it used to show your batting dots. | `09-engine.js`, `10-profiles.js` |
+| **Stats keys** | Career is per-username (`hc_stats:<name>`, legacy global blob migrated on first `setUsername`). Player id is a stable `HC-######` derived from the name, not a re-randomised fake. Opponent names are escaped before `innerHTML`. | `10-profiles.js` |
+| **Opponents** | Offline + Quick Match opponents are personas: clean Indian name, home city, style, career — all derived **deterministically from the name** (`genBotProfile(name)` + `personaStats()`), so the same player never shows two careers. No "BOT"/"Ultra Bot" labels remain in the UI. | `01-config.js`, `11-modes.js`, `13-offline.js`, `18-instant.js`, `07-display.js` |
+| **Quick Match** | Two steps: **Find Opponent** → ~1.1–1.8s reveal of the persona card → **Start Match**. | `18-instant.js`, `#mmPersona` |
+| **Invite join** | The lobby has a room-code field (`#roomCodeInput`, normalised to `A-Z0-9`), so a lost invite link is not a dead end. Hosts see the 6-char code plus the link. Joiners now get `setUsername()` and are gated by `ensureUsername()`. | `14-online.js` (`setLobbyMode`/`resolveRoomCode`), `18-instant.js` boot |
+| **Feedback** | `toast()` and `confirmDialog()` (in `07-display.js`) replace every native `alert()`/`confirm()`. Add a smoke check if you reintroduce one. | `07-display.js` |
+| **Nav** | The dock is Profile · **Friends** · Play · Career · Help. The old "Arena" tab duplicated the home Quick Match tile; Friends had no root entry at all. Profile and Friends sheets now close each other, and overlays have explicit `z-index`. | `05-navigation.js`, `index.html`, `app.css` |
+## v2.9 — ownership, scale, installability, retention
+
+| Area | Change | Files |
+| --- | --- | --- |
+| **API ownership** | Every mutating endpoint requires a device token. The browser generates one on first run (`hcp_token`); the server records the first token to claim a name and returns 403 afterwards. Profiles idle >90 days can be re-claimed so clearing localStorage isn't a permanent lockout. **This is not authentication** — it stops drive-by tampering, not a determined attacker. | `lib/api/shared.js`, all of `functions/api/` |
+| **Leaderboard index** | `leaderboard:top` holds the sorted top 50. A publish rewrites it (1 get + 1 put); a leaderboard read is 1 get. The old `list` + per-player `get` scan is now only the one-time seed path (`?refresh=1` forces a reseed). | `lib/api/shared.js`, `functions/api/leaderboard.js` |
+| **Relay config** | `buildIceServers()` prefers `HC_TURN_URLS/USERNAME/CREDENTIAL` from `/api/config`, falling back to the free Metered openrelay. Set them in the Pages dashboard to swap relays with no rebuild. | `public/js/14-online.js`, `functions/api/config.js` |
+| **Role sync** | Online styles now sync **by squad index**, not by name — the RR `Boult`/`Bolt` duplicate proved name matching was unsafe. Name is still sent for fallback with older peers. | `public/js/14-online.js` |
+| **Analytics consent** | GA is not loaded until `hcp_consent === 'yes'`. A dismissible bar records accept *or* decline. | `public/index.html`, `public/js/21-shell.js` |
+| **Installable** | Manifest + service worker (network-first, never caches `/api/`). Icons are generated PNGs, committed. | `public/manifest.webmanifest`, `public/sw.js`, `public/img/` |
+| **Avatars** | Deterministic inline-SVG faces from a name hash — same name, same face, on every device. No image assets, no network. Replaces the bare initial in profile, persona, friend and leaderboard rows. | `public/js/22-avatars.js` |
+| **Retention** | Daily streak (`hcp_activity`, one increment per calendar day), head-to-head per pairing (`hcp_h2h:<me>:<them>`), and "Auto-pick my XI" which fills legal role styles per `getRoleLimits()`. | `public/js/23-features.js`, hooks in `09-engine.js` |
+| **Sharing** | Result screen renders the scorecard to a canvas and uses the Web Share API; falls back to download, then to a clipboard text summary. | `public/js/23-features.js` |
+| **Arena life** | A crowd band drifts in the stands while a match is live; a ball trail plays on reveal. Both suppressed under `prefers-reduced-motion`. | `public/index.html`, `public/css/app.css`, `09-engine.js` |
+| **Type ramp** | `--ink-soft`/`--ink-faint` widened from .62/.40 to .80/.45 — the two were 22 points apart, so secondary and tertiary text read as one tier. | `public/css/app.css` |
+
+### Knockout cup (`24-tournaments.js`)
+The dock tab labelled **Tournaments** used to open the tutorial. It now opens a
+real 4- or 8-player single-elimination cup. It reuses the ordinary offline match
+engine (`startQuickBotMatch`) rather than a second implementation, so roles, free
+hits and career rules all behave. State persists in `hcp_cup`.
+
+**Fix found by its own tests:** the first version only removed the opponent the
+player actually beat, so the fixtures you don't play never resolved and a
+4-player cup needed three wins. A knockout round now halves the field, always
+including the beaten opponent — 4 players takes 2 wins, 8 takes 3.
+
+### Match replay (`25-replay.js`)
+The engine already records every ball in `G.me.hist` / `G.opp.hist`, so replay is
+**playback, not simulation** — nothing re-rolls a result, so a replay can never
+disagree with the match it came from. Last 5 matches kept in `hcp_replays`.
+Ball values are `"DOT"`, `"NB"`, `"W"` and numeric runs.
+
+### Not done, and why
+- **SRI on the PeerJS CDN tag** — the sandbox has no outbound network, so the hash could not be computed. Guessing one would break online play outright. `21-shell.js` detects a failed load and labels the online buttons instead.
+- **Server-authoritative online play** — PeerJS is peer-to-peer, so either client can still misreport a score. Needs a Durable Object per room. This is the one remaining architectural gap.
+
+| **Leaderboard** | `GET /api/leaderboard?limit&me` ranks `profile:*` by wins (ties → win%). Real players only: personas are generated in memory and never persisted, plus an `isPersona` guard. Home → **Leaderboard**; tapping a row opens that player's live profile. | `functions/api/leaderboard.js`, `10-profiles.js`, `#leaderboardOverlay` |
+| **Player profiles** | `showUserProfile(name)` fetches `/api/profile?user=` for **live** stats — used by friend rows and leaderboard rows. Action buttons `stopPropagation` so they don't also open the sheet. | `10-profiles.js`, `20-friends.js` |
+| **Role locks** | Every greyed gesture number carries `data-lock-reason`; the arena shows a one-line role hint; tapping a locked number toasts the reason instead of doing nothing. | `15-roles.js`, `#roleHint` |
+| **Scroll** | Sheets are the only scroller (`.friend-list` is no longer a nested scroller), `overscroll-behavior:contain`, and `padding-bottom` clears the dock. Short viewports shrink the coin and hide `#tossPreStats`. | `app.css` |
+| **Rosters** | No duplicate names inside a squad — RR had both `Boult` and `Bolt`, which broke online role sync (it matches by name). | `01-config.js` |
+| **Type** | No font size below 10px (was 7px). `.prof-id` was 9px at 2.33:1 contrast; it is now 11px on `--ink-soft`. | `app.css` |
 
 > ⚠️ Rule: **never create load-time dependencies on later files.** If a file
 > needs a value from a later file at parse time, reorder the `<script>` tags in

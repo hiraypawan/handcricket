@@ -50,7 +50,7 @@ function updCenterCard() {
 }
 function updAllNames() {
   const a = G.myName || "YOU",
-    b = G.oppName || "BOT";
+    b = G.oppName || "Opponent";
   if ($("labelA")) $("labelA").textContent = a;
   if ($("labelB")) $("labelB").textContent = b;
   if ($("nameA")) $("nameA").textContent = a;
@@ -193,8 +193,20 @@ function showLeave(s) {
   $("leaveBtn").style.display = s ? "block" : "none";
 }
 function updBotLvl() {
-  if (G.mode === "offline") $("botLvl").textContent = "Bot: " + BotAI.level();
-  else $("botLvl").textContent = "";
+  const el = $("botLvl");
+  if (!el) return;
+  if (G.mode === "online") {
+    el.textContent = "";
+    return;
+  }
+  /* v2.8: the chip under the opponent's score used to read "Bot: 3". It now
+     shows who they are — home city and rank — like any other player card. */
+  const p = G.botProfile || null;
+  const bits = [];
+  if (p && p.city) bits.push(p.city);
+  const rk = getRank(G.oppStats || p);
+  if (rk) bits.push(rk);
+  el.textContent = bits.join(" \u00b7 ");
 }
 function armWD() {
   clearWD();
@@ -250,4 +262,61 @@ function tossChipHTML(faceRes) {
 }
 function tossDotsHTML() {
   return '<span class="toss-dots"><i></i><i></i><i></i></span>';
+}
+
+/* ============================================================================
+   v2.8 IN-APP FEEDBACK — replaces every native alert()/confirm().
+   Native dialogs block the render thread, ignore the theme and cannot be
+   dismissed with the app's own chrome.
+============================================================================ */
+function toast(msg, kind) {
+  const host = $("toastHost");
+  if (!host) return;
+  const el = document.createElement("div");
+  el.className = "toast" + (kind ? " toast-" + kind : "");
+  el.textContent = String(msg == null ? "" : msg);
+  host.appendChild(el);
+  // keep at most 3 on screen
+  while (host.children.length > 3) host.removeChild(host.firstChild);
+  setTimeout(() => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 260);
+  }, 2400);
+}
+
+let confirmWired = false;
+let confirmResolve = null;
+/* Promise-based replacement for window.confirm(). Resolves false if the sheet
+   is dismissed any other way. */
+function confirmDialog(title, msg, yesLabel) {
+  return new Promise((resolve) => {
+    const ov = $("confirmOverlay");
+    if (!ov) {
+      resolve(true);
+      return;
+    }
+    if (confirmResolve) confirmResolve(false);
+    confirmResolve = resolve;
+    $("confirmTitle").textContent = title || "Are you sure?";
+    $("confirmMsg").textContent = msg || "";
+    $("btnConfirmYes").textContent = yesLabel || "Yes";
+    ov.classList.remove("hidden");
+    if (!confirmWired) {
+      confirmWired = true;
+      const done = (v) => {
+        ov.classList.add("hidden");
+        const r = confirmResolve;
+        confirmResolve = null;
+        if (r) r(v);
+      };
+      $("btnConfirmYes").onclick = () => {
+        sfx("tap");
+        done(true);
+      };
+      $("btnConfirmNo").onclick = () => {
+        sfx("tap");
+        done(false);
+      };
+    }
+  });
 }
