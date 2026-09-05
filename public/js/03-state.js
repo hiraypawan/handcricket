@@ -52,6 +52,16 @@ const G = {
   selectTimer: null,
 };
 const $ = (id) => document.getElementById(id);
+/* Team display name: always "<username>'s Team" — derived, never asked.
+   Used by quick/instant matches and as the story default. */
+function defaultTeamName() {
+  try {
+    const u =
+      (typeof getUsername === "function" && getUsername()) || "";
+    if (u) return (u + "'s Team").slice(0, 32);
+  } catch (e) {}
+  return "My Team";
+}
 let audioCtx = null,
   peer = null,
   conn = null,

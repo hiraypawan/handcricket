@@ -36,6 +36,8 @@ function resetMatchmakingUI() {
   mmSearching = false;
   mmPersona = null;
   clearInterval(matchTimer);
+  const bnb = $("btnMMBotNow");
+  if (bnb) bnb.style.display = "none";
   $("matchStatus").textContent = "Pick your format — we will find you an opponent.";
   $("matchTimer").textContent = "";
   $("searchSpinner").style.display = "none";
@@ -82,13 +84,29 @@ function findOpponent() {
     window.hcPresenceSet("seeking", null);
   const me = (typeof getUsername === "function" && getUsername()) || "Player";
   const teamSize = getTeamSize();
+  /* Real pairs need overlap time (separate taps + KV propagation), so the
+     hunt runs ~18-25s; a Play Bot Now shortcut appears after ~8s for solo
+     players instead of forcing the full wait. */
   const cutoff =
     typeof window.__qmCutoffMs === "number"
       ? window.__qmCutoffMs
-      : 9000 + Math.random() * 5000;
+      : 18000 + Math.random() * 7000;
   const t0 = Date.now();
-  const S = { cancelled: false, poll: null, cut: null, stages: [] };
+  const S = { cancelled: false, poll: null, cut: null, stages: [], seekers: 0 };
   mmSearch = S;
+  const botNowBtn = $("btnMMBotNow");
+  if (botNowBtn) {
+    botNowBtn.style.display = "none";
+    botNowBtn.onclick = () => {
+      sfx("tap");
+      goBot();
+    };
+  }
+  S.stages.push(
+    setTimeout(() => {
+      if (!S.cancelled && botNowBtn) botNowBtn.style.display = "block";
+    }, 8000),
+  );
   const qmPost = async (action) => {
     try {
       const r = await fetch("/api/quickmatch", {
@@ -109,6 +127,15 @@ function findOpponent() {
     clearTimeout(S.cut);
     S.stages.forEach(clearTimeout);
     mmSearch = null;
+    if (botNowBtn) botNowBtn.style.display = "none";
+    /* tell ops this pair launched into P2P (vs. dying silently) */
+    try {
+      fetch("/api/quickmatch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "joined", user: me }),
+      }).catch(() => {});
+    } catch (e) {}
     joinRealMatch(m);
   };
   const goBot = () => {
@@ -116,6 +143,7 @@ function findOpponent() {
     S.cancelled = true;
     clearInterval(S.poll);
     mmSearch = null;
+    if (botNowBtn) botNowBtn.style.display = "none";
     mmPersona = genBotProfile();
     renderMMPersona(mmPersona);
     mmSearching = false;
@@ -128,7 +156,9 @@ function findOpponent() {
   let si = 0;
   const beat = () => {
     if (S.cancelled) return;
-    $("matchStatus").textContent = MM_SEARCH_STAGES[si % MM_SEARCH_STAGES.length];
+    $("matchStatus").textContent =
+      MM_SEARCH_STAGES[si % MM_SEARCH_STAGES.length] +
+      (S.seekers > 1 ? " • " + S.seekers + " searching" : "");
     si++;
     S.stages.push(setTimeout(beat, 1400));
   };
@@ -140,7 +170,9 @@ function findOpponent() {
       return;
     }
     const j = await qmPost("poll");
-    if (j && j.status === "matched") goReal(j);
+    if (!j) return;
+    if (typeof j.seekers === "number") S.seekers = j.seekers;
+    if (j.status === "matched") goReal(j);
   }, 2000);
   qmPost("seek").then((j) => {
     if (j && j.status === "matched") goReal(j);
@@ -209,22 +241,9 @@ function resetMatchmakingUI2() {
   mmSearching = false;
   clearInterval(matchTimer);
 }
-function teamDisplayName() {
-  try {
-    const v = ($("mmTeamName") && $("mmTeamName").value) || "";
-    if (v.trim()) return v.trim().slice(0, 16);
-    return localStorage.getItem("hcp_teamname") || "";
-  } catch (e) {
-    return "";
-  }
-}
 function startMatchmaking() {
   mmSearching = false;
   clearInterval(matchTimer);
-  try {
-    const saved = localStorage.getItem("hcp_teamname") || "";
-    if (saved && $("mmTeamName") && !$("mmTeamName").value) $("mmTeamName").value = saved;
-  } catch (e) {}
   G.teamSize = getTeamSize();
   G.mode = "offline";
   G.isHost = true;
@@ -249,14 +268,11 @@ function startQuickBotMatch(persona) {
   G.botProfile = persona || null;
   G.oppStats = persona ? personaStats(persona) : null;
   if (persona) G.oppName = persona.name;
-  /* Renamable T20/quick team: typed name wins, else username, else YOU. */
-  const tn = teamDisplayName();
-  if (tn) {
-    try {
-      localStorage.setItem("hcp_teamname", tn);
-    } catch (e) {}
-  }
-  G.myName = tn || getUsername() || "Player";
+  /* Team name is always "<username>'s Team" — derived, never asked. */
+  G.myName =
+    (typeof defaultTeamName === "function" && defaultTeamName()) ||
+    getUsername() ||
+    "Player";
   // never inherit a previous match's roster (e.g. a story XI)
   G.myPlayers = [];
   G.oppPlayers = [];

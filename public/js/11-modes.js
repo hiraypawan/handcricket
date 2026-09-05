@@ -14,6 +14,9 @@ function ensureUsername(cb) {
   $("usernameInput").value = "";
   $("usernameInput").focus();
   try {
+    if (typeof refreshRenameHint === "function") refreshRenameHint();
+  } catch (e) {}
+  try {
     if (typeof renderGoogleButtons === "function") renderGoogleButtons();
   } catch (e) {}
   if (!window._pendingCbs) window._pendingCbs = [];
@@ -26,14 +29,24 @@ $("btnSaveUsername").onclick = () => {
     $("usernameInput").focus();
     return;
   }
+  /* Renames are capped at 2 per device (first naming is free). Programmatic
+     identity switches (Google adopt) bypass this — it gates casual renames. */
+  const prev =
+    typeof getUsername === "function" ? getUsername() || "" : "";
+  const isRename =
+    !!prev && prev.toLowerCase() !== v.toLowerCase();
+  if (isRename && typeof renamesLeft === "function" && renamesLeft() <= 0) {
+    toast("No renames left (2 per device)", "warn");
+    $("usernameInput").focus();
+    return;
+  }
   /* Rename (not just first set): carry the old career over explicitly so the
      new name never starts empty while the old record — and the Google link,
      which re-publishes below under the new name — stays intact. */
-  const prev =
-    typeof getUsername === "function" ? getUsername() || "" : "";
   const prevStats =
     typeof loadStats === "function" ? loadStats() : null;
   setUsername(v);
+  if (isRename && typeof noteRename === "function") noteRename();
   try {
     if (
       prev &&
@@ -80,6 +93,9 @@ $("btnEditName").onclick = () => {
   $("usernameInput").value = getUsername();
   $("usernameInput").focus();
   window._pendingCbs = null;
+  try {
+    if (typeof refreshRenameHint === "function") refreshRenameHint();
+  } catch (e) {}
 };
 function updHomeUsername() {
   const u = getUsername();

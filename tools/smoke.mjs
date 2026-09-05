@@ -277,6 +277,7 @@ ev(dom, `$('btnMMPlayBot').click()`);
 await sleep(4200); // staged search + short-cutoff fallback
 const qmSeek = ev(dom, `JSON.stringify(window.__net.map(c=>c.url))`);
 check("quick search polls the real matchmaking pool first", /\/api\/quickmatch/.test(qmSeek), qmSeek.slice(0, 90));
+check("Play Bot Now escape hatch exists", !!byId(dom, "btnMMBotNow"));
 const personaShown = !byId(dom, "mmPersona")?.classList.contains("hidden");
 const personaName = byId(dom, "mmPersona")?.querySelector(".persona-name")?.textContent || "";
 const personaMeta = byId(dom, "mmPersona")?.querySelector(".persona-meta")?.textContent || "";
@@ -343,6 +344,12 @@ check("preset squads carry no real-famous names", presetHit === false, "");
 const fs5b = await import("node:fs");
 const repoSrc = (p) => fs5b.readFileSync(join(root, p), "utf8");
 check(
+  "matched pairs ping joined + client shows seekers",
+  /action.*joined/.test(repoSrc("public/js/18-instant.js")) &&
+    /S\.seekers/.test(repoSrc("public/js/18-instant.js")),
+  "",
+);
+check(
   "matchmaking converges concurrent seekers (deterministic room + adopt)",
   /function roomFor/.test(repoSrc("functions/api/quickmatch.js")) &&
     /readMatch\(KV, cand\.user\)/.test(repoSrc("functions/api/quickmatch.js")),
@@ -389,6 +396,14 @@ check("google restore + save notes wired", ev(dom, `typeof restoreGoogleProgress
 ev(dom, `window.__realFetch2 = window.fetch; window.fetch = (u, o) => Promise.resolve({ ok: true, json: async () => ({ names: ["Ravi"] }) });`);
 const linkedName = await ev(dom, `hcGoogleLinkedName('tok')`);
 check("google lookup adopts the linked in-game name", linkedName === "Ravi", linkedName);
+ev(dom, `localStorage.removeItem('hcp_renames'); setUsername('Ravi');`);
+const teamAuto = ev(dom, `defaultTeamName()`);
+check("team auto-names as Username's Team", teamAuto === "Ravi's Team", teamAuto);
+const rl0 = ev(dom, `renamesLeft()`);
+ev(dom, `noteRename(); noteRename();`);
+const rl2 = ev(dom, `renamesLeft()`);
+ev(dom, `localStorage.removeItem('hcp_renames');`);
+check("renames capped at 2 per device", rl0 === 2 && rl2 === 0, `${rl0}->${rl2}`);
 ev(dom, `window.fetch = window.__realFetch2;`);
 check("dock Career tab is now Ranks", (byId(dom, "tabBar")?.textContent || "").includes("Ranks"));
 

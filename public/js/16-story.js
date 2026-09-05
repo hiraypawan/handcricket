@@ -386,7 +386,14 @@ function showStoryTeamBuilder() {
   $("storyHome").classList.add("hidden");
   $("storyTeamBuilder").classList.remove("hidden");
   storyBuilderPicks = [];
-  $("storyTeamName").value = "";
+  /* Pre-filled "<username>'s Team" — editable, never a blank ask. */
+  try {
+    const cur = $("storyTeamName").value.trim();
+    if (!cur)
+      $("storyTeamName").value =
+        (typeof defaultTeamName === "function" && defaultTeamName()) ||
+        "My Team";
+  } catch (e) {}
   $("storyPickCount").textContent = "0";
   $("btnStoryTeamConfirm").disabled = true;
   const pool = $("storyPlayerPool");
@@ -437,7 +444,10 @@ function toggleStoryPick(idx, el) {
 $("btnStoryTeamConfirm").onclick = () => {
   if (storyBuilderPicks.length !== 11) return;
   sfx("tap");
-  const teamName = $("storyTeamName").value.trim() || "My Team";
+  const teamName =
+    $("storyTeamName").value.trim() ||
+    ((typeof defaultTeamName === "function" && defaultTeamName()) ||
+      "My Team");
   const players = storyBuilderPicks.map((i) => {
     const src = STORY_DATA.playerPool[i];
     return {

@@ -11,6 +11,40 @@ function setUsername(n) {
   G.myName = n;
   migrateLegacyStats(n);
 }
+/* Username renames: 2 per device, then locked. First-time naming is free;
+   only the Save button consumes one (programmatic switches don't). */
+function renamesUsed() {
+  try {
+    return parseInt(localStorage.getItem("hcp_renames") || "0", 10) || 0;
+  } catch (e) {
+    return 0;
+  }
+}
+function renamesLeft() {
+  return Math.max(0, 2 - renamesUsed());
+}
+function noteRename() {
+  try {
+    localStorage.setItem("hcp_renames", String(renamesUsed() + 1));
+  } catch (e) {}
+}
+function refreshRenameHint() {
+  try {
+    const el = $("renameHint");
+    if (!el) return;
+    const prev =
+      (typeof getUsername === "function" && getUsername()) || "";
+    if (!prev) {
+      el.textContent = "";
+      return;
+    }
+    const left = renamesLeft();
+    el.textContent =
+      left > 0
+        ? left + (left === 1 ? " rename" : " renames") + " left"
+        : "No renames left";
+  } catch (e) {}
+}
 
 /* ---- CAREER STATS ARE PER-USERNAME -------------------------------------
    v2.8: the blob used to live at one global key ("hc_stats"), so renaming
